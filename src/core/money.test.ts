@@ -43,10 +43,37 @@ describe('parseMoney()', () => {
     ['negative half-cent rounds away from zero', '-12,345', -1235],
     ['long fraction', '0,0049', 0],
     ['number with sub-cent', 0.125, 13],
+    ['number half-cent that is below in binary', 1.005, 101],
+    ['negative number half-cent', -1.005, -101],
+    ['0.145', 0.145, 15],
+    ['2.675', 2.675, 268],
+    ['0.285', 0.285, 29],
+    ['5e-7 rounds to zero', 5e-7, 0],
   ];
 
   it.each(subCent)('flags sub-cent: %s', (_name, input, cents) => {
     expect(parseMoney(input)).toEqual({ cents, subCent: true });
+  });
+
+  it('reads every two-decimal number from 0.00 to 19999.99 exactly', () => {
+    for (let cents = 0; cents < 2_000_000; cents++) {
+      const result = parseMoney(cents / 100);
+      if (!('cents' in result) || result.cents !== cents || result.subCent) {
+        expect.fail(`${String(cents / 100)} read as ${JSON.stringify(result)}`);
+      }
+    }
+  });
+
+  it('agrees with the comma text form for every three-decimal number', () => {
+    for (let thousandths = 0; thousandths < 1_000_000; thousandths++) {
+      const text = `${String(Math.floor(thousandths / 1000))},${String(thousandths % 1000).padStart(3, '0')}`;
+      if (
+        JSON.stringify(parseMoney(thousandths / 1000)) !==
+        JSON.stringify(parseMoney(text))
+      ) {
+        expect.fail(`${text} disagrees`);
+      }
+    }
   });
 
   it('does not flag trailing zeros past the cents', () => {

@@ -34,17 +34,40 @@ export function roundHalfAway(numerator: number, denominator: number): number {
   return negative && quotient !== 0 ? -quotient : quotient;
 }
 
+const NUMBER_DIGITS = /^(\d+)(?:\.(\d+))?(?:e([+-]\d+))?$/;
+
+function centsFromDigits(
+  whole: string,
+  fraction: string,
+): { magnitude: number; subCent: boolean } {
+  const kept = fraction.slice(0, 2).padEnd(2, '0');
+  const dropped = fraction.slice(2);
+  const roundUp = dropped !== '' && dropped.charAt(0) >= '5';
+  return {
+    magnitude: Number(whole) * 100 + Number(kept) + (roundUp ? 1 : 0),
+    subCent: /[1-9]/.test(dropped),
+  };
+}
+
+function signed(magnitude: number, negative: boolean): number {
+  return negative && magnitude !== 0 ? -magnitude : magnitude;
+}
+
+// Excel keeps 15 significant digits, so a cell shown as 1,005 must not read as the nearest double below it
 function fromNumber(value: number): MoneyParse {
   if (!Number.isFinite(value) || Math.abs(value) > 10 ** MAX_EURO_DIGITS) {
     return { issue: 'invalid-number' };
   }
-  const scaled = Math.abs(value) * 100;
-  const rounded = Math.round(scaled);
-  const cents = value < 0 ? -rounded : rounded;
-  return {
-    cents: cents === 0 ? 0 : cents,
-    subCent: Math.abs(scaled - rounded) > 1e-6,
-  };
+  const match = NUMBER_DIGITS.exec(Math.abs(value).toPrecision(15));
+  if (match === null) return { issue: 'invalid-number' };
+  const digits = (match[1] ?? '') + (match[2] ?? '');
+  const pointAt = (match[1] ?? '').length + Number(match[3] ?? '0');
+  const whole =
+    pointAt <= 0 ? '0' : digits.padEnd(pointAt, '0').slice(0, pointAt);
+  const fraction =
+    pointAt <= 0 ? '0'.repeat(-pointAt) + digits : digits.slice(pointAt);
+  const { magnitude, subCent } = centsFromDigits(whole, fraction);
+  return { cents: signed(magnitude, value < 0), subCent };
 }
 
 function splitDecimal(
@@ -102,15 +125,8 @@ function fromText(text: string): MoneyParse {
   const fractionOk = fraction === '' || DIGITS.test(fraction);
   if (!wholeOk || !fractionOk) return { issue: 'invalid-number' };
 
-  const kept = fraction.slice(0, 2).padEnd(2, '0');
-  const dropped = fraction.slice(2);
-  const subCent = /[1-9]/.test(dropped);
-  const roundUp = dropped.charAt(0) >= '5' && dropped !== '';
-  const magnitude = Number(whole) * 100 + Number(kept) + (roundUp ? 1 : 0);
-  return {
-    cents: negative && magnitude !== 0 ? -magnitude : magnitude,
-    subCent,
-  };
+  const { magnitude, subCent } = centsFromDigits(whole, fraction);
+  return { cents: signed(magnitude, negative), subCent };
 }
 
 export function parseMoney(cell: string | number): MoneyParse {
