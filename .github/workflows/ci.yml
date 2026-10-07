@@ -37,7 +37,7 @@ jobs:
           curl -fsSL "https://github.com/typst/typst/releases/download/v${TYPST_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz" \
             | sudo tar -xJ --strip-components=1 -C /usr/local/bin --wildcards '*/typst'
           typst --version
-      - run: sudo apt-get install -y poppler-utils
+      - run: sudo apt-get update && sudo apt-get install -y poppler-utils
       - name: Compile the hello template
         run: |
           mkdir -p build/typst-root/data
