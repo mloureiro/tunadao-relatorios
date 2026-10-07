@@ -9,6 +9,7 @@
     "node": ">=24"
   },
   "scripts": {
+    "postinstall": "node scripts/patch-typst-glue.ts",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "lint": "eslint .",

@@ -54,16 +54,25 @@ export function patchDynamicImportHelper(code: string): string {
   return replaceOnce(code, DYNAMIC_IMPORT_HELPER, NO_DYNAMIC_IMPORT);
 }
 
-export function patchTypstGlue(id: string, code: string): string | undefined {
-  const file = id.split('?')[0] ?? id;
-  if (file.endsWith('typst-ts-web-compiler/pkg/typst_ts_web_compiler.mjs')) {
-    return patchWebCompilerGlue(code);
+export const PINNED_TYPST_VERSION = '0.7.0';
+
+export function assertPinnedVersion(name: string, version: string): void {
+  if (version !== PINNED_TYPST_VERSION) {
+    throw new Error(
+      `${name} must be exactly ${PINNED_TYPST_VERSION} (found ${version}); the glue patch only knows that release`,
+    );
   }
-  if (
-    file.endsWith('typst-ts-web-compiler/pkg/wasm-pack-shim.mjs') ||
-    file.endsWith('@myriaddreamin/typst.ts/dist/esm/init.mjs')
-  ) {
-    return patchDynamicImportHelper(code);
+}
+
+export type GlueFile = 'web-compiler-glue' | 'dynamic-import-helper';
+
+export function patchGlueFile(kind: GlueFile, code: string): string {
+  if (kind === 'web-compiler-glue') {
+    return code.includes('function typstGlueClosure')
+      ? code
+      : patchWebCompilerGlue(code);
   }
-  return undefined;
+  return code.includes(NO_DYNAMIC_IMPORT)
+    ? code
+    : patchDynamicImportHelper(code);
 }
