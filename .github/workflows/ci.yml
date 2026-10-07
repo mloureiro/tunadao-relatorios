@@ -14,8 +14,8 @@ jobs:
     timeout-minutes: 25
     container:
       image: mcr.microsoft.com/playwright:v1.63.0-noble
-      env:
-        HOME: /root
+    env:
+      HOME: /root
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
