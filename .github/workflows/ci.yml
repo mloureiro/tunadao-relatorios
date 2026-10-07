@@ -25,3 +25,26 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps
       - run: npm run test:e2e
+
+  typst-cli:
+    runs-on: ubuntu-latest
+    env:
+      TYPST_VERSION: 0.14.2
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Typst ${{ env.TYPST_VERSION }}
+        run: |
+          curl -fsSL "https://github.com/typst/typst/releases/download/v${TYPST_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz" \
+            | sudo tar -xJ --strip-components=1 -C /usr/local/bin --wildcards '*/typst'
+          typst --version
+      - run: sudo apt-get install -y poppler-utils
+      - name: Compile the hello template
+        run: |
+          mkdir -p build/typst-root/data
+          cp -r templates assets build/typst-root/
+          cp src/engine/hello-sample.json build/typst-root/data/report.json
+          typst compile --root build/typst-root --font-path assets/fonts --ignore-system-fonts build/typst-root/templates/hello.typ build/hello.pdf
+      - name: Check the PDF embeds only the bundled fonts
+        run: |
+          pdffonts build/hello.pdf
+          ! pdffonts build/hello.pdf | tail -n +3 | grep -vE '\+(Lato|CarterOne)'
