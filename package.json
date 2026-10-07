@@ -1,0 +1,42 @@
+{
+  "name": "tunadao-relatorios",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Gerador de relatórios financeiros do TUNADÃO 1998",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:deployed": "playwright test smoke",
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "gerar": "tsx src/cli/gerar-relatorio.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.63.0",
+    "@preact/preset-vite": "2.10.6",
+    "@types/node": "24.19.1",
+    "eslint": "10.12.0",
+    "globals": "17.13.0",
+    "prettier": "3.9.9",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.1",
+    "vite": "8.3.3",
+    "vitest": "5.0.3"
+  },
+  "dependencies": {
+    "preact": "11.0.0",
+    "xlsx": "file:vendor/xlsx-0.20.3.tgz"
+  }
+}
