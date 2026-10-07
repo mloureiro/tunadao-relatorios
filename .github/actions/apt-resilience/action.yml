@@ -1,0 +1,14 @@
+name: Make apt resilient
+description: Bound every apt network operation so a stalled mirror fails fast instead of hanging the job
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        sudo tee /etc/apt/apt.conf.d/80-ci-resilience >/dev/null <<'APT'
+        Acquire::Retries "3";
+        Acquire::http::Timeout "20";
+        Acquire::https::Timeout "20";
+        Acquire::ForceIPv4 "true";
+        APT
