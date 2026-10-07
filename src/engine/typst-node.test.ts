@@ -70,12 +70,14 @@ describe('createNodeRenderer', () => {
 
     const { warnings } = await withoutCarterOne.render('hello', helloSample);
 
-    expect(warnings.join('\n')).toContain('unknown font family: carter one');
+    expect(warnings.join('\n')).toContain(
+      'warning: /templates/hello.typ:17:13: unknown font family: carter one',
+    );
   });
 
   it('rejects when the template cannot be compiled', async () => {
     await expect(renderer.render('pegada', helloSample)).rejects.toThrow(
-      /Typst compilation failed/,
+      /error: \/templates\/pegada\.typ: failed to load file/,
     );
   });
 

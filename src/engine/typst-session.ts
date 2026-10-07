@@ -23,16 +23,23 @@ function bundledFontLoader(fonts: readonly Uint8Array[]) {
   return loader;
 }
 
-function describe({
-  severity,
-  path,
-  message,
-}: {
+interface Diagnostic {
   severity: string;
   path: string;
+  range: string;
   message: string;
-}): string {
-  return `${severity}: ${path}: ${message}`;
+}
+
+function locate({ path, range }: Diagnostic, fallbackPath: string): string {
+  const start = /^(\d+):(\d+)/.exec(range);
+  const position = start
+    ? `:${String(Number(start[1]) + 1)}:${String(Number(start[2]) + 1)}`
+    : '';
+  return `${path || fallbackPath}${position}`;
+}
+
+function describe(diagnostic: Diagnostic, fallbackPath: string): string {
+  return `${diagnostic.severity}: ${locate(diagnostic, fallbackPath)}: ${diagnostic.message}`;
 }
 
 export async function createTypstSession(
@@ -68,23 +75,24 @@ export async function createTypstSession(
       encoder.encode(JSON.stringify(report)),
     );
 
-    return compiler.runWithWorld(
-      { mainFilePath: `/${mainTemplatePath(templateId)}`, root: '/' },
-      async (world) => {
-        const { hasError, diagnostics = [] } = await world.compile({
-          diagnostics: 'full',
-        });
-        if (hasError) {
-          const errors = diagnostics.filter((d) => d.severity === 'error');
-          throw new Error(
-            `Typst compilation failed:\n${errors.map(describe).join('\n')}`,
-          );
-        }
-        const { result } = await world.pdf({ diagnostics: 'full' });
-        if (!result) throw new Error('Typst produced no PDF');
-        return { pdf: result, warnings: diagnostics.map(describe) };
-      },
-    );
+    const mainFilePath = `/${mainTemplatePath(templateId)}`;
+    return compiler.runWithWorld({ mainFilePath, root: '/' }, async (world) => {
+      const { hasError, diagnostics = [] } = await world.compile({
+        diagnostics: 'full',
+      });
+      if (hasError) {
+        const errors = diagnostics.filter((d) => d.severity === 'error');
+        throw new Error(
+          `Typst compilation failed:\n${errors.map((d) => describe(d, mainFilePath)).join('\n')}`,
+        );
+      }
+      const { result } = await world.pdf({ diagnostics: 'full' });
+      if (!result) throw new Error('Typst produced no PDF');
+      return {
+        pdf: result,
+        warnings: diagnostics.map((d) => describe(d, mainFilePath)),
+      };
+    });
   }
 
   return {
