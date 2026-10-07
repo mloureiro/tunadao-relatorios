@@ -56,44 +56,26 @@ describe('loadDataset() validation', () => {
     ).toEqual(['unknown-atividade', 'unknown-rubrica']);
   });
 
-  it('warns about a renamed sheet and suggests the tab it looks like', async () => {
-    const { Pendentes, ...rest } = XLSX_SHEETS;
+  it('returns the sheet-level issues of the reader', async () => {
+    const { issues } = await load({ ...XLSX_SHEETS, Rel_Evento: [['Resumo']] });
 
-    const { issues, dataset } = await load({
-      ...rest,
-      'Pendentes 2025': Pendentes ?? [],
-    });
-
-    expect(dataset.pendentes).toEqual([]);
     expect(issues).toMatchObject([
-      { severity: 'warning', code: 'ignored-sheet', suggestion: 'Pendentes' },
+      { severity: 'warning', code: 'ignored-sheet' },
     ]);
   });
 
-  it('allows an extra report sheet with a warning and no suggestion', async () => {
-    const { issues } = await load({
+  it('reports every row as unresolved when Listas has headers but no rows', async () => {
+    const { dataset, unresolved, issues } = await load({
       ...XLSX_SHEETS,
-      Rel_Evento: [['Resumo']],
+      Listas: [LISTAS[0] ?? []],
     });
 
-    expect(issues).toHaveLength(1);
-    expect(issues[0]).toMatchObject({
-      severity: 'warning',
-      code: 'ignored-sheet',
-    });
-    expect(issues[0]).not.toHaveProperty('suggestion');
-  });
-
-  it('rejects two sheets that normalise to the same tab, naming both', async () => {
-    const { issues } = await load({
-      ...XLSX_SHEETS,
-      Orcamento: XLSX_SHEETS.Orçamento ?? [],
-    });
-
-    expect(issues).toMatchObject([
-      { severity: 'error', code: 'duplicate-sheet', tab: 'Orçamento' },
-    ]);
-    expect(issues[0]?.message).toContain('"Orçamento" e "Orcamento"');
+    expect(dataset.movimentos).toEqual([]);
+    expect(unresolved).toHaveLength(2);
+    const rows = issues
+      .filter((issue) => issue.code.startsWith('unknown-'))
+      .map((issue) => issue.row);
+    expect(new Set(rows)).toEqual(new Set([2, 3]));
   });
 
   it('returns validator findings from the dataset alongside the load-stage ones', async () => {

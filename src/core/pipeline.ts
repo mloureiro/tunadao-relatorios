@@ -92,13 +92,16 @@ export async function loadDataset(
   const { dataset, issues, unresolved } = normaliseTables(
     read.flatMap(({ tables }) => tables),
   );
+  const listasMissing = !read.some(({ tables }) =>
+    tables.some((table) => table.tab === 'Listas'),
+  );
   const full: Dataset = { sources, ...dataset };
   return {
     dataset: full,
     issues: [
       ...read.flatMap((result) => result.issues),
       ...issues,
-      ...validateDataset(full, unresolved),
+      ...validateDataset(full, unresolved, { listasMissing }),
     ],
     unresolved,
   };

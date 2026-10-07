@@ -138,8 +138,8 @@ function checkBudgetTipo(
   if (expected === undefined || expected === null || expected === tipo) return;
   issues.push(
     makeIssue(
-      'unknown-rubrica',
-      issueMessages['unknown-rubrica'](rubrica, null, tipo),
+      'budget-tipo-mismatch',
+      issueMessages['budget-tipo-mismatch'](rubrica, tipo),
       at(src, 'Tipo'),
       expected,
     ),
@@ -149,13 +149,10 @@ function checkBudgetTipo(
 export function membershipIssues(
   dataset: Dataset,
   unresolved: readonly UnresolvedMovimento[],
+  listasMissing: boolean,
 ): Issue[] {
   const { lists } = dataset;
-  const listsAbsent =
-    lists.rubricas.length === 0 &&
-    lists.atividades.length === 0 &&
-    lists.meios.length === 0;
-  if (listsAbsent) return [];
+  if (listasMissing) return [];
 
   const index = indexLists(lists);
   const issues: Issue[] = [];

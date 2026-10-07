@@ -237,6 +237,48 @@ describe('validateDataset()', () => {
     });
   });
 
+  describe('non-result rubrics other than internal transfers', () => {
+    const opening = mov({
+      data: '2025-01-10',
+      cents: 3000,
+      rubrica: 'Saldo inicial',
+      row: 5,
+    });
+
+    it('warns on the row and does not treat it as an unbalanced transfer', () => {
+      const issues = validateDataset(
+        emptyDataset({ movimentos: [opening] }),
+        [],
+      );
+
+      expect(issues).toMatchObject([
+        { severity: 'warning', code: 'non-result-row', row: 5 },
+      ]);
+    });
+
+    it('does not pull the row into a balanced transfer group of the same day', () => {
+      const dataset = emptyDataset({
+        movimentos: [
+          mov({
+            data: '2025-01-10',
+            cents: 100,
+            tipo: 'Saída',
+            rubrica: 'Transferências internas',
+          }),
+          mov({
+            data: '2025-01-10',
+            cents: 100,
+            conta: 'Banco',
+            rubrica: 'Transferências internas',
+          }),
+          opening,
+        ],
+      });
+
+      expect(codes(dataset)).toEqual(['non-result-row']);
+    });
+  });
+
   describe('Listas membership', () => {
     it('suggests the closest rubrica without correcting it', () => {
       const dataset = emptyDataset({
@@ -313,7 +355,7 @@ describe('validateDataset()', () => {
 
       expect(validateDataset(dataset, [])).toMatchObject([
         {
-          code: 'unknown-rubrica',
+          code: 'budget-tipo-mismatch',
           tab: 'Orçamento',
           column: 'Tipo',
           suggestion: 'Entrada',
