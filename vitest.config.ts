@@ -7,6 +7,10 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts', 'tests/fixtures/**/*.test.ts'],
+    include: [
+      'src/**/*.test.ts',
+      'scripts/**/*.test.ts',
+      'tests/fixtures/**/*.test.ts',
+    ],
   },
 });

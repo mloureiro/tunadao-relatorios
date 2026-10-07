@@ -1,3 +1,4 @@
+import renderWorkerUrl from './render.worker.ts?worker&url';
 import wasmUrl from '@myriaddreamin/typst-ts-web-compiler/wasm?url';
 import { defaultManifest, type AssetManifest } from './assets';
 import type { RenderResult, Renderer, TemplateId } from './renderer';
@@ -37,19 +38,37 @@ const urlByPath = new Map(
   ]),
 );
 
+// The blob worker has a blob: base URL, so it cannot resolve relative paths.
+function absolute(url: string): string {
+  return new URL(url, location.href).href;
+}
+
 function urlFor(path: string): string {
   const url = urlByPath.get(path);
   if (!url) throw new Error(`Asset is not part of the build: ${path}`);
-  return url;
+  return absolute(url);
 }
 
 function resolveAssets(manifest: AssetManifest): WorkerAssets {
   const filePaths = [...manifest.templates, manifest.logo];
   return {
-    wasmUrl,
+    wasmUrl: absolute(wasmUrl),
     fontUrls: manifest.fonts.map(urlFor),
     fileUrls: Object.fromEntries(filePaths.map((p) => [p, urlFor(p)])),
   };
+}
+
+// A worker started from its own URL gets only the CSP of its own response, and
+// Pages sends none. A blob worker inherits the page's CSP, so it loads the real
+// worker script through a static import.
+function createInheritingWorker(): Worker {
+  const entry = absolute(renderWorkerUrl);
+  const loader = URL.createObjectURL(
+    new Blob([`import ${JSON.stringify(entry)};`], {
+      type: 'text/javascript',
+    }),
+  );
+  return new Worker(loader, { type: 'module' });
 }
 
 interface Pending {
@@ -68,10 +87,7 @@ export function createWebRenderer(
 
   function start(): Promise<void> {
     ready ??= new Promise<void>((resolve, reject) => {
-      const instance = new Worker(
-        new URL('./render.worker.ts', import.meta.url),
-        { type: 'module' },
-      );
+      const instance = createInheritingWorker();
       worker = instance;
       instance.onmessage = (event: MessageEvent<WorkerResponse>) => {
         const message = event.data;
