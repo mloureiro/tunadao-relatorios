@@ -6,6 +6,7 @@ import { readXlsx } from './input/xlsx.ts';
 import { issueMessages, makeIssue, type Issue } from './issues.ts';
 import { normaliseTables } from './normalise/normalise-tables.ts';
 import type { UnresolvedMovimento } from './normalise/movimentos.ts';
+import { validateDataset } from './validate/validate-dataset.ts';
 
 export interface InputFile {
   readonly name: string;
@@ -25,16 +26,20 @@ function startsWith(bytes: Uint8Array, magic: readonly number[]): boolean {
   return magic.every((byte, position) => bytes[position] === byte);
 }
 
-function readTables(file: InputFile): RawTable[] {
+function readTables(file: InputFile): {
+  tables: RawTable[];
+  issues: Issue[];
+} {
   return startsWith(file.bytes, ZIP_MAGIC) || startsWith(file.bytes, OLE_MAGIC)
     ? readXlsx(file.name, file.bytes)
-    : [readCsv(file.name, file.bytes)];
+    : { tables: [readCsv(file.name, file.bytes)], issues: [] };
 }
 
 function readFile(file: InputFile): { tables: RawTable[]; issues: Issue[] } {
   let tables: RawTable[];
+  let sheetIssues: Issue[];
   try {
-    tables = readTables(file);
+    ({ tables, issues: sheetIssues } = readTables(file));
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     return {
@@ -50,7 +55,7 @@ function readFile(file: InputFile): { tables: RawTable[]; issues: Issue[] } {
   }
 
   const recognised = tables.some((table) => table.tab !== null);
-  if (recognised) return { tables, issues: [] };
+  if (recognised) return { tables, issues: sheetIssues };
 
   const closest =
     tables.length === 0 ? null : closestTab(tables[0]?.header ?? []);
@@ -62,6 +67,7 @@ function readFile(file: InputFile): { tables: RawTable[]; issues: Issue[] } {
         issueMessages['unrecognised-file'](file.name, closest),
         { file: file.name },
       ),
+      ...sheetIssues,
     ],
   };
 }
@@ -86,9 +92,14 @@ export async function loadDataset(
   const { dataset, issues, unresolved } = normaliseTables(
     read.flatMap(({ tables }) => tables),
   );
+  const full: Dataset = { sources, ...dataset };
   return {
-    dataset: { sources, ...dataset },
-    issues: [...read.flatMap((result) => result.issues), ...issues],
+    dataset: full,
+    issues: [
+      ...read.flatMap((result) => result.issues),
+      ...issues,
+      ...validateDataset(full, unresolved),
+    ],
     unresolved,
   };
 }

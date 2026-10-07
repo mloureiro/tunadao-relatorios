@@ -1,4 +1,4 @@
-import type { Conta, TabName } from './dataset/types.ts';
+import type { Conta, Direcao, TabName } from './dataset/types.ts';
 import { formatDate, formatMoney, formatMoneySigned } from './format.ts';
 import type { Cents } from './money.ts';
 
@@ -8,6 +8,8 @@ export const ISSUE_SEVERITY = {
   'missing-column': 'error',
   'missing-tab': 'error',
   'unreadable-file': 'error',
+  'ignored-sheet': 'warning',
+  'duplicate-sheet': 'error',
   'unrecognised-file': 'error',
   'required-empty': 'error',
   'invalid-date': 'error',
@@ -66,6 +68,10 @@ export const issueMessages = {
   'missing-tab': (tab: TabName) => `Falta o separador obrigatório ${tab}.`,
   'unreadable-file': (file: string, reason: string) =>
     `Não foi possível ler o ficheiro "${file}" (detalhe técnico: ${reason}).`,
+  'ignored-sheet': (sheet: string, near: TabName | null) =>
+    `A folha "${sheet}" não corresponde a nenhum separador da Tesouraria e foi ignorada.${near === null ? '' : ` ${sheet} → ${near}?`}`,
+  'duplicate-sheet': (kept: string, duplicate: string, tab: TabName) =>
+    `As folhas "${kept}" e "${duplicate}" correspondem ambas ao separador ${tab}. Deixe apenas uma.`,
   'unrecognised-file': (
     file: string,
     closest: { tab: TabName; missing: readonly string[] } | null,
@@ -93,10 +99,18 @@ export const issueMessages = {
     `O valor ${formatMoney(cents)} tem de ser superior a zero. O sentido do movimento indica-se na coluna Tipo.`,
   'negative-value': (cents: Cents) =>
     `O valor ${formatMoney(cents)} não pode ser negativo.`,
-  'unknown-rubrica': (rubrica: string, subRubrica: string | null) =>
-    subRubrica === null
+  'unknown-rubrica': (
+    rubrica: string,
+    subRubrica: string | null,
+    wrongTipo?: Direcao,
+  ) => {
+    if (wrongTipo !== undefined) {
+      return `O tipo ${wrongTipo} não corresponde ao da rubrica "${rubrica}" na lista Rubricas.`;
+    }
+    return subRubrica === null
       ? `A rubrica "${rubrica}" não existe na lista Rubricas.`
-      : `A sub-rubrica "${subRubrica}" não existe na rubrica "${rubrica}" da lista Sub-rubricas.`,
+      : `A sub-rubrica "${subRubrica}" não existe na rubrica "${rubrica}" da lista Sub-rubricas.`;
+  },
   'unknown-atividade': (atividade: string) =>
     `A atividade "${atividade}" não existe na lista Atividades.`,
   'unknown-meio': (meio: string) =>

@@ -43,6 +43,7 @@ describe('issue catalogue', () => {
       'missing-column',
       'missing-tab',
       'unreadable-file',
+      'duplicate-sheet',
       'unrecognised-file',
       'required-empty',
       'invalid-date',
