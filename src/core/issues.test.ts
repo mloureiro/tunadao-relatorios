@@ -42,11 +42,14 @@ describe('issue catalogue', () => {
     expect(errors).toEqual([
       'missing-column',
       'missing-tab',
+      'unreadable-file',
+      'unrecognised-file',
       'required-empty',
       'invalid-date',
       'invalid-number',
       'invalid-enum',
       'non-positive-value',
+      'negative-value',
       'unknown-rubrica',
       'unknown-atividade',
       'unknown-meio',
@@ -79,5 +82,30 @@ describe('issueMessages', () => {
     ).toBe(
       'O saldo de Banco em 31/12/2025 é 8.430,15 € mas os movimentos dão 8.420,15 € (diferença +10,00 €).',
     );
+  });
+});
+
+describe('file-level messages', () => {
+  it('carries the reason for an unreadable file', () => {
+    expect(issueMessages['unreadable-file']('a.xlsx', 'cifrado')).toBe(
+      'Não foi possível ler o ficheiro "a.xlsx": cifrado',
+    );
+  });
+
+  it.each([
+    [
+      null,
+      'O ficheiro "a.csv" não corresponde a nenhum separador da Tesouraria.',
+    ],
+    [
+      { tab: 'Saldos' as const, missing: ['Fonte', 'Conta'] },
+      'O ficheiro "a.csv" não corresponde a nenhum separador da Tesouraria. O separador mais próximo é Saldos. Colunas em falta: Fonte, Conta.',
+    ],
+    [
+      { tab: 'Saldos' as const, missing: [] },
+      'O ficheiro "a.csv" não corresponde a nenhum separador da Tesouraria. O separador mais próximo é Saldos.',
+    ],
+  ])('words an unrecognised file with closest %j', (closest, expected) => {
+    expect(issueMessages['unrecognised-file']('a.csv', closest)).toBe(expected);
   });
 });

@@ -160,4 +160,58 @@ describe('loadDataset()', () => {
       ['duplicate-listas', 4, 'Sub-rubrica'],
     ]);
   });
+
+  it('reports a file SheetJS cannot parse instead of throwing', async () => {
+    const garbage = Uint8Array.from([0x50, 0x4b, 0x03, 0x04, 1, 2, 3, 4, 5]);
+
+    const { issues, dataset } = await loadDataset([
+      { name: 'estragado.xlsx', bytes: garbage },
+      { name: 'ok.xlsx', bytes: buildWorkbook(XLSX_SHEETS) },
+    ]);
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'unreadable-file',
+        severity: 'error',
+        file: 'estragado.xlsx',
+      }),
+    ]);
+    expect(dataset.movimentos).toHaveLength(2);
+    expect(dataset.sources.map((source) => source.name)).toEqual([
+      'estragado.xlsx',
+      'ok.xlsx',
+    ]);
+  });
+
+  it('names the closest tab and the missing headers for a CSV that matches no tab', async () => {
+    const csv = new TextEncoder().encode(
+      'Tipo;Entidad;Descrição;Atividade;Valor (€);Data de registo\nA pagar;Bar;Jantar;Geral;5,00;01/01/2025',
+    );
+
+    const { issues, dataset } = await loadDataset([
+      { name: 'pendentes.csv', bytes: csv },
+    ]);
+
+    expect(dataset.generos).toEqual([]);
+    expect(issues[0]).toMatchObject({
+      code: 'unrecognised-file',
+      severity: 'error',
+      file: 'pendentes.csv',
+    });
+    expect(issues[0]?.message).toMatch(/Pendentes.*Entidade/);
+  });
+
+  it.each([
+    ['a PDF', new TextEncoder().encode('%PDF-1.7\n%âãÏÓ\n1 0 obj')],
+    ['an empty file', new Uint8Array()],
+    ['a workbook with no known tab', buildWorkbook({ Outra: [['x']] })],
+  ])('reports %s as an unrecognised file', async (_name, bytes) => {
+    const { issues } = await loadDataset([{ name: 'coisa', bytes }]);
+
+    expect(issues[0]).toMatchObject({
+      code: 'unrecognised-file',
+      file: 'coisa',
+    });
+    expect(issues[0]?.message).not.toMatch(/mais próximo/);
+  });
 });

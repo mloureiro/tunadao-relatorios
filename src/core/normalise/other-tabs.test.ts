@@ -161,12 +161,7 @@ describe('normaliseOrcamento()', () => {
   });
 
   it.each([
-    [
-      'negative budget',
-      orcamento({ 4: -1 }),
-      'non-positive-value',
-      'Orçado (€)',
-    ],
+    ['negative budget', orcamento({ 4: -1 }), 'negative-value', 'Orçado (€)'],
     ['empty Âmbito', orcamento({ 0: null }), 'required-empty', 'Âmbito'],
     ['unknown Tipo', orcamento({ 1: 'Despesa' }), 'invalid-enum', 'Tipo'],
     ['empty Rubrica', orcamento({ 2: null }), 'required-empty', 'Rubrica'],
@@ -226,7 +221,7 @@ describe('normaliseGeneros()', () => {
     [
       'negative estimated value',
       genero({ 5: -5 }),
-      'non-positive-value',
+      'negative-value',
       'Valor estimado (€)',
     ],
     ['bad date', genero({ 0: 'em breve' }), 'invalid-date', 'Data'],

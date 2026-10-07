@@ -59,6 +59,30 @@ describe('readCsv() tab assignment', () => {
     expect(table.tab).toBeNull();
   });
 
+  it('does not file a Pendentes CSV with a misspelt required header under another tab', () => {
+    const table = readCsv(
+      'x.csv',
+      encodeCsv(
+        'Tipo;Entidad;Descrição;Atividade;Valor (€);Data de registo\nA pagar;Bar;Jantar;Geral;5,00;01/01/2025',
+        'utf-8',
+      ),
+    );
+
+    expect(table.tab).toBeNull();
+  });
+
+  it('still assigns a valid file that carries an extra unknown column', () => {
+    const table = readCsv(
+      'x.csv',
+      encodeCsv(
+        'Tipo;Entidade;Descrição;Valor (€);Data de registo;Observações\nA pagar;Bar;Jantar;5,00;01/01/2025;x',
+        'utf-8',
+      ),
+    );
+
+    expect(table.tab).toBe('Pendentes');
+  });
+
   it('numbers rows from the header line, skipping leading blank lines', () => {
     const table = readCsv(
       'x.csv',

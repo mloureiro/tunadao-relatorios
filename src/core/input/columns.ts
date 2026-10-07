@@ -97,47 +97,90 @@ function requiredHeaders(specs: ColumnSpecs): string[] {
     .map((spec) => spec.header);
 }
 
+function allHeaders(specs: ColumnSpecs): string[] {
+  return Object.values(specs).map((spec) => spec.header);
+}
+
 interface Signature {
   readonly tab: TabName;
-  readonly headers: readonly string[];
-  readonly adjacent?: readonly string[];
+  readonly required: readonly string[];
+  readonly defined: readonly string[];
 }
 
 const SIGNATURES: readonly Signature[] = [
-  { tab: 'Movimentos', headers: requiredHeaders(MOVIMENTOS_COLUMNS) },
-  { tab: 'Pendentes', headers: requiredHeaders(PENDENTES_COLUMNS) },
-  { tab: 'Orçamento', headers: requiredHeaders(ORCAMENTO_COLUMNS) },
-  { tab: 'Géneros', headers: requiredHeaders(GENEROS_COLUMNS) },
-  { tab: 'Saldos', headers: requiredHeaders(SALDOS_COLUMNS) },
   {
-    tab: 'Listas',
-    headers: LISTAS_SIGNATURE,
-    adjacent: ['Rubrica', 'Tipo', 'Conta para o resultado'],
+    tab: 'Movimentos',
+    required: requiredHeaders(MOVIMENTOS_COLUMNS),
+    defined: allHeaders(MOVIMENTOS_COLUMNS),
   },
+  {
+    tab: 'Pendentes',
+    required: requiredHeaders(PENDENTES_COLUMNS),
+    defined: allHeaders(PENDENTES_COLUMNS),
+  },
+  {
+    tab: 'Orçamento',
+    required: requiredHeaders(ORCAMENTO_COLUMNS),
+    defined: allHeaders(ORCAMENTO_COLUMNS),
+  },
+  {
+    tab: 'Géneros',
+    required: requiredHeaders(GENEROS_COLUMNS),
+    defined: allHeaders(GENEROS_COLUMNS),
+  },
+  {
+    tab: 'Saldos',
+    required: requiredHeaders(SALDOS_COLUMNS),
+    defined: allHeaders(SALDOS_COLUMNS),
+  },
+  { tab: 'Listas', required: LISTAS_SIGNATURE, defined: LISTAS_SIGNATURE },
 ];
 
-function hasRun(
-  header: readonly string[],
-  run: readonly string[] | undefined,
+function carriesNoForeignColumn(
+  { tab, defined }: Signature,
+  present: ReadonlySet<string>,
 ): boolean {
-  if (run === undefined) return true;
-  const wanted = run.map(normaliseHeader);
-  return header.some((_, start) =>
-    wanted.every((cell, offset) => header[start + offset] === cell),
-  );
+  const known = new Set(defined.map(normaliseHeader));
+  return !SIGNATURES.filter((other) => other.tab !== tab)
+    .flatMap((other) => other.required.map(normaliseHeader))
+    .some((wanted) => present.has(wanted) && !known.has(wanted));
 }
 
 export function tabForHeader(header: readonly string[]): TabName | null {
-  const normalised = header.map(normaliseHeader);
-  const present = new Set(normalised);
+  const present = new Set(header.map(normaliseHeader));
   const matches = SIGNATURES.filter(
-    ({ headers, adjacent }) =>
-      headers.every((wanted) => present.has(normaliseHeader(wanted))) &&
-      hasRun(normalised, adjacent),
+    (signature) =>
+      signature.required.every((wanted) =>
+        present.has(normaliseHeader(wanted)),
+      ) && carriesNoForeignColumn(signature, present),
   );
-  const widest = Math.max(0, ...matches.map(({ headers }) => headers.length));
-  const best = matches.filter(({ headers }) => headers.length === widest);
+  const widest = Math.max(0, ...matches.map(({ required }) => required.length));
+  const best = matches.filter(({ required }) => required.length === widest);
   return best.length === 1 ? (best[0]?.tab ?? null) : null;
+}
+
+export interface ClosestTab {
+  readonly tab: TabName;
+  readonly missing: readonly string[];
+}
+
+export function closestTab(header: readonly string[]): ClosestTab | null {
+  const present = new Set(header.map(normaliseHeader));
+  let best: ClosestTab | null = null;
+  let bestShare = 0;
+  for (const signature of SIGNATURES) {
+    if (!carriesNoForeignColumn(signature, present)) continue;
+    const { tab, required } = signature;
+    const missing = required.filter(
+      (wanted) => !present.has(normaliseHeader(wanted)),
+    );
+    const share = (required.length - missing.length) / required.length;
+    if (share > bestShare) {
+      best = { tab, missing };
+      bestShare = share;
+    }
+  }
+  return best;
 }
 
 export function headerRow(table: RawTable): number {
