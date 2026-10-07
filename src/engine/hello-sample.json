@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "tipo": "evento",
+  "theme": {
+    "navy": "#1D2F6F",
+    "light": "#F3F5F9",
+    "accentRed": "#B3261E",
+    "accentGold": "#C9A227"
+  },
+  "header": {
+    "org": "TUNADÃO 1998",
+    "subtitle": "Tuna do Instituto Politécnico de Viseu",
+    "title": "Teste do motor de PDF",
+    "periodLabel": "01/09/2026 – 30/09/2026"
+  },
+  "sections": [],
+  "signatures": [],
+  "trace": {
+    "generatedAt": "2026-10-01T10:00:00Z",
+    "generatedAtLabel": "01/10/2026 10:00",
+    "sources": [],
+    "generatorVersion": "0.1.0",
+    "attachReport": true
+  }
+}
