@@ -6,6 +6,7 @@ import type { UnresolvedMovimento } from '../normalise/movimentos.ts';
 import { membershipIssues } from './membership.ts';
 import {
   duplicateIssues,
+  nonResultRowIssues,
   settledBeforeRegisteredIssues,
   transferIssues,
 } from './rows.ts';
@@ -13,11 +14,13 @@ import {
 export function validateDataset(
   dataset: Dataset,
   unresolved: readonly UnresolvedMovimento[],
+  options: { readonly listasMissing?: boolean } = {},
 ): Issue[] {
   return [
-    ...membershipIssues(dataset, unresolved),
+    ...membershipIssues(dataset, unresolved, options.listasMissing === true),
     ...duplicateIssues(dataset),
     ...transferIssues(dataset),
+    ...nonResultRowIssues(dataset),
     ...settledBeforeRegisteredIssues(dataset),
     ...verifyCheckpoints(dataset),
     ...negativeBalanceIssues(dataset),

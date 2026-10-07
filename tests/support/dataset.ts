@@ -33,6 +33,13 @@ export const LISTS: Lists = {
       order: 2,
       src: { file: FILE, tab: 'Listas', row: 4 },
     },
+    {
+      rubrica: 'Saldo inicial',
+      tipo: null,
+      contaResultado: false,
+      order: 3,
+      src: { file: FILE, tab: 'Listas', row: 5 },
+    },
   ],
   subRubricas: [
     {

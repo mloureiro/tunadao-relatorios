@@ -4,6 +4,8 @@ import { issueMessages, makeIssue, type Issue } from '../issues.ts';
 import { sum } from '../money.ts';
 import { normalise } from '../text.ts';
 
+export const TRANSFER_RUBRICA = 'Transferências internas';
+
 const KEY_SEPARATOR = '\u0000';
 
 export function duplicateIssues(dataset: Dataset): Issue[] {
@@ -42,7 +44,7 @@ function transferGroupKey(m: Movimento): { key: string; label: string } {
 export function transferIssues(dataset: Dataset): Issue[] {
   const groups = new Map<string, { label: string; rows: Movimento[] }>();
   for (const m of dataset.movimentos) {
-    if (m.contaResultado) continue;
+    if (m.rubrica !== TRANSFER_RUBRICA) continue;
     const { key, label } = transferGroupKey(m);
     const group = groups.get(key) ?? { label, rows: [] };
     group.rows.push(m);
@@ -61,6 +63,20 @@ export function transferIssues(dataset: Dataset): Issue[] {
           ),
         );
   });
+}
+
+export function nonResultRowIssues(dataset: Dataset): Issue[] {
+  return dataset.movimentos.flatMap((m) =>
+    m.contaResultado || m.rubrica === TRANSFER_RUBRICA
+      ? []
+      : [
+          makeIssue(
+            'non-result-row',
+            issueMessages['non-result-row'](m.rubrica),
+            { file: m.src.file, tab: m.src.tab, row: m.src.row },
+          ),
+        ],
+  );
 }
 
 export function settledBeforeRegisteredIssues(dataset: Dataset): Issue[] {

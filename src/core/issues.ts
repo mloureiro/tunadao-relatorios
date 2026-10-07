@@ -22,10 +22,12 @@ export const ISSUE_SEVERITY = {
   'unknown-rubrica': 'error',
   'unknown-atividade': 'error',
   'unknown-meio': 'error',
+  'budget-tipo-mismatch': 'error',
   'derived-mismatch': 'error',
   'duplicate-listas': 'error',
   'probable-duplicate': 'warning',
   'transfer-unbalanced': 'warning',
+  'non-result-row': 'warning',
   'settled-before-registered': 'error',
   'checkpoint-conflict': 'error',
   'checkpoint-mismatch': 'error',
@@ -99,18 +101,12 @@ export const issueMessages = {
     `O valor ${formatMoney(cents)} tem de ser superior a zero. O sentido do movimento indica-se na coluna Tipo.`,
   'negative-value': (cents: Cents) =>
     `O valor ${formatMoney(cents)} não pode ser negativo.`,
-  'unknown-rubrica': (
-    rubrica: string,
-    subRubrica: string | null,
-    wrongTipo?: Direcao,
-  ) => {
-    if (wrongTipo !== undefined) {
-      return `O tipo ${wrongTipo} não corresponde ao da rubrica "${rubrica}" na lista Rubricas.`;
-    }
-    return subRubrica === null
+  'unknown-rubrica': (rubrica: string, subRubrica: string | null) =>
+    subRubrica === null
       ? `A rubrica "${rubrica}" não existe na lista Rubricas.`
-      : `A sub-rubrica "${subRubrica}" não existe na rubrica "${rubrica}" da lista Sub-rubricas.`;
-  },
+      : `A sub-rubrica "${subRubrica}" não existe na rubrica "${rubrica}" da lista Sub-rubricas.`,
+  'budget-tipo-mismatch': (rubrica: string, tipo: Direcao) =>
+    `O tipo ${tipo} não corresponde ao da rubrica "${rubrica}" na lista Rubricas.`,
   'unknown-atividade': (atividade: string) =>
     `A atividade "${atividade}" não existe na lista Atividades.`,
   'unknown-meio': (meio: string) =>
@@ -123,6 +119,8 @@ export const issueMessages = {
     `Movimento provavelmente duplicado: mesma data (${formatDate(date)}), valor (${formatMoney(cents)}), tipo e descrição da linha ${String(otherRow)}.`,
   'transfer-unbalanced': (group: string, cents: Cents) =>
     `As transferências internas de ${group} não se anulam: diferença de ${formatMoneySigned(cents)}.`,
+  'non-result-row': (rubrica: string) =>
+    `Este movimento altera o saldo mas não conta para o resultado (rubrica "${rubrica}") e não é uma transferência interna. Se é um saldo inicial, registe-o no separador Saldos.`,
   'settled-before-registered': (settled: string, registered: string) =>
     `A data de liquidação (${formatDate(settled)}) é anterior à data de registo (${formatDate(registered)}).`,
   'checkpoint-conflict': (conta: Conta, date: string, a: Cents, b: Cents) =>

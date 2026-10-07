@@ -54,6 +54,7 @@ describe('issue catalogue', () => {
       'unknown-rubrica',
       'unknown-atividade',
       'unknown-meio',
+      'budget-tipo-mismatch',
       'derived-mismatch',
       'duplicate-listas',
       'settled-before-registered',
