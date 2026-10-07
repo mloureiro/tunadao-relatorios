@@ -123,8 +123,8 @@ export function normaliseOrcamento(
 
       if (orcado !== null && orcado.cents < 0) {
         reader.report(
-          'non-positive-value',
-          issueMessages['non-positive-value'](orcado.cents),
+          'negative-value',
+          issueMessages['negative-value'](orcado.cents),
           'orcado',
         );
       }
@@ -186,8 +186,8 @@ export function normaliseGeneros(
 
       if (valorEstimado !== null && valorEstimado.cents < 0) {
         reader.report(
-          'non-positive-value',
-          issueMessages['non-positive-value'](valorEstimado.cents),
+          'negative-value',
+          issueMessages['negative-value'](valorEstimado.cents),
           'valorEstimado',
         );
       }

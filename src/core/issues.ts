@@ -7,6 +7,8 @@ export type Severity = 'error' | 'warning';
 export const ISSUE_SEVERITY = {
   'missing-column': 'error',
   'missing-tab': 'error',
+  'unreadable-file': 'error',
+  'unrecognised-file': 'error',
   'required-empty': 'error',
   'invalid-date': 'error',
   'invalid-number': 'error',
@@ -14,6 +16,7 @@ export const ISSUE_SEVERITY = {
   'sub-cent': 'warning',
   'ambiguous-date-order': 'warning',
   'non-positive-value': 'error',
+  'negative-value': 'error',
   'unknown-rubrica': 'error',
   'unknown-atividade': 'error',
   'unknown-meio': 'error',
@@ -61,6 +64,20 @@ export const issueMessages = {
   'missing-column': (column: string, tab: TabName) =>
     `Falta a coluna obrigatória "${column}" no separador ${tab}.`,
   'missing-tab': (tab: TabName) => `Falta o separador obrigatório ${tab}.`,
+  'unreadable-file': (file: string, reason: string) =>
+    `Não foi possível ler o ficheiro "${file}": ${reason}`,
+  'unrecognised-file': (
+    file: string,
+    closest: { tab: TabName; missing: readonly string[] } | null,
+  ) => {
+    const base = `O ficheiro "${file}" não corresponde a nenhum separador da Tesouraria.`;
+    if (closest === null) return base;
+    const missing =
+      closest.missing.length === 0
+        ? ''
+        : ` Colunas em falta: ${closest.missing.join(', ')}.`;
+    return `${base} O separador mais próximo é ${closest.tab}.${missing}`;
+  },
   'required-empty': (column: string) =>
     `O campo "${column}" é obrigatório e está vazio.`,
   'invalid-date': (value: string) =>
@@ -74,6 +91,8 @@ export const issueMessages = {
     'As datas desta coluna parecem estar na ordem mm/dd/aaaa. Confirme que usam dd/mm/aaaa.',
   'non-positive-value': (cents: Cents) =>
     `O valor ${formatMoney(cents)} tem de ser superior a zero. O sentido do movimento indica-se na coluna Tipo.`,
+  'negative-value': (cents: Cents) =>
+    `O valor ${formatMoney(cents)} não pode ser negativo.`,
   'unknown-rubrica': (rubrica: string, subRubrica: string | null) =>
     subRubrica === null
       ? `A rubrica "${rubrica}" não existe na lista Rubricas.`
