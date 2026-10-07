@@ -44,7 +44,8 @@ compila `templates/hello.typ` com o Typst CLI 0.14.2 e confirma que o PDF só em
 | tipos de letra (5 TTF)                  | 2 800 908 B (2,7 MiB)   |
 
 O primeiro PDF de teste, medido em `vite preview` local (sem rede real), fica pronto cerca de 0,1 s após o wasm
-carregar e demora cerca de 0,2 s a compor. O tamanho transferido e o `content-encoding` no GitHub Pages ainda não foram
-medidos: só é possível no URL publicado, depois do primeiro deploy deste motor.
+carregar e demora cerca de 0,2 s a compor. No GitHub Pages o wasm é transferido
+com `content-encoding: gzip`: 10 854 723 B transferidos para 28 325 178 B em bruto. O Pages não serve brotli e envia
+`cache-control: max-age=600`.
 
 Licença: Apache-2.0.
