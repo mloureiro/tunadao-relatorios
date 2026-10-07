@@ -1,0 +1,31 @@
+{
+  "org": {
+    "name": "TUNADÃO 1998",
+    "subtitle": "Tuna do Instituto Politécnico de Viseu"
+  },
+  "theme": {
+    "navy": "#1D2F6F",
+    "light": "#F3F5F9",
+    "accentRed": "#B3262E",
+    "accentGold": "#C9A227"
+  },
+  "signatures": {
+    "evento": ["Coordenação do evento", "Tesoureiro(a)"],
+    "pegada": ["Direção cessante", "Direção entrante", "Conselho Fiscal"],
+    "letivo": ["Tesoureiro(a)", "Presidente da Direção"],
+    "fiscal": [
+      "Presidente da Direção",
+      "Tesoureiro(a)",
+      "Presidente do Conselho Fiscal"
+    ]
+  },
+  "aggregation": {
+    "summary": "rubrica",
+    "budgetPeriod": "rubrica",
+    "budgetEvent": "subRubrica",
+    "compositionEvent": "subRubrica",
+    "compositionPeriod": "rubrica",
+    "comparison": "rubrica",
+    "annex": "subRubrica"
+  }
+}
