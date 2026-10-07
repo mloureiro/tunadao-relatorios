@@ -5,6 +5,8 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   base: process.env.BASE_PATH ?? '/tunadao-relatorios/',
   plugins: [preact()],
+  build: { assetsInlineLimit: 0 },
+  worker: { format: 'es' },
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },

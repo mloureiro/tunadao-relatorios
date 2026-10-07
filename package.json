@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "test:e2e:deployed": "playwright test smoke",
+    "test:e2e:deployed": "playwright test smoke engine",
     "build": "vite build",
     "dev": "vite",
     "preview": "vite preview",
@@ -36,6 +36,8 @@
     "vitest": "5.0.3"
   },
   "dependencies": {
+    "@myriaddreamin/typst-ts-web-compiler": "0.7.0",
+    "@myriaddreamin/typst.ts": "0.7.0",
     "preact": "11.0.0",
     "xlsx": "file:vendor/xlsx-0.20.3.tgz"
   }
