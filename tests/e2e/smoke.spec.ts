@@ -1,16 +1,12 @@
 import { expect, test } from '@playwright/test';
+import { trackForeignRequests } from './same-origin';
 
 test('page loads and only talks to its own origin', async ({
   page,
+  context,
   baseURL,
 }) => {
-  const origin = new URL(baseURL ?? '').origin;
-  const foreign: string[] = [];
-  page.on('request', (request) => {
-    const url = new URL(request.url());
-    const isNetwork = url.protocol === 'http:' || url.protocol === 'https:';
-    if (isNetwork && url.origin !== origin) foreign.push(request.url());
-  });
+  const foreign = trackForeignRequests(context, baseURL);
 
   await page.goto('./');
   await expect(
