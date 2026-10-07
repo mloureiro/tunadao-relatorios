@@ -1,5 +1,10 @@
 import * as XLSX from 'xlsx';
-import { tabForSheetName } from './columns.ts';
+import {
+  isIgnoredSheetName,
+  suggestTabForSheetName,
+  tabForSheetName,
+} from './columns.ts';
+import { issueMessages, makeIssue, type Issue } from '../issues.ts';
 import { headerText, toCell, type Cell, type RawTable } from './raw-table.ts';
 
 function sheetRows(sheet: XLSX.WorkSheet): unknown[][] {
@@ -16,17 +21,50 @@ function sheetRows(sheet: XLSX.WorkSheet): unknown[][] {
   });
 }
 
-export function readXlsx(name: string, bytes: Uint8Array): RawTable[] {
+export interface XlsxRead {
+  readonly tables: RawTable[];
+  readonly issues: Issue[];
+}
+
+export function readXlsx(name: string, bytes: Uint8Array): XlsxRead {
   const workbook = XLSX.read(bytes, { type: 'array', cellDates: false });
   const date1904 = workbook.Workbook?.WBProps?.date1904 === true;
   const tables: RawTable[] = [];
-  const seen = new Set<string>();
+  const issues: Issue[] = [];
+  const keptSheet = new Map<string, string>();
 
   for (const sheetName of workbook.SheetNames) {
     const tab = tabForSheetName(sheetName);
     const sheet = workbook.Sheets[sheetName];
-    if (tab === null || sheet === undefined || seen.has(tab)) continue;
-    seen.add(tab);
+    if (sheet === undefined) continue;
+
+    if (tab === null) {
+      if (!isIgnoredSheetName(sheetName)) {
+        const near = suggestTabForSheetName(sheetName);
+        issues.push(
+          makeIssue(
+            'ignored-sheet',
+            issueMessages['ignored-sheet'](sheetName, near),
+            { file: name },
+            near ?? undefined,
+          ),
+        );
+      }
+      continue;
+    }
+
+    const kept = keptSheet.get(tab);
+    if (kept !== undefined) {
+      issues.push(
+        makeIssue(
+          'duplicate-sheet',
+          issueMessages['duplicate-sheet'](kept, sheetName, tab),
+          { file: name, tab },
+        ),
+      );
+      continue;
+    }
+    keptSheet.set(tab, sheetName);
 
     const [header = [], ...rows] = sheetRows(sheet);
     tables.push({
@@ -38,5 +76,5 @@ export function readXlsx(name: string, bytes: Uint8Array): RawTable[] {
       date1904,
     });
   }
-  return tables;
+  return { tables, issues };
 }

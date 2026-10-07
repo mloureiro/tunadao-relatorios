@@ -15,6 +15,7 @@ export interface UnresolvedMovimento {
   readonly rubrica: string;
   readonly subRubrica: string | null;
   readonly meio: string;
+  readonly atividade: string;
   readonly unknownRubrica: boolean;
   readonly unknownMeio: boolean;
 }
@@ -184,6 +185,7 @@ export function normaliseMovimentos(
           rubrica,
           subRubrica,
           meio,
+          atividade,
           unknownRubrica: !pairKnown,
           unknownMeio: conta === undefined,
         });

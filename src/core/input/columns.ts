@@ -1,6 +1,6 @@
 import type { TabName } from '../dataset/types.ts';
 import { issueMessages, makeIssue, type Issue } from '../issues.ts';
-import { normalise, normaliseHeader } from '../text.ts';
+import { closest, normalise, normaliseHeader } from '../text.ts';
 import type { RawTable } from './raw-table.ts';
 
 export interface ColumnSpec {
@@ -85,6 +85,23 @@ export const TAB_NAMES = [
   'Listas',
   'Saldos',
 ] as const satisfies readonly TabName[];
+
+const IGNORED_SHEET_NAMES = ['Instruções'] as const;
+
+export function isIgnoredSheetName(sheetName: string): boolean {
+  const wanted = normalise(sheetName);
+  return IGNORED_SHEET_NAMES.some((name) => normalise(name) === wanted);
+}
+
+export function suggestTabForSheetName(sheetName: string): TabName | null {
+  const near = closest(sheetName, TAB_NAMES);
+  const words = normalise(sheetName).split(' ');
+  return (
+    TAB_NAMES.find((tab) => tab === near) ??
+    TAB_NAMES.find((tab) => words.includes(normalise(tab))) ??
+    null
+  );
+}
 
 export function tabForSheetName(sheetName: string): TabName | null {
   const wanted = normalise(sheetName);
