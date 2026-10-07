@@ -11,4 +11,5 @@ runs:
         Acquire::http::Timeout "20";
         Acquire::https::Timeout "20";
         Acquire::ForceIPv4 "true";
+        DPkg::Lock::Timeout "120";
         APT

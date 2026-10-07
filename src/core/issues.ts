@@ -65,7 +65,7 @@ export const issueMessages = {
     `Falta a coluna obrigatória "${column}" no separador ${tab}.`,
   'missing-tab': (tab: TabName) => `Falta o separador obrigatório ${tab}.`,
   'unreadable-file': (file: string, reason: string) =>
-    `Não foi possível ler o ficheiro "${file}": ${reason}`,
+    `Não foi possível ler o ficheiro "${file}" (detalhe técnico: ${reason}).`,
   'unrecognised-file': (
     file: string,
     closest: { tab: TabName; missing: readonly string[] } | null,

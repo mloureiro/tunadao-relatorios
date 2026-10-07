@@ -55,10 +55,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Install Playwright browsers
-        run: |
-          timeout --kill-after=10 300 npx playwright install --with-deps \
-            || timeout --kill-after=10 300 npx playwright install --with-deps
+      - run: npx playwright install --with-deps
       - run: npm run test:e2e:deployed
         env:
           BASE_URL: ${{ needs.deploy.outputs.page_url }}
