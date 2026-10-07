@@ -88,7 +88,7 @@ describe('issueMessages', () => {
 describe('file-level messages', () => {
   it('carries the reason for an unreadable file', () => {
     expect(issueMessages['unreadable-file']('a.xlsx', 'cifrado')).toBe(
-      'Não foi possível ler o ficheiro "a.xlsx": cifrado',
+      'Não foi possível ler o ficheiro "a.xlsx" (detalhe técnico: cifrado).',
     );
   });
 
