@@ -21,8 +21,10 @@ compila `templates/hello.typ` com o Typst CLI 0.14.2 e confirma que o PDF só em
   GitHub Pages não envia nenhuma), enquanto um worker de blob herda a CSP da página. O E2E confirma, nos três
   navegadores, que `new Function` está bloqueado dentro do worker.
 - A cola JavaScript do `@myriaddreamin/typst-ts-web-compiler` chama `new Function` em cada arranque (cinco cadeias
-  fixas). `scripts/lib/typst-glue-patch.ts`, aplicado por um plugin do Vite à página e ao worker, troca-as por funções
-  normais e falha o build se a cola mudar numa atualização do typst.ts. A CSP não leva `unsafe-eval`.
+  fixas). O `postinstall` corre `scripts/patch-typst-glue.ts`, que confirma que typst.ts e o web-compiler são exatamente
+  a 0.7.0, troca essas chamadas por funções normais em `node_modules` (idempotente) e apaga `node_modules/.vite` para
+  não sobreviver uma pré-compilação antiga. Serve o `npm run dev`, o build e o Node com o mesmo mecanismo, e a
+  instalação falha se a cola mudar numa atualização do typst.ts. A CSP não leva `unsafe-eval`.
 - No Node, `src/engine/typst-node.ts` lê **os mesmos bytes wasm** de `node_modules`; não é preciso
   `@myriaddreamin/typst-ts-node-compiler`.
 - Os tipos de letra do Typst são passados como bytes e o carregamento de tipos de letra remotos fica desligado: os

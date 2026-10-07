@@ -1,7 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const PREVIEW_PORT = '4173';
+const DEV_PORT = '4174';
 const deployedUrl = process.env.BASE_URL;
+const devURL = `http://localhost:${DEV_PORT}/tunadao-relatorios/`;
 const baseURL = (
   deployedUrl ?? `http://localhost:${PREVIEW_PORT}/tunadao-relatorios/`
 ).replace(/\/?$/, '/');
@@ -16,15 +18,32 @@ export default defineConfig({
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    ...(deployedUrl
+      ? []
+      : [
+          {
+            name: 'chromium-dev',
+            testMatch: 'engine.spec.ts',
+            use: { ...devices['Desktop Chrome'], baseURL: devURL },
+          },
+        ]),
   ],
   ...(deployedUrl
     ? {}
     : {
-        webServer: {
-          command: `npm run build && npm run preview -- --port ${PREVIEW_PORT} --strictPort`,
-          url: baseURL,
-          reuseExistingServer: !process.env.CI,
-          timeout: 120_000,
-        },
+        webServer: [
+          {
+            command: `npm run build && npm run preview -- --port ${PREVIEW_PORT} --strictPort`,
+            url: baseURL,
+            reuseExistingServer: !process.env.CI,
+            timeout: 120_000,
+          },
+          {
+            command: `npm run dev -- --port ${DEV_PORT} --strictPort`,
+            url: devURL,
+            reuseExistingServer: !process.env.CI,
+            timeout: 120_000,
+          },
+        ],
       }),
 });

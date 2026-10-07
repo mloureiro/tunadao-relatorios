@@ -3,47 +3,64 @@ import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  patchDynamicImportHelper,
-  patchTypstGlue,
+  assertPinnedVersion,
+  patchGlueFile,
   patchWebCompilerGlue,
-} from './typst-glue-patch';
+} from './typst-glue-patch.ts';
 
 const require = createRequire(import.meta.url);
-const gluePath =
-  require.resolve('@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler.mjs');
-const typstTsInit = join(
-  dirname(require.resolve('@myriaddreamin/typst.ts/package.json')),
-  'dist/esm/init.mjs',
+const webCompilerDir = dirname(
+  require.resolve('@myriaddreamin/typst-ts-web-compiler/package.json'),
+);
+const typstTsDir = dirname(
+  require.resolve('@myriaddreamin/typst.ts/package.json'),
 );
 
 describe('typst glue patch', () => {
-  it('removes every eval path from the installed web-compiler glue', () => {
-    const patched = patchTypstGlue(gluePath, readFileSync(gluePath, 'utf8'));
-
-    expect(patched).toBeDefined();
-    expect(patched).not.toMatch(/new Function\(getStringFromWasm0/);
-  });
-
-  it('leaves unrelated modules alone', () => {
-    expect(patchTypstGlue('/repo/src/main.ts', 'new Function("x")')).toBe(
-      undefined,
+  it.each([
+    join(webCompilerDir, 'pkg/typst_ts_web_compiler.mjs'),
+    join(webCompilerDir, 'pkg/wasm-pack-shim.mjs'),
+    join(typstTsDir, 'dist/esm/init.mjs'),
+  ])('leaves no eval path in the installed %s', (file) => {
+    expect(readFileSync(file, 'utf8')).not.toMatch(
+      /new Function\((getStringFromWasm0|'m')/,
     );
   });
 
-  it('replaces the dynamic-import helper in the typst.ts init module', () => {
-    const init = readFileSync(typstTsInit, 'utf8');
-
-    expect(patchTypstGlue(typstTsInit, init)).not.toContain(
-      "new Function('m', 'return import(m)')",
+  it('is idempotent on an already patched file', () => {
+    const once = patchGlueFile(
+      'web-compiler-glue',
+      patchWebCompilerGlue(
+        'a = new Function(getStringFromWasm0(arg0, arg1)); b = new Function(getStringFromWasm0(arg0, arg1), getStringFromWasm0(arg2, arg3));',
+      ),
     );
+
+    expect(patchGlueFile('web-compiler-glue', once)).toBe(once);
   });
 
   it('fails loudly when an upgrade changes the glue', () => {
-    expect(() => patchWebCompilerGlue('const changed = 1;')).toThrow(
+    expect(() => patchGlueFile('web-compiler-glue', 'const x = 1;')).toThrow(
       /Typst glue changed/,
     );
-    expect(() => patchDynamicImportHelper('const changed = 1;')).toThrow(
-      /Typst glue changed/,
-    );
+  });
+
+  it('rejects any typst.ts release other than the pinned one', () => {
+    expect(() => {
+      assertPinnedVersion('@myriaddreamin/typst.ts', '0.7.0');
+    }).not.toThrow();
+    expect(() => {
+      assertPinnedVersion('@myriaddreamin/typst.ts', '0.7.1');
+    }).toThrow(/exactly 0\.7\.0/);
+  });
+
+  it('pins the installed packages to the supported release', () => {
+    for (const dir of [webCompilerDir, typstTsDir]) {
+      const { version } = JSON.parse(
+        readFileSync(join(dir, 'package.json'), 'utf8'),
+      ) as { version: string };
+      expect(() => {
+        assertPinnedVersion(dir, version);
+      }).not.toThrow();
+    }
   });
 });

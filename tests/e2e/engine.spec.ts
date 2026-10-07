@@ -61,25 +61,35 @@ test('the render worker runs under the page CSP, where dynamic code is blocked',
   expect(workerUrls).toHaveLength(1);
   expect(workerUrls[0]).toMatch(/^blob:/);
 
-  const evalBlockedIn = await page.evaluate(async () => {
-    const attempt =
-      'try { new Function("return 1")(); postMessage(false); } catch { postMessage(true); }';
-    const url = URL.createObjectURL(
-      new Blob([attempt], { type: 'text/javascript' }),
+  await page.route('**/csp-probe.js', (route) =>
+    route.fulfill({
+      contentType: 'text/javascript',
+      body: `
+        const outcome = {};
+        for (const [name, run] of [
+          ['Function', () => new Function('return 1')()],
+          ['eval', () => (0, eval)('1')],
+        ]) {
+          try { run(); outcome[name] = 'allowed'; } catch { outcome[name] = 'blocked'; }
+        }
+        postMessage(outcome);
+      `,
+    }),
+  );
+
+  const outcome = await page.evaluate(async () => {
+    const entry = new URL('csp-probe.js', location.href).href;
+    const loader = URL.createObjectURL(
+      new Blob([`import ${JSON.stringify(entry)};`], {
+        type: 'text/javascript',
+      }),
     );
-    const worker = new Worker(url, { type: 'module' });
-    const inWorker = await new Promise<boolean>((resolve) => {
-      worker.onmessage = (event: MessageEvent<boolean>) => {
+    const worker = new Worker(loader, { type: 'module' });
+    return new Promise<Record<string, string>>((resolve) => {
+      worker.onmessage = (event: MessageEvent<Record<string, string>>) => {
         resolve(event.data);
       };
     });
-    let inPage = false;
-    try {
-      Reflect.construct(Function, ['return 1']);
-    } catch {
-      inPage = true;
-    }
-    return { inWorker, inPage };
   });
-  expect(evalBlockedIn).toEqual({ inWorker: true, inPage: true });
+  expect(outcome).toEqual({ Function: 'blocked', eval: 'blocked' });
 });
