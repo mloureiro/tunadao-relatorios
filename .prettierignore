@@ -10,3 +10,4 @@ fixtures/generated/
 tests/visual/baselines/
 wiki
 spec/
+.beads
