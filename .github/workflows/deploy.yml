@@ -47,15 +47,17 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      env:
+        HOME: /root
     steps:
       - uses: actions/checkout@v5
-      - uses: ./.github/actions/apt-resilience
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps
       - run: npm run test:e2e:deployed
         env:
           BASE_URL: ${{ needs.deploy.outputs.page_url }}
