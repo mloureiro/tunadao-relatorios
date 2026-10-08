@@ -1,4 +1,4 @@
-export { aggregate } from './aggregate.ts';
+export { aggregate, compareListasOrder } from './aggregate.ts';
 export type {
   AggregateResult,
   AggregateRow,
@@ -39,7 +39,12 @@ export type {
 } from './pegada.ts';
 export { pendingAt } from './pending.ts';
 export type { PendingResult } from './pending.ts';
-export { inPeriod, periodFigures } from './period.ts';
+export {
+  inPeriod,
+  periodFigures,
+  resultMovements,
+  sortChronologically,
+} from './period.ts';
 export type {
   AccountSplit,
   ManualOpening,
