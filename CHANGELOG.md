@@ -8,6 +8,4 @@
 - Funcionamento offline depois da primeira visita, com aviso de nova versão.
 - O motor de PDF começa a carregar quando o navegador está livre e mostra o progresso se ainda não estiver pronto ao
   gerar.
-- A causa de uma falha ao compor o PDF fica na consola do navegador.
-- As mensagens de erro de parâmetros do CLI deixam de ter um ponto antes do valor recebido.
 - README em português com o guia de utilização, o CLI, a personalização e a publicação.
