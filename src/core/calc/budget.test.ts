@@ -141,6 +141,47 @@ describe('budgetVsActual()', () => {
     ]);
   });
 
+  it('warns when a rubric-level budget line with actuals sits beside an unbudgeted sub-rubric', () => {
+    const dataset = emptyDataset({
+      lists: LISTS_WITH_VIP,
+      orcamento: [linha({ orcadoCents: 100000 })],
+    });
+
+    const { issues } = budgetVsActual(
+      dataset,
+      'Festival Alfa',
+      [
+        mov({ data: '2025-03-01', cents: 20000 }),
+        mov({ data: '2025-03-01', cents: 40000, subRubrica: 'Bilhetes VIP' }),
+      ],
+      'subRubrica',
+    );
+
+    expect(issues.map((i) => i.code)).toEqual(['budget-level-mismatch']);
+  });
+
+  it('stays silent when the rubric-level line and the sub-rubric are both budgeted', () => {
+    const dataset = emptyDataset({
+      lists: LISTS_WITH_VIP,
+      orcamento: [
+        linha({ orcadoCents: 100000 }),
+        linha({ subRubrica: 'Bilhetes VIP', orcadoCents: 50000 }),
+      ],
+    });
+
+    const { issues } = budgetVsActual(
+      dataset,
+      'Festival Alfa',
+      [
+        mov({ data: '2025-03-01', cents: 20000 }),
+        mov({ data: '2025-03-01', cents: 40000, subRubrica: 'Bilhetes VIP' }),
+      ],
+      'subRubrica',
+    );
+
+    expect(issues).toEqual([]);
+  });
+
   it('returns no tables and a no-budget warning when the scope has no lines', () => {
     const dataset = emptyDataset({
       orcamento: [linha({ ambito: '2024', orcadoCents: 1 })],
