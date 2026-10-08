@@ -25,7 +25,7 @@ export function EngineStatus() {
   if (engine.status === 'error') {
     return (
       <footer class="engine">
-        <p role="alert">O motor de PDF falhou: {engine.message}</p>
+        <p role="alert">{engine.message}</p>
       </footer>
     );
   }

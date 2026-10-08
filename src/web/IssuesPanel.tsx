@@ -33,7 +33,9 @@ export function IssuesPanel({
 
   return (
     <section class="validation" aria-labelledby="validacao-titulo">
-      <h2 id="validacao-titulo">Validação</h2>
+      <h2 id="validacao-titulo" tabIndex={-1}>
+        Validação
+      </h2>
       <div class="summary">
         {valid && <strong class="badge-ok">Dados válidos</strong>}
         {blockedByMapping && (

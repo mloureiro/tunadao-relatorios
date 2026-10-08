@@ -2,6 +2,9 @@ import type { TemplateId } from '@/engine/renderer';
 import { createWebRenderer, type WebRenderer } from '@/engine/typst-web';
 import { getState, setState } from './state';
 
+const LOAD_FAILURE =
+  'Não foi possível carregar o motor de PDF. Verifique a ligação e tente de novo.';
+
 let renderer: WebRenderer | null = null;
 let warmUp: Promise<void> | null = null;
 
@@ -28,7 +31,8 @@ export function startEngine(): Promise<WebRenderer> {
       },
       (error: unknown) => {
         warmUp = null;
-        setEngine({ status: 'error', message: failure(error) });
+        renderer = null;
+        setEngine({ status: 'error', message: LOAD_FAILURE });
         throw error;
       },
     );

@@ -126,6 +126,11 @@ export function createWebRenderer(
       };
       instance.postMessage(init);
     });
+    ready.catch(() => {
+      worker?.terminate();
+      worker = undefined;
+      ready = undefined;
+    });
     return ready;
   }
 

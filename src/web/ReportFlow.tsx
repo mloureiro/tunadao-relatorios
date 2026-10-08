@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { formatMoney } from '@/core/format';
 import type { LoadResult } from '@/core/pipeline';
 import type { ReportTipo } from '@/core/reports';
 import { config } from './config';
@@ -10,7 +11,6 @@ import { ReportFields } from './ReportFields';
 import {
   emptyForm,
   extratoOn,
-  plainEuros,
   setField,
   setFlag,
   touch,
@@ -68,6 +68,20 @@ export function ReportFlow({
   const [failure, setFailure] = useState<string | null>(null);
   const [generated, setGenerated] = useState<GeneratedReport | null>(null);
   const [previewing, setPreviewing] = useState(false);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const submitRef = useRef<HTMLButtonElement>(null);
+  const returningFromPreview = useRef(false);
+
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!previewing && returningFromPreview.current) {
+      returningFromPreview.current = false;
+      submitRef.current?.focus();
+    }
+  }, [previewing]);
 
   const form = useMemo(
     () =>
@@ -200,6 +214,7 @@ export function ReportFlow({
       <PreviewPanel
         generated={generated}
         onEdit={() => {
+          returningFromPreview.current = true;
           setPreviewing(false);
         }}
       />
@@ -213,13 +228,15 @@ export function ReportFlow({
   const extratoHint =
     extrato === null
       ? undefined
-      : `Preenchido com o extrato de ${form?.fields.dataPassagem ?? ''} (${plainEuros(extrato)} €).`;
+      : `Preenchido com o extrato de ${form?.fields.dataPassagem ?? ''} (${formatMoney(extrato)}).`;
   const choice = REPORT_CHOICES.find((entry) => entry.tipo === tipo);
 
   return (
     <section class="report" aria-labelledby="relatorio-titulo">
       <div class="report-head">
-        <h2 id="relatorio-titulo">Relatório</h2>
+        <h2 id="relatorio-titulo" tabIndex={-1} ref={headingRef}>
+          Relatório
+        </h2>
         <button type="button" class="button button-quiet" onClick={onBack}>
           Voltar aos dados
         </button>
@@ -255,6 +272,11 @@ export function ReportFlow({
           {evaluation !== null && (
             <ReportIssues issues={reportIssues(evaluation)} />
           )}
+          {evaluation?.status === 'failure' && (
+            <p class="notice notice-error" role="alert">
+              {GENERIC_FAILURE} {evaluation.message}
+            </p>
+          )}
           {failure !== null && (
             <p class="notice notice-error" role="alert">
               {failure}
@@ -264,6 +286,7 @@ export function ReportFlow({
           <div class="actions">
             <button
               type="submit"
+              ref={submitRef}
               class="button"
               disabled={!ready || generating}
             >

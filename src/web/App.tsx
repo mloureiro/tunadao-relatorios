@@ -150,6 +150,14 @@ export function App() {
     counts,
   });
 
+  const wasReporting = useRef(false);
+  useEffect(() => {
+    if (wasReporting.current && !inReport) {
+      document.getElementById('validacao-titulo')?.focus();
+    }
+    wasReporting.current = inReport;
+  }, [inReport]);
+
   const stepIndex = !inReport ? 0 : previewing ? 2 : 1;
 
   return (

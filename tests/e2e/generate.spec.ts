@@ -29,6 +29,9 @@ async function generate(page: Page): Promise<void> {
   await expect(
     page.getByRole('heading', { name: 'Relatório gerado' }),
   ).toBeVisible({ timeout: 90_000 });
+  await expect(
+    page.getByRole('heading', { name: 'Relatório gerado' }),
+  ).toBeFocused();
   const preview = page.getByTitle('Pré-visualização do relatório em PDF');
   await expect(preview).toBeVisible();
   await expect(preview).toHaveAttribute('src', /^blob:/);
@@ -207,6 +210,9 @@ test('the fiscal-year report is generated from the form with the council opinion
   const text = await downloadPdfText(page, 'relatorio-fiscal-2025.pdf');
   expect(text).toContain('6.231,55 €');
   expect(text.replaceAll('\n', ' ')).toContain('emite parecer favorável');
+
+  await page.getByRole('button', { name: 'Alterar parâmetros' }).click();
+  await expect(page.getByRole('button', { name: 'Gerar PDF' })).toBeFocused();
 });
 
 test('a period without an opening balance cannot be generated until the balances are declared', async ({
