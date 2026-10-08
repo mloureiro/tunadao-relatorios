@@ -1,3 +1,4 @@
+import { TRANSFER_RUBRICA } from '../../src/core/dataset/domain.ts';
 import type { Conta, IsoDate } from '../../src/core/dataset/types.ts';
 import type { MovimentoSpec } from '../../scripts/lib/workbook-writer.ts';
 
@@ -33,8 +34,6 @@ export interface Atividade {
   ): Linha[];
 }
 
-const TRANSFERENCIAS = 'Transferências internas';
-
 export function atividade(nome: string): Atividade {
   const linha = (
     tipo: Linha['tipo'],
@@ -61,12 +60,12 @@ export function atividade(nome: string): Atividade {
     saida: (data, descricao, rubrica, meio, valor, subRubrica) =>
       linha('Saída', data, descricao, rubrica, meio, valor, subRubrica),
     transferencia: (data, descricao, de, para, valor) => [
-      linha('Saída', data, `${descricao} (saída)`, TRANSFERENCIAS, de, valor),
+      linha('Saída', data, `${descricao} (saída)`, TRANSFER_RUBRICA, de, valor),
       linha(
         'Entrada',
         data,
         `${descricao} (entrada)`,
-        TRANSFERENCIAS,
+        TRANSFER_RUBRICA,
         para,
         valor,
       ),
@@ -75,7 +74,7 @@ export function atividade(nome: string): Atividade {
 }
 
 function prefixoDoDocumento(linha: Linha): 'R' | 'P' | 'T' {
-  if (linha.rubrica === TRANSFERENCIAS) return 'T';
+  if (linha.rubrica === TRANSFER_RUBRICA) return 'T';
   return linha.tipo === 'Entrada' ? 'R' : 'P';
 }
 

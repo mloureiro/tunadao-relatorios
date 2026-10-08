@@ -80,7 +80,7 @@ describe('aggregate()', () => {
     ]);
   });
 
-  it('omits a rubric that nets to zero and movements outside the result', () => {
+  it('shows a rubric that nets to zero as a 0 row and ignores movements outside the result', () => {
     const { rows } = aggregate(
       [
         mov({ data: '2025-01-02', cents: 3000 }),
@@ -101,7 +101,15 @@ describe('aggregate()', () => {
       'rubrica',
     );
 
-    expect(rows).toEqual([]);
+    expect(rows).toMatchObject([
+      {
+        rubrica: 'Bilheteira',
+        netCents: 0,
+        grossCents: 3000,
+        refundCents: 3000,
+        count: 2,
+      },
+    ]);
   });
 
   it('splits by sub-rubric in Listas order with the rubric-named line first', () => {

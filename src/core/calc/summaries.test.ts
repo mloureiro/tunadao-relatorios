@@ -71,6 +71,15 @@ describe('composition()', () => {
     ]);
   });
 
+  it('leaves zero rows out of the segments', () => {
+    const { segments } = composition([
+      { label: 'moved', cents: 0 },
+      { label: 'real', cents: 500 },
+    ]);
+
+    expect(segments.map((s) => s.label)).toEqual(['real']);
+  });
+
   it('rounds a 0.5 permille share up', () => {
     const { segments } = composition([
       { label: 'big', cents: 1999 },

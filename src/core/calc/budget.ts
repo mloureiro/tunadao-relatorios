@@ -61,14 +61,8 @@ function levelMismatches(
   const budgeted = new Set(
     lines.map((l) => `${l.rubrica}\u0000${l.subRubrica}`),
   );
-  const actualised = new Set(
-    actual.map((r) => `${r.rubrica}\u0000${r.subRubrica ?? r.rubrica}`),
-  );
   const unbudgeted = actual.filter(
     (r) => !budgeted.has(`${r.rubrica}\u0000${r.subRubrica ?? r.rubrica}`),
-  );
-  const unactualised = lines.filter(
-    (l) => !actualised.has(`${l.rubrica}\u0000${l.subRubrica}`),
   );
   const isPlain = (rubrica: string, sub: string | undefined) =>
     sub === undefined || sub === rubrica;
@@ -76,7 +70,7 @@ function levelMismatches(
   const rubricas = new Set(unbudgeted.map((r) => r.rubrica));
   return [...rubricas].filter((rubrica) => {
     const actualOf = unbudgeted.filter((r) => r.rubrica === rubrica);
-    const budgetOf = unactualised.filter((l) => l.rubrica === rubrica);
+    const budgetOf = lines.filter((l) => l.rubrica === rubrica);
     return (
       (actualOf.some((r) => !isPlain(rubrica, r.subRubrica)) &&
         budgetOf.some((l) => isPlain(rubrica, l.subRubrica))) ||
