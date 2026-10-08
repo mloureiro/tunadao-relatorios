@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { ColumnMapping } from '@/core/input/csv';
 import { loadDataset, type InputFile } from '@/core/pipeline';
 import { startEngine } from './engine';
@@ -10,7 +10,29 @@ import { browserStorage, clearProfile, saveProfile } from './profiles';
 import { resetState, setState, useAppState } from './state';
 import { Stepper } from './Stepper';
 import { UploadPanel } from './UploadPanel';
-import { countIssues } from './validation';
+import { countIssues, describeCounts, type IssueCounts } from './validation';
+
+interface StatusInput {
+  loading: boolean;
+  loadFailed: boolean;
+  pendingName: string | null;
+  hasResult: boolean;
+  valid: boolean;
+  counts: IssueCounts;
+}
+
+function describeStatus(input: StatusInput): string {
+  if (input.loading) return 'A validar os dados…';
+  if (input.loadFailed) return 'Não foi possível validar os dados.';
+  if (input.pendingName !== null) {
+    return `Falta associar as colunas de ${input.pendingName}.`;
+  }
+  if (!input.hasResult) return '';
+  const counts = describeCounts(input.counts);
+  return input.valid
+    ? `Dados válidos. ${counts}.`
+    : `Há erros a corrigir. ${counts}.`;
+}
 
 export function App() {
   const { files, dataset, issues } = useAppState();
@@ -19,6 +41,8 @@ export function App() {
   const [profileVersion, setProfileVersion] = useState(0);
   const [problem, setProblem] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const selection = useRef(0);
 
   const prepared = useMemo(
     () => prepareInputs(rawFiles, chosen, browserStorage()),
@@ -32,16 +56,25 @@ export function App() {
     }
     let current = true;
     setLoading(true);
-    void loadDataset(prepared.ready).then((result) => {
-      if (!current) return;
-      setLoading(false);
-      setState({
-        files: prepared.ready,
-        dataset: result.dataset,
-        issues: result.issues,
-        loadResult: result,
-      });
-    });
+    setLoadFailed(false);
+    loadDataset(prepared.ready).then(
+      (result) => {
+        if (!current) return;
+        setLoading(false);
+        setState({
+          files: prepared.ready,
+          dataset: result.dataset,
+          issues: result.issues,
+          loadResult: result,
+        });
+      },
+      () => {
+        if (!current) return;
+        setLoading(false);
+        setLoadFailed(true);
+        resetState();
+      },
+    );
     return () => {
       current = false;
     };
@@ -49,15 +82,30 @@ export function App() {
 
   async function pick(chosenFiles: File[]) {
     if (chosenFiles.length === 0) return;
+    selection.current += 1;
+    const mine = selection.current;
     const rejected = selectionProblem(chosenFiles.map((file) => file.name));
     setProblem(rejected);
     if (rejected !== null) return;
     void startEngine().catch(() => undefined);
+    let read: InputFile[];
+    try {
+      read = await readInputFiles(chosenFiles);
+    } catch {
+      if (mine === selection.current) {
+        setProblem(
+          'Não foi possível ler o ficheiro. Volte a escolhê-lo ou copie-o para este computador.',
+        );
+      }
+      return;
+    }
+    if (mine !== selection.current) return;
     setChosen({});
-    setRawFiles(await readInputFiles(chosenFiles));
+    setRawFiles(read);
   }
 
   function clear() {
+    selection.current += 1;
     setRawFiles([]);
     setChosen({});
     setProblem(null);
@@ -65,7 +113,8 @@ export function App() {
 
   const first = prepared.pending[0];
   const hasData = rawFiles.length > 0;
-  const hasErrors = countIssues(issues).errors > 0;
+  const counts = countIssues(issues);
+  const hasErrors = counts.errors > 0;
   const valid =
     hasData &&
     !loading &&
@@ -73,12 +122,25 @@ export function App() {
     first === undefined &&
     !hasErrors;
 
+  const announcement = describeStatus({
+    loading,
+    loadFailed,
+    pendingName: first?.name ?? null,
+    hasResult: hasData && dataset !== null,
+    valid,
+    counts,
+  });
+
   return (
     <div class="page">
       <header class="masthead">
         <h1>Gerador de relatórios financeiros · TUNADÃO 1998</h1>
         <Stepper />
       </header>
+
+      <p role="status" class="visually-hidden">
+        {announcement}
+      </p>
 
       <main>
         <UploadPanel
@@ -121,7 +183,12 @@ export function App() {
           />
         )}
 
-        {hasData && loading && <p role="status">A validar os dados…</p>}
+        {hasData && loading && <p>A validar os dados…</p>}
+        {loadFailed && (
+          <p class="notice notice-error" role="alert">
+            Não foi possível validar os dados. Volte a escolher o ficheiro.
+          </p>
+        )}
         {hasData && !loading && (dataset !== null || first !== undefined) && (
           <IssuesPanel
             issues={issues}
@@ -131,7 +198,7 @@ export function App() {
         )}
         {files.length === 0 && !hasData && (
           <p class="lead">
-            Comece por carregar a folha de Tesouraria. Os erros aparecem aqui
+            Comece por carregar o ficheiro da Tesouraria. Os erros aparecem aqui
             com o separador, a linha e a coluna a corrigir.
           </p>
         )}

@@ -24,7 +24,7 @@ export function UploadPanel({ files, problem, onPick, onClear }: Props) {
       <h2 id="dados-titulo">Dados da tesouraria</h2>
       <div class="intake-grid">
         <div class="template-card">
-          <h3>Ainda não tem a folha?</h3>
+          <h3>Ainda não tem o modelo?</h3>
           <p>
             Descarregue o modelo, preencha-o no Excel ou no LibreOffice e volte
             aqui.
@@ -64,7 +64,9 @@ export function UploadPanel({ files, problem, onPick, onClear }: Props) {
               event.currentTarget.value = '';
             }}
           />
-          <span class="dropzone-title">Largue aqui a folha de Tesouraria</span>
+          <span class="dropzone-title">
+            Largue aqui o ficheiro da Tesouraria
+          </span>
           <span class="dropzone-action">ou escolha o ficheiro</span>
           <span id="dropzone-ajuda" class="dropzone-help">
             Um ficheiro .xlsx, ou vários ficheiros .csv. Os ficheiros são lidos

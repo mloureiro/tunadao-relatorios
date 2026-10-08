@@ -50,7 +50,9 @@ test('invalid data blocks Continuar, and a corrected file unblocks it', async ({
 
   await fileInput(page).setInputFiles(INVALID);
 
-  await expect(page.getByText('Há erros a corrigir')).toBeVisible();
+  await expect(
+    page.getByText('Há erros a corrigir', { exact: true }),
+  ).toBeVisible();
   const table = page.getByRole('table', { name: /Problemas encontrados/ });
   const unknownRubrica = table.getByRole('row', {
     name: /Erro.*misclassified\.xlsx.*Movimentos.*não existe na lista Rubricas/,
@@ -63,8 +65,10 @@ test('invalid data blocks Continuar, and a corrected file unblocks it', async ({
 
   await fileInput(page).setInputFiles(VALID);
 
-  await expect(page.getByText('Dados válidos')).toBeVisible();
-  await expect(page.getByText('0 erros, 0 avisos')).toBeVisible();
+  await expect(page.getByText('Dados válidos', { exact: true })).toBeVisible();
+  await expect(
+    page.getByText('0 erros, 0 avisos', { exact: true }),
+  ).toBeVisible();
   await expect(next).toBeEnabled();
   await expect(table).toHaveCount(0);
   expect(foreign).toEqual([]);
@@ -87,7 +91,9 @@ test('the Typst engine starts loading when a file is chosen, not on page load', 
     page.evaluate(() => (window as unknown as { __workers: number }).__workers);
 
   await page.goto('./');
-  await page.waitForLoadState('networkidle');
+  await expect(
+    page.getByRole('heading', { name: 'Dados da tesouraria' }),
+  ).toBeVisible();
   expect(await workers()).toBe(0);
 
   await fileInput(page).setInputFiles(VALID);
@@ -100,8 +106,10 @@ test('a set of CSV files is validated together', async ({ page }) => {
 
   await fileInput(page).setInputFiles(await csvSet());
 
-  await expect(page.getByText('Dados válidos')).toBeVisible();
-  await expect(page.getByText('0 erros, 0 avisos')).toBeVisible();
+  await expect(page.getByText('Dados válidos', { exact: true })).toBeVisible();
+  await expect(
+    page.getByText('0 erros, 0 avisos', { exact: true }),
+  ).toBeVisible();
 });
 
 test('a CSV with unknown columns is mapped once and remembered', async ({
@@ -136,7 +144,7 @@ test('a CSV with unknown columns is mapped once and remembered', async ({
   ).toBeVisible();
   await save.click();
 
-  await expect(page.getByText('Dados válidos')).toBeVisible();
+  await expect(page.getByText('Dados válidos', { exact: true })).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Associar as colunas' }),
   ).toHaveCount(0);
@@ -145,7 +153,7 @@ test('a CSV with unknown columns is mapped once and remembered', async ({
   await fileInput(page).setInputFiles([foreign, listas]);
 
   await expect(page.getByText(/Aplicámos o perfil guardado/)).toBeVisible();
-  await expect(page.getByText('Dados válidos')).toBeVisible();
+  await expect(page.getByText('Dados válidos', { exact: true })).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Associar as colunas' }),
   ).toHaveCount(0);
