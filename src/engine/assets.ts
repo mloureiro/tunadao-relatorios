@@ -10,6 +10,9 @@ export const defaultManifest: AssetManifest = {
   templates: [
     'templates/hello.typ',
     'templates/evento.typ',
+    'templates/pegada.typ',
+    'templates/letivo.typ',
+    'templates/fiscal.typ',
     'templates/lib/page.typ',
     'templates/lib/sections.typ',
     'templates/lib/charts.typ',

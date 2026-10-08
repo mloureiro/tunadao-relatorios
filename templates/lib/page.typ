@@ -6,12 +6,13 @@
 #let green = rgb(theme.positive)
 #let muted = luma(90)
 #let rule-grey = luma(220)
+#let page-top = 3.6cm
 
 #let setup(body) = {
   set document(date: none, title: report.header.title)
   set page(
     paper: "a4",
-    margin: (top: 3.6cm, bottom: 2.2cm, x: 2cm),
+    margin: (top: page-top, bottom: 2.2cm, x: 2cm),
     header-ascent: 0.6cm,
     header: {
       grid(
