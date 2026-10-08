@@ -65,6 +65,14 @@ describe('buildLetivo()', () => {
     expect(issues.map((issue) => issue.code)).toEqual(['no-previous-data']);
   });
 
+  it('joins each account label to its amount in the closing balance caption so only the separator can wrap', () => {
+    const { report } = build(simple);
+
+    const caption = sectionOf(report, 'kpis').cards.at(-1)?.caption;
+
+    expect(caption).toMatch(/^Caixa\u00A0\S+\u00A0€ · Banco\u00A0\S+\u00A0€$/u);
+  });
+
   it('adds budget, pending, in-kind and notes in the report order when there is something to show', () => {
     const dataset = emptyDataset({
       saldos: opening,
@@ -230,9 +238,15 @@ describe('buildLetivo()', () => {
     const footer = Object.fromEntries(
       section.footer.map((line) => [line.label, line.value.cents]),
     );
+    expect(Object.keys(footer)).not.toContain(
+      'Recebido (entradas brutas − reembolsos)',
+    );
+    expect(Object.keys(footer)).not.toContain(
+      'Pago (saídas brutas − reembolsos)',
+    );
     expect(
-      (footer['Recebido (entradas brutas − reembolsos)'] ?? 0) -
-        (footer['Pago (saídas brutas − reembolsos)'] ?? 0) +
+      (footer['Entradas brutas'] ?? 0) -
+        (footer['Saídas brutas'] ?? 0) +
         (footer['Movimentos fora do resultado'] ?? 0),
     ).toBe(footer['Variação no período']);
     expect(footer['Variação no período']).toBe(3500);

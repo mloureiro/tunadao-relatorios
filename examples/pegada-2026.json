@@ -305,20 +305,6 @@
           }
         },
         {
-          "label": "Recebido (entradas brutas − reembolsos)",
-          "value": {
-            "cents": 72000,
-            "text": "720,00 €"
-          }
-        },
-        {
-          "label": "Pago (saídas brutas − reembolsos)",
-          "value": {
-            "cents": 35400,
-            "text": "354,00 €"
-          }
-        },
-        {
           "label": "Variação no período",
           "value": {
             "cents": 36600,

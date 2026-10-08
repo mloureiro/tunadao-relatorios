@@ -460,20 +460,6 @@
             "cents": 144740,
             "text": "1.447,40 €"
           }
-        },
-        {
-          "label": "Recebido (entradas brutas − reembolsos)",
-          "value": {
-            "cents": 292750,
-            "text": "2.927,50 €"
-          }
-        },
-        {
-          "label": "Pago (saídas brutas − reembolsos)",
-          "value": {
-            "cents": 144740,
-            "text": "1.447,40 €"
-          }
         }
       ]
     }
