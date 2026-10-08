@@ -117,7 +117,7 @@ describe('buildReport()', () => {
       {
         code: 'unknown-atividade',
         severity: 'error',
-        suggestion: 'Festival Alfa',
+        suggestion: 'Quis dizer "Festival Alfa"?',
       },
     ]);
     expect(eventFigures).not.toHaveBeenCalled();

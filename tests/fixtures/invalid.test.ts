@@ -54,7 +54,7 @@ describe('invalid fixtures', () => {
         tab: 'Movimentos',
         row: 3,
         column: 'Rubrica',
-        suggestion: 'Produção (som, luz, palco)',
+        suggestion: 'Quis dizer "Produção (som, luz, palco)"?',
       },
     ]);
   });

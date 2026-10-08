@@ -4,7 +4,7 @@ import { closestTab } from './input/columns.ts';
 import { readCsv } from './input/csv.ts';
 import type { RawTable } from './input/raw-table.ts';
 import { readXlsx } from './input/xlsx.ts';
-import { issueMessages, makeIssue, type Issue } from './issues.ts';
+import { didYouMean, issueMessages, makeIssue, type Issue } from './issues.ts';
 import { closest } from './text.ts';
 import { normaliseTables } from './normalise/normalise-tables.ts';
 import type { UnresolvedMovimento } from './normalise/movimentos.ts';
@@ -165,7 +165,7 @@ function unknownActivity(
     'unknown-atividade',
     issueMessages['unknown-atividade'](atividade),
     {},
-    closest(atividade, atividades) ?? undefined,
+    didYouMean(closest(atividade, atividades)),
   );
 }
 
