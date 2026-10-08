@@ -11,6 +11,7 @@ export interface KpiCard {
   readonly label: string;
   readonly value: string;
   readonly caption?: string;
+  readonly emphasis?: boolean;
 }
 
 export interface SummarySection {
@@ -261,6 +262,9 @@ export interface ReportJson {
     readonly light: string;
     readonly accentRed: string;
     readonly accentGold: string;
+    readonly positive: string;
+    readonly segments: readonly string[];
+    readonly segmentInk: readonly string[];
   };
   readonly header: {
     readonly org: string;

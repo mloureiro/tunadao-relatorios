@@ -5,7 +5,28 @@
     "navy": "#1D2F6F",
     "light": "#F3F5F9",
     "accentRed": "#B3262E",
-    "accentGold": "#C9A227"
+    "accentGold": "#C9A227",
+    "positive": "#0A7A3D",
+    "segments": [
+      "#2A78D6",
+      "#EB6834",
+      "#1BAF7A",
+      "#EDA100",
+      "#E87BA4",
+      "#008300",
+      "#4A3AA7",
+      "#E34948"
+    ],
+    "segmentInk": [
+      "#FFFFFF",
+      "#000000",
+      "#000000",
+      "#000000",
+      "#000000",
+      "#FFFFFF",
+      "#FFFFFF",
+      "#000000"
+    ]
   },
   "header": {
     "org": "TUNADÃO 1998",
@@ -30,7 +51,8 @@
         },
         {
           "label": "Resultado",
-          "value": "4.298 €"
+          "value": "4.298 €",
+          "emphasis": true
         },
         {
           "label": "Por receber",
@@ -206,49 +228,13 @@
           "shareText": "4%"
         },
         {
-          "label": "Comunicação e gráfica",
+          "label": "Restantes rubricas",
           "value": {
-            "cents": 51500,
-            "text": "515,00 €"
+            "cents": 152640,
+            "text": "1.526,40 €"
           },
-          "permille": 32,
-          "shareText": "3%"
-        },
-        {
-          "label": "Júri",
-          "value": {
-            "cents": 42000,
-            "text": "420,00 €"
-          },
-          "permille": 26,
-          "shareText": "3%"
-        },
-        {
-          "label": "Licenças e SPA",
-          "value": {
-            "cents": 31000,
-            "text": "310,00 €"
-          },
-          "permille": 19,
-          "shareText": "2%"
-        },
-        {
-          "label": "Seguro",
-          "value": {
-            "cents": 18500,
-            "text": "185,00 €"
-          },
-          "permille": 12,
-          "shareText": "1%"
-        },
-        {
-          "label": "Diversos",
-          "value": {
-            "cents": 9640,
-            "text": "96,40 €"
-          },
-          "permille": 6,
-          "shareText": "1%"
+          "permille": 95,
+          "shareText": "10%"
         }
       ]
     },

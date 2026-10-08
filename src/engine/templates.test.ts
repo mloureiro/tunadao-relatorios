@@ -138,12 +138,10 @@ describe('evento template', () => {
         (s): s is BudgetSection => s.kind === 'budget' && s.side === 'despesa',
       )?.note;
       if (note === undefined) throw new Error('example has no expenses note');
-      const withoutNote: ReportJson = {
-        ...report,
-        sections: report.sections.map((section) =>
-          section.kind === 'budget' ? { ...section, note: '' } : section,
-        ),
+      const withoutNote = structuredClone(report) as unknown as {
+        sections: { note?: string }[];
       };
+      for (const section of withoutNote.sections) delete section.note;
 
       const [shown, hidden] = await Promise.all([
         renderer.render('evento', report),
@@ -179,12 +177,12 @@ describe('evento template', () => {
     expect(text.match(/ · reembolso/g)).toHaveLength(1);
   });
 
-  it('renders a composition with more segments than palette slots and a zero-share segment', async () => {
-    const report = example('evento-citadao');
-    const crowded: ReportJson = {
+  it('renders a composition that carries a zero-share segment', async () => {
+    const report = example('evento-zumba');
+    const withZero: ReportJson = {
       ...report,
       sections: report.sections.map((section) =>
-        section.kind === 'composition' && section.segments.length > 8
+        section.kind === 'composition'
           ? {
               ...section,
               segments: [
@@ -200,7 +198,7 @@ describe('evento template', () => {
       ),
     };
 
-    const { warnings } = await renderer.render('evento', crowded);
+    const { warnings } = await renderer.render('evento', withZero);
 
     expect(warnings).toEqual([]);
   });

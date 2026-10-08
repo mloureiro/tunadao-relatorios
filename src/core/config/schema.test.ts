@@ -35,6 +35,13 @@ describe('loadConfig()', () => {
     expect(() => loadConfig(config)).toThrow(/accentRed/);
   });
 
+  it('rejects a segment palette that is not eight colours', () => {
+    const config = structuredClone(shipped);
+    config.theme.segments = config.theme.segments.slice(0, 7);
+
+    expect(() => loadConfig(config)).toThrow(/segments/);
+  });
+
   it('rejects an aggregation level that does not exist', () => {
     const config = {
       ...structuredClone(shipped),

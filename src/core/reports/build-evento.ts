@@ -60,7 +60,7 @@ export function buildEvento(
       event.pagoCents,
       countLabel(event.counts.pagamentos, 'movimento', 'movimentos'),
     ),
-    card('Resultado', event.resultadoCents),
+    card('Resultado', event.resultadoCents, undefined, true),
     card('Por receber', event.pending.porReceberCents),
     card('Por pagar', event.pending.porPagarCents),
     card(

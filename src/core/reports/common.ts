@@ -83,11 +83,17 @@ export function periodLabel(start: IsoDate, end: IsoDate): string {
     : `${formatDate(start)} a ${formatDate(end)}`;
 }
 
-export function card(label: string, cents: Cents, caption?: string): KpiCard {
+export function card(
+  label: string,
+  cents: Cents,
+  caption?: string,
+  emphasis = false,
+): KpiCard {
   return {
     label,
     value: formatEuros(cents),
     ...(caption === undefined ? {} : { caption }),
+    ...(emphasis ? { emphasis } : {}),
   };
 }
 
@@ -165,6 +171,9 @@ export function labelOf(row: {
   return row.subRubrica ?? row.rubrica;
 }
 
+const MAX_COMPOSITION_SEGMENTS = 8;
+const FOLDED_SEGMENT_LABEL = 'Restantes rubricas';
+
 export function compositionSection(
   title: string,
   level: AggregationLevel,
@@ -181,11 +190,30 @@ export function compositionSection(
       .map((row) => ({ label: labelOf(row), cents: row.netCents })),
   );
   if (positive.segments.length === 0) return null;
+  const kept =
+    positive.segments.length > MAX_COMPOSITION_SEGMENTS
+      ? positive.segments.slice(0, MAX_COMPOSITION_SEGMENTS - 1)
+      : positive.segments;
+  const folded = positive.segments.slice(kept.length);
+  const segments =
+    folded.length === 0
+      ? kept
+      : [
+          ...kept,
+          {
+            label: FOLDED_SEGMENT_LABEL,
+            cents: sum(folded.map((segment) => segment.cents)),
+            permille: folded.reduce(
+              (acc, segment) => acc + segment.permille,
+              0,
+            ),
+          },
+        ];
   return {
     kind: 'composition',
     title,
     total: money(sum(rows.map((row) => row.netCents))),
-    segments: positive.segments.map((segment) => ({
+    segments: segments.map((segment) => ({
       label: segment.label,
       value: money(segment.cents),
       permille: segment.permille,
