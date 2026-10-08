@@ -20,6 +20,7 @@ export function composition(
 ): CompositionResult {
   const totalCents = sum(rows.map((row) => row.cents));
   const segments = rows
+    .filter((row) => row.cents !== 0)
     .toSorted((a, b) => b.cents - a.cents)
     .map((row) => ({
       ...row,

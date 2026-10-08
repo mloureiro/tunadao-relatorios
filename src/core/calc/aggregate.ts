@@ -105,7 +105,6 @@ export function aggregate(
         count: group.gross.length + group.refund.length,
       };
     })
-    .filter((row) => row.netCents !== 0)
     .toSorted((a, b) => compareListasOrder(lists, a, b));
 
   const issues = rows
