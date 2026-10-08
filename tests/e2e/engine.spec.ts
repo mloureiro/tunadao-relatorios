@@ -53,12 +53,14 @@ test('the render worker runs under the page CSP, where dynamic code is blocked',
   });
 
   await page.goto('./');
-  await expect(
-    page.getByRole('button', { name: 'Gerar PDF de teste' }),
-  ).toBeEnabled({ timeout: 90_000 });
+  await page
+    .locator('input[type="file"]')
+    .setInputFiles('fixtures/generated/tesouraria.xlsx');
+  await expect
+    .poll(() => page.evaluate(() => window.__workerUrls.length))
+    .toBe(1);
 
   const workerUrls = await page.evaluate(() => window.__workerUrls);
-  expect(workerUrls).toHaveLength(1);
   expect(workerUrls[0]).toMatch(/^blob:/);
 
   await page.route('**/csp-probe.js', (route) =>
