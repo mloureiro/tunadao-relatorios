@@ -47,7 +47,7 @@ test('the page works offline on a later visit and still produces a PDF', async (
 }) => {
   test.skip(
     browserName === 'webkit',
-    'Playwright WebKit cannot emulate offline for pages a service worker answers; verified manually in Safari.',
+    'Playwright WebKit cannot emulate offline for pages a service worker answers; must be verified manually in Safari.',
   );
   test.setTimeout(180_000);
 
@@ -83,4 +83,31 @@ test('the page works offline on a later visit and still produces a PDF', async (
   expect((await download).suggestedFilename()).toBe(
     'relatorio-evento-20o-citadao-2026-05-03.pdf',
   );
+});
+
+test('a first visit downloads the PDF engine from the network once', async ({
+  page,
+  context,
+  browserName,
+}) => {
+  test.skip(
+    browserName !== 'chromium',
+    'Only chromium reports the service worker own requests to the context.',
+  );
+  const fromNetwork: string[] = [];
+  context.on('response', (response) => {
+    if (response.url().endsWith('.wasm') && !response.fromServiceWorker()) {
+      fromNetwork.push(response.url());
+    }
+  });
+  const served = page.waitForResponse(
+    (response) =>
+      response.url().endsWith('.wasm') && response.fromServiceWorker(),
+    { timeout: 60_000 },
+  );
+
+  await page.goto('./');
+  await served;
+
+  expect(fromNetwork).toHaveLength(1);
 });

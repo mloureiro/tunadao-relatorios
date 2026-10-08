@@ -1,5 +1,6 @@
 import type { TemplateId } from '@/engine/renderer';
 import { createWebRenderer, type WebRenderer } from '@/engine/typst-web';
+import { serviceWorkerSettled } from './service-worker';
 import { getState, setState } from './state';
 
 const LOAD_FAILURE =
@@ -68,6 +69,8 @@ export function warmUpWhenIdle(): void {
   const start = () => {
     void startEngine().catch(() => undefined);
   };
-  if ('requestIdleCallback' in window) window.requestIdleCallback(start);
-  else setTimeout(start, 200);
+  void serviceWorkerSettled().then(() => {
+    if ('requestIdleCallback' in window) window.requestIdleCallback(start);
+    else setTimeout(start, 200);
+  });
 }
