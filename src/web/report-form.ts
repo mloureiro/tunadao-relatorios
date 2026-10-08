@@ -252,7 +252,7 @@ export function cashCountTotals(
   return { rows, totalCents };
 }
 
-function smallCoinsCents(text: string): Cents | null {
+export function smallCoinsCents(text: string): Cents | null {
   const parsed = parseMoney(text);
   return 'cents' in parsed && parsed.cents >= 0 ? parsed.cents : null;
 }

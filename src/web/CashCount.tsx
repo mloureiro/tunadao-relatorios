@@ -1,17 +1,18 @@
 import { formatMoney } from '@/core/format';
-import { MoneyField, type FormApi } from './form-controls';
+import type { FormApi } from './form-controls';
 import {
   DENOMINATION_GRID,
+  smallCoinsCents,
   cashCountTotals,
   denominationKey,
   setCount,
 } from './report-form';
 
 export function CashCount({ api }: { api: FormApi }) {
-  const { rows, totalCents } = cashCountTotals(
-    api.form.contagem,
-    api.form.fields.moedasPequenas ?? '',
-  );
+  const coins = api.form.fields.moedasPequenas ?? '';
+  const coinsId = `${api.idPrefix}-moedasPequenas`;
+  const coinsError = api.error('moedasPequenas');
+  const { rows, totalCents } = cashCountTotals(api.form.contagem, coins);
   return (
     <section
       class="list-block"
@@ -20,7 +21,7 @@ export function CashCount({ api }: { api: FormApi }) {
       <h3 id={`${api.idPrefix}-caixa-titulo`}>Contagem de caixa</h3>
       <p class="field-hint">
         Indique quantas notas e moedas há de cada valor. Se não as contou uma a
-        uma, indique o valor das moedas pequenas na linha em baixo.
+        uma, indique o valor das moedas pequenas na última linha.
       </p>
       <div class="table-wrap">
         <table class="cash-grid">
@@ -79,6 +80,42 @@ export function CashCount({ api }: { api: FormApi }) {
                 </tr>
               );
             })}
+            <tr>
+              <th scope="row">
+                <label for={coinsId}>Moedas pequenas (valor total)</label>
+              </th>
+              <td>
+                <input
+                  id={coinsId}
+                  type="text"
+                  inputMode="decimal"
+                  autoComplete="off"
+                  placeholder="0,00"
+                  class="count-input"
+                  value={coins}
+                  aria-invalid={coinsError === undefined ? undefined : true}
+                  aria-describedby={
+                    coinsError === undefined ? undefined : `${coinsId}-erro`
+                  }
+                  onInput={(event) => {
+                    api.set('moedasPequenas', event.currentTarget.value);
+                  }}
+                  onBlur={() => {
+                    api.blur('moedasPequenas');
+                  }}
+                />
+                {coinsError !== undefined && (
+                  <p id={`${coinsId}-erro`} class="field-error">
+                    {coinsError}
+                  </p>
+                )}
+              </td>
+              <td class="cell-number">
+                {smallCoinsCents(coins) === null
+                  ? '—'
+                  : formatMoney(smallCoinsCents(coins) ?? 0)}
+              </td>
+            </tr>
           </tbody>
           <tfoot>
             <tr>
@@ -91,14 +128,6 @@ export function CashCount({ api }: { api: FormApi }) {
             </tr>
           </tfoot>
         </table>
-      </div>
-      <div class="coins">
-        <MoneyField
-          api={api}
-          name="moedasPequenas"
-          label="Moedas pequenas (valor total)"
-          hint="Opcional. Somado ao total contado."
-        />
       </div>
     </section>
   );

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'preact/hooks';
 import type { Issue } from '@/core/issues';
 import { saveFile, saveText } from './download';
 import { ReportIssues } from './ReportIssues';
@@ -16,9 +17,15 @@ interface Props {
 
 export function PreviewPanel({ generated, onEdit }: Props) {
   const { pdfUrl, json, stem, issues } = generated;
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    heading.current?.focus();
+  }, []);
   return (
     <section class="preview" aria-labelledby="pre-visualizacao-titulo">
-      <h2 id="pre-visualizacao-titulo">Relatório gerado</h2>
+      <h2 id="pre-visualizacao-titulo" tabIndex={-1} ref={heading}>
+        Relatório gerado
+      </h2>
       <div class="actions">
         <button
           type="button"
