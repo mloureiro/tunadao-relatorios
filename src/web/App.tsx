@@ -8,7 +8,6 @@ import {
 import type { ColumnMapping } from '@/core/input/csv';
 import { loadDataset, type InputFile } from '@/core/pipeline';
 import { startEngine } from './engine';
-import { EngineStatus } from './EngineStatus';
 import { IssuesPanel } from './IssuesPanel';
 import { prepareInputs, readInputFiles, selectionProblem } from './load-files';
 import { MappingPanel } from './MappingPanel';
@@ -255,8 +254,6 @@ export function App() {
           </>
         )}
       </main>
-
-      <EngineStatus />
     </div>
   );
 }

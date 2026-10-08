@@ -492,19 +492,6 @@ select {
   font: inherit;
 }
 
-.engine {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--rule);
-  color: var(--ink-soft);
-}
-
-.engine p {
-  margin: 0;
-}
-
 .report-head {
   display: flex;
   align-items: baseline;

@@ -74,7 +74,7 @@ test('invalid data blocks Continuar, and a corrected file unblocks it', async ({
   expect(foreign).toEqual([]);
 });
 
-test('the Typst engine starts loading when a file is chosen, not on page load', async ({
+test('the Typst engine starts loading once, when the page is idle', async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -94,11 +94,12 @@ test('the Typst engine starts loading when a file is chosen, not on page load', 
   await expect(
     page.getByRole('heading', { name: 'Dados da tesouraria' }),
   ).toBeVisible();
-  expect(await workers()).toBe(0);
+  await expect.poll(workers).toBe(1);
 
   await fileInput(page).setInputFiles(VALID);
+  await expect(page.getByText('Dados válidos', { exact: true })).toBeVisible();
 
-  await expect.poll(workers).toBe(1);
+  expect(await workers()).toBe(1);
 });
 
 test('a set of CSV files is validated together', async ({ page }) => {
