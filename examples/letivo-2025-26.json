@@ -1,0 +1,1552 @@
+{
+  "schemaVersion": 1,
+  "tipo": "letivo",
+  "theme": {
+    "navy": "#1D2F6F",
+    "light": "#F3F5F9",
+    "accentRed": "#B3262E",
+    "accentGold": "#C9A227"
+  },
+  "header": {
+    "org": "TUNADÃO 1998",
+    "subtitle": "Tuna do Instituto Politécnico de Viseu",
+    "title": "Relatório de fim de ano letivo",
+    "periodLabel": "01/01/2026 a 31/08/2026"
+  },
+  "sections": [
+    {
+      "kind": "kpis",
+      "cards": [
+        {
+          "label": "Saldo inicial",
+          "value": "6.232 €"
+        },
+        {
+          "label": "Recebimentos",
+          "value": "27.793 €",
+          "caption": "20 movimentos"
+        },
+        {
+          "label": "Pagamentos",
+          "value": "20.546 €",
+          "caption": "27 movimentos"
+        },
+        {
+          "label": "Saldo final",
+          "value": "13.478 €",
+          "caption": "Caixa 258 € · Banco 13.220 €"
+        }
+      ]
+    },
+    {
+      "kind": "bridge",
+      "title": "Ponte entre o saldo inicial e o saldo final",
+      "rows": [
+        {
+          "label": "Saldo inicial",
+          "value": {
+            "cents": 623155,
+            "text": "6.231,55 €"
+          }
+        },
+        {
+          "label": "(+) Recebimentos",
+          "value": {
+            "cents": 2779270,
+            "text": "27.792,70 €"
+          }
+        },
+        {
+          "label": "(−) Pagamentos",
+          "value": {
+            "cents": 2054620,
+            "text": "20.546,20 €"
+          }
+        },
+        {
+          "label": "Saldo final",
+          "value": {
+            "cents": 1347805,
+            "text": "13.478,05 €"
+          },
+          "emphasis": true
+        },
+        {
+          "label": "Em caixa",
+          "value": {
+            "cents": 25830,
+            "text": "258,30 €"
+          }
+        },
+        {
+          "label": "Em banco",
+          "value": {
+            "cents": 1321975,
+            "text": "13.219,75 €"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "composition",
+      "title": "Composição do recebido",
+      "total": {
+        "cents": 2779270,
+        "text": "27.792,70 €"
+      },
+      "segments": [
+        {
+          "label": "Bar e merchandising",
+          "value": {
+            "cents": 843770,
+            "text": "8.437,70 €"
+          },
+          "permille": 304,
+          "shareText": "30%"
+        },
+        {
+          "label": "Inscrições e bilheteira",
+          "value": {
+            "cents": 750500,
+            "text": "7.505,00 €"
+          },
+          "permille": 270,
+          "shareText": "27%"
+        },
+        {
+          "label": "Subsídios e apoios",
+          "value": {
+            "cents": 550000,
+            "text": "5.500,00 €"
+          },
+          "permille": 198,
+          "shareText": "20%"
+        },
+        {
+          "label": "Patrocínios",
+          "value": {
+            "cents": 265000,
+            "text": "2.650,00 €"
+          },
+          "permille": 95,
+          "shareText": "10%"
+        },
+        {
+          "label": "Atuações e serenatas",
+          "value": {
+            "cents": 215000,
+            "text": "2.150,00 €"
+          },
+          "permille": 77,
+          "shareText": "8%"
+        },
+        {
+          "label": "Quotas",
+          "value": {
+            "cents": 110000,
+            "text": "1.100,00 €"
+          },
+          "permille": 40,
+          "shareText": "4%"
+        },
+        {
+          "label": "Donativos",
+          "value": {
+            "cents": 37010,
+            "text": "370,10 €"
+          },
+          "permille": 13,
+          "shareText": "1%"
+        },
+        {
+          "label": "Outros recebimentos",
+          "value": {
+            "cents": 7990,
+            "text": "79,90 €"
+          },
+          "permille": 3,
+          "shareText": "0%"
+        }
+      ]
+    },
+    {
+      "kind": "composition",
+      "title": "Composição do pago",
+      "total": {
+        "cents": 2054620,
+        "text": "20.546,20 €"
+      },
+      "segments": [
+        {
+          "label": "Produção (som, luz, palco)",
+          "value": {
+            "cents": 588000,
+            "text": "5.880,00 €"
+          },
+          "permille": 286,
+          "shareText": "29%"
+        },
+        {
+          "label": "Alimentação e alojamento",
+          "value": {
+            "cents": 492000,
+            "text": "4.920,00 €"
+          },
+          "permille": 239,
+          "shareText": "24%"
+        },
+        {
+          "label": "Compras para o bar",
+          "value": {
+            "cents": 359300,
+            "text": "3.593,00 €"
+          },
+          "permille": 175,
+          "shareText": "18%"
+        },
+        {
+          "label": "Deslocações",
+          "value": {
+            "cents": 228000,
+            "text": "2.280,00 €"
+          },
+          "permille": 111,
+          "shareText": "11%"
+        },
+        {
+          "label": "Prémios e troféus",
+          "value": {
+            "cents": 128000,
+            "text": "1.280,00 €"
+          },
+          "permille": 62,
+          "shareText": "6%"
+        },
+        {
+          "label": "Merchandising e trajes",
+          "value": {
+            "cents": 93200,
+            "text": "932,00 €"
+          },
+          "permille": 45,
+          "shareText": "5%"
+        },
+        {
+          "label": "Comunicação e gráfica",
+          "value": {
+            "cents": 56300,
+            "text": "563,00 €"
+          },
+          "permille": 27,
+          "shareText": "3%"
+        },
+        {
+          "label": "Taxas e licenças",
+          "value": {
+            "cents": 41500,
+            "text": "415,00 €"
+          },
+          "permille": 20,
+          "shareText": "2%"
+        },
+        {
+          "label": "Outros pagamentos",
+          "value": {
+            "cents": 39160,
+            "text": "391,60 €"
+          },
+          "permille": 19,
+          "shareText": "2%"
+        },
+        {
+          "label": "Seguros e despesas bancárias",
+          "value": {
+            "cents": 23160,
+            "text": "231,60 €"
+          },
+          "permille": 11,
+          "shareText": "1%"
+        },
+        {
+          "label": "Instrumentos e manutenção",
+          "value": {
+            "cents": 6000,
+            "text": "60,00 €"
+          },
+          "permille": 3,
+          "shareText": "0%"
+        }
+      ]
+    },
+    {
+      "kind": "byActivity",
+      "title": "Resultado por atividade",
+      "rows": [
+        {
+          "atividade": "Funcionamento",
+          "recebido": {
+            "cents": 439000,
+            "text": "4.390,00 €"
+          },
+          "pago": {
+            "cents": 131180,
+            "text": "1.311,80 €"
+          },
+          "resultado": {
+            "cents": 307820,
+            "text": "3.078,20 €"
+          }
+        },
+        {
+          "atividade": "Zumba na Caneca",
+          "recebido": {
+            "cents": 292750,
+            "text": "2.927,50 €"
+          },
+          "pago": {
+            "cents": 144740,
+            "text": "1.447,40 €"
+          },
+          "resultado": {
+            "cents": 148010,
+            "text": "1.480,10 €"
+          }
+        },
+        {
+          "atividade": "20º CITADÃO",
+          "recebido": {
+            "cents": 2022520,
+            "text": "20.225,20 €"
+          },
+          "pago": {
+            "cents": 1592700,
+            "text": "15.927,00 €"
+          },
+          "resultado": {
+            "cents": 429820,
+            "text": "4.298,20 €"
+          }
+        },
+        {
+          "atividade": "Festivais",
+          "recebido": {
+            "cents": 25000,
+            "text": "250,00 €"
+          },
+          "pago": {
+            "cents": 186000,
+            "text": "1.860,00 €"
+          },
+          "resultado": {
+            "cents": -161000,
+            "text": "−1.610,00 €"
+          }
+        }
+      ],
+      "total": {
+        "recebido": {
+          "cents": 2779270,
+          "text": "27.792,70 €"
+        },
+        "pago": {
+          "cents": 2054620,
+          "text": "20.546,20 €"
+        },
+        "resultado": {
+          "cents": 724650,
+          "text": "7.246,50 €"
+        }
+      }
+    },
+    {
+      "kind": "pending",
+      "title": "Pendentes no fim do período",
+      "refLabel": "Situação a 31/08/2026",
+      "receber": [
+        {
+          "entidade": "Patrocinador do 20º CITADÃO",
+          "descricao": "Protocolo de 750 €: pagos 500 €, faltam 250 €",
+          "atividade": "20º CITADÃO",
+          "registo": "02/04/2026",
+          "valor": {
+            "cents": 25000,
+            "text": "250,00 €"
+          }
+        },
+        {
+          "entidade": "Membros (6)",
+          "descricao": "Quotas 2026 em atraso (6 membros × 20 €)",
+          "atividade": "Funcionamento",
+          "registo": "31/05/2026",
+          "valor": {
+            "cents": 12000,
+            "text": "120,00 €"
+          },
+          "notas": "Lista de membros em anexo"
+        }
+      ],
+      "pagar": [
+        {
+          "entidade": "Membro da tuna",
+          "descricao": "Reembolso de cordas compradas em julho",
+          "atividade": "Funcionamento",
+          "registo": "15/07/2026",
+          "valor": {
+            "cents": 6430,
+            "text": "64,30 €"
+          },
+          "notas": "Talão anexo"
+        }
+      ],
+      "totals": {
+        "receber": {
+          "cents": 37000,
+          "text": "370,00 €"
+        },
+        "pagar": {
+          "cents": 6430,
+          "text": "64,30 €"
+        }
+      }
+    },
+    {
+      "kind": "inKind",
+      "title": "Apoios em espécie",
+      "rows": [
+        {
+          "data": "30/04/2026",
+          "atividade": "20º CITADÃO",
+          "tipo": "UPV: cedência da Aula Magna, CAFAC e Pala do CAFAC",
+          "quantidade": "4 dias",
+          "valor": {
+            "cents": 240000,
+            "text": "2.400,00 €"
+          }
+        },
+        {
+          "data": "30/04/2026",
+          "atividade": "20º CITADÃO",
+          "tipo": "CMV: transporte das tunas (autocarro municipal)",
+          "quantidade": "2 viagens",
+          "valor": {
+            "cents": 38000,
+            "text": "380,00 €"
+          }
+        },
+        {
+          "data": "30/04/2026",
+          "atividade": "20º CITADÃO",
+          "tipo": "Ginásio parceiro: cadeiras e mesas",
+          "quantidade": "150 un.",
+          "valor": {
+            "cents": 15000,
+            "text": "150,00 €"
+          }
+        }
+      ],
+      "total": {
+        "cents": 293000,
+        "text": "2.930,00 €"
+      }
+    },
+    {
+      "kind": "text",
+      "title": "Notas / Comentários",
+      "paragraphs": [
+        "Ano letivo marcado pelo 20º CITADÃO e pela Zumba na Caneca. As quotas em atraso foram regularizadas em setembro."
+      ]
+    },
+    {
+      "kind": "yearComparison",
+      "title": "Comparação com o período homólogo",
+      "status": "ok",
+      "labels": [
+        "01/01/2025 a 31/08/2025",
+        "01/01/2026 a 31/08/2026"
+      ],
+      "rows": [
+        {
+          "label": "Saldo inicial",
+          "kind": "saldo",
+          "previous": "4.098,15 €",
+          "current": "6.231,55 €",
+          "variation": "+2.133,40 €"
+        },
+        {
+          "label": "Quotas",
+          "kind": "receita",
+          "previous": "960,00 €",
+          "current": "1.100,00 €",
+          "variation": "+140,00 €"
+        },
+        {
+          "label": "Donativos",
+          "kind": "receita",
+          "previous": "500,00 €",
+          "current": "370,10 €",
+          "variation": "−129,90 €"
+        },
+        {
+          "label": "Subsídios e apoios",
+          "kind": "receita",
+          "previous": "4.000,00 €",
+          "current": "5.500,00 €",
+          "variation": "+1.500,00 €"
+        },
+        {
+          "label": "Atuações e serenatas",
+          "kind": "receita",
+          "previous": "1.920,00 €",
+          "current": "2.150,00 €",
+          "variation": "+230,00 €"
+        },
+        {
+          "label": "Inscrições e bilheteira",
+          "kind": "receita",
+          "previous": "6.180,00 €",
+          "current": "7.505,00 €",
+          "variation": "+1.325,00 €"
+        },
+        {
+          "label": "Bar e merchandising",
+          "kind": "receita",
+          "previous": "5.940,00 €",
+          "current": "8.437,70 €",
+          "variation": "+2.497,70 €"
+        },
+        {
+          "label": "Patrocínios",
+          "kind": "receita",
+          "previous": "2.200,00 €",
+          "current": "2.650,00 €",
+          "variation": "+450,00 €"
+        },
+        {
+          "label": "Outros recebimentos",
+          "kind": "receita",
+          "previous": "0,00 €",
+          "current": "79,90 €",
+          "variation": "+79,90 €"
+        },
+        {
+          "label": "Total recebido",
+          "kind": "total",
+          "previous": "21.700,00 €",
+          "current": "27.792,70 €",
+          "variation": "+6.092,70 €"
+        },
+        {
+          "label": "Produção (som, luz, palco)",
+          "kind": "despesa",
+          "previous": "6.350,00 €",
+          "current": "5.880,00 €",
+          "variation": "−470,00 €"
+        },
+        {
+          "label": "Alimentação e alojamento",
+          "kind": "despesa",
+          "previous": "4.870,00 €",
+          "current": "4.920,00 €",
+          "variation": "+50,00 €"
+        },
+        {
+          "label": "Compras para o bar",
+          "kind": "despesa",
+          "previous": "3.215,60 €",
+          "current": "3.593,00 €",
+          "variation": "+377,40 €"
+        },
+        {
+          "label": "Deslocações",
+          "kind": "despesa",
+          "previous": "2.040,00 €",
+          "current": "2.280,00 €",
+          "variation": "+240,00 €"
+        },
+        {
+          "label": "Prémios e troféus",
+          "kind": "despesa",
+          "previous": "780,00 €",
+          "current": "1.280,00 €",
+          "variation": "+500,00 €"
+        },
+        {
+          "label": "Instrumentos e manutenção",
+          "kind": "despesa",
+          "previous": "520,00 €",
+          "current": "60,00 €",
+          "variation": "−460,00 €"
+        },
+        {
+          "label": "Merchandising e trajes",
+          "kind": "despesa",
+          "previous": "1.450,00 €",
+          "current": "932,00 €",
+          "variation": "−518,00 €"
+        },
+        {
+          "label": "Comunicação e gráfica",
+          "kind": "despesa",
+          "previous": "610,00 €",
+          "current": "563,00 €",
+          "variation": "−47,00 €"
+        },
+        {
+          "label": "Seguros e despesas bancárias",
+          "kind": "despesa",
+          "previous": "0,00 €",
+          "current": "231,60 €",
+          "variation": "+231,60 €"
+        },
+        {
+          "label": "Taxas e licenças",
+          "kind": "despesa",
+          "previous": "395,00 €",
+          "current": "415,00 €",
+          "variation": "+20,00 €"
+        },
+        {
+          "label": "Outros pagamentos",
+          "kind": "despesa",
+          "previous": "0,00 €",
+          "current": "391,60 €",
+          "variation": "+391,60 €"
+        },
+        {
+          "label": "Total pago",
+          "kind": "total",
+          "previous": "20.230,60 €",
+          "current": "20.546,20 €",
+          "variation": "+315,60 €"
+        },
+        {
+          "label": "Resultado",
+          "kind": "total",
+          "previous": "1.469,40 €",
+          "current": "7.246,50 €",
+          "variation": "+5.777,10 €"
+        },
+        {
+          "label": "Saldo final",
+          "kind": "saldo",
+          "previous": "5.567,55 €",
+          "current": "13.478,05 €",
+          "variation": "+7.910,50 €"
+        }
+      ]
+    },
+    {
+      "kind": "movements",
+      "title": "Movimentos do período",
+      "columns": "signed",
+      "rows": [
+        {
+          "data": "12/01/2026",
+          "doc": "R-001",
+          "descricao": "Apoio da Câmara Municipal (2.ª tranche do 19º CITADÃO)",
+          "atividade": "Funcionamento",
+          "rubrica": "Apoio CMV",
+          "valor": {
+            "cents": 100000,
+            "text": "1.000,00 €"
+          },
+          "entrada": {
+            "cents": 100000,
+            "text": "1.000,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "20/01/2026",
+          "doc": "P-001",
+          "descricao": "Fornecedor de som: saldo do Arraial 2025 (FT 2025/311)",
+          "atividade": "Festivais",
+          "rubrica": "Som e luz",
+          "valor": {
+            "cents": -45000,
+            "text": "−450,00 €"
+          },
+          "saida": {
+            "cents": 45000,
+            "text": "450,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "20/02/2026",
+          "doc": "R-002",
+          "descricao": "Apoio da Câmara Municipal",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Apoio CMV",
+          "valor": {
+            "cents": 250000,
+            "text": "2.500,00 €"
+          },
+          "entrada": {
+            "cents": 250000,
+            "text": "2.500,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "24/02/2026",
+          "doc": "P-002",
+          "descricao": "Cartazes e programa",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Comunicação e gráfica",
+          "valor": {
+            "cents": -51500,
+            "text": "−515,00 €"
+          },
+          "saida": {
+            "cents": 51500,
+            "text": "515,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "27/02/2026",
+          "doc": "R-003",
+          "descricao": "Apoio da universidade (via AE ESAV)",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Apoio UPV (via AE ESAV)",
+          "valor": {
+            "cents": 150000,
+            "text": "1.500,00 €"
+          },
+          "entrada": {
+            "cents": 150000,
+            "text": "1.500,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "03/03/2026",
+          "doc": "P-003",
+          "descricao": "Cartazes e impressões",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Cartazes e impressões",
+          "valor": {
+            "cents": -4800,
+            "text": "−48,00 €"
+          },
+          "saida": {
+            "cents": 4800,
+            "text": "48,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "05/03/2026",
+          "doc": "P-004",
+          "descricao": "Canecas personalizadas (300 un.)",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Merchandising e trajes",
+          "valor": {
+            "cents": -34200,
+            "text": "−342,00 €"
+          },
+          "saida": {
+            "cents": 34200,
+            "text": "342,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "10/03/2026",
+          "doc": "R-004",
+          "descricao": "Patrocínio ginásio local",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Patrocínio do evento",
+          "valor": {
+            "cents": 15000,
+            "text": "150,00 €"
+          },
+          "entrada": {
+            "cents": 15000,
+            "text": "150,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "13/03/2026",
+          "doc": "P-005",
+          "descricao": "Bebidas e consumíveis",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Bebidas e consumíveis",
+          "valor": {
+            "cents": -61240,
+            "text": "−612,40 €"
+          },
+          "saida": {
+            "cents": 61240,
+            "text": "612,40 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "14/03/2026",
+          "doc": "R-005",
+          "descricao": "Inscrições (247 × 5 €)",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Inscrições",
+          "valor": {
+            "cents": 123500,
+            "text": "1.235,00 €"
+          },
+          "entrada": {
+            "cents": 123500,
+            "text": "1.235,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "14/03/2026",
+          "doc": "R-006",
+          "descricao": "Receita de bar",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Bar",
+          "valor": {
+            "cents": 148250,
+            "text": "1.482,50 €"
+          },
+          "entrada": {
+            "cents": 148250,
+            "text": "1.482,50 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "14/03/2026",
+          "doc": "R-007",
+          "descricao": "Donativos na caixa do evento",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Donativos",
+          "valor": {
+            "cents": 6000,
+            "text": "60,00 €"
+          },
+          "entrada": {
+            "cents": 6000,
+            "text": "60,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "14/03/2026",
+          "doc": "P-006",
+          "descricao": "Instrutora de zumba",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Outros",
+          "valor": {
+            "cents": -20000,
+            "text": "−200,00 €"
+          },
+          "saida": {
+            "cents": 20000,
+            "text": "200,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "16/03/2026",
+          "doc": "P-007",
+          "descricao": "Aluguer de som",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Som e luz",
+          "valor": {
+            "cents": -18000,
+            "text": "−180,00 €"
+          },
+          "saida": {
+            "cents": 18000,
+            "text": "180,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "18/03/2026",
+          "doc": "P-008",
+          "descricao": "Licença de ruído e SPA",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Licenças e SPA",
+          "valor": {
+            "cents": -6500,
+            "text": "−65,00 €"
+          },
+          "saida": {
+            "cents": 6500,
+            "text": "65,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "20/03/2026",
+          "doc": "P-009",
+          "descricao": "T-shirts do evento",
+          "atividade": "20º CITADÃO",
+          "rubrica": "T-shirts",
+          "valor": {
+            "cents": -59000,
+            "text": "−590,00 €"
+          },
+          "saida": {
+            "cents": 59000,
+            "text": "590,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "27/03/2026",
+          "doc": "P-010",
+          "descricao": "Licenças e SPA",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Licenças e SPA",
+          "valor": {
+            "cents": -31000,
+            "text": "−310,00 €"
+          },
+          "saida": {
+            "cents": 31000,
+            "text": "310,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "28/03/2026",
+          "doc": "R-008",
+          "descricao": "Inscrições das tunas",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Inscrições de tunas",
+          "valor": {
+            "cents": 240000,
+            "text": "2.400,00 €"
+          },
+          "entrada": {
+            "cents": 240000,
+            "text": "2.400,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "01/04/2026",
+          "doc": "P-011",
+          "descricao": "Seguro do evento",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Seguro",
+          "valor": {
+            "cents": -18500,
+            "text": "−185,00 €"
+          },
+          "saida": {
+            "cents": 18500,
+            "text": "185,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "02/04/2026",
+          "doc": "R-009",
+          "descricao": "Patrocínios do evento",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Patrocínios",
+          "valor": {
+            "cents": 250000,
+            "text": "2.500,00 €"
+          },
+          "entrada": {
+            "cents": 250000,
+            "text": "2.500,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "06/04/2026",
+          "doc": "R-010",
+          "descricao": "Quotas 2026 (38 membros)",
+          "atividade": "Funcionamento",
+          "rubrica": "Quotas",
+          "valor": {
+            "cents": 76000,
+            "text": "760,00 €"
+          },
+          "entrada": {
+            "cents": 76000,
+            "text": "760,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "08/04/2026",
+          "doc": "P-012",
+          "descricao": "Deslocação a atuação",
+          "atividade": "Funcionamento",
+          "rubrica": "Deslocações",
+          "valor": {
+            "cents": -64000,
+            "text": "−640,00 €"
+          },
+          "saida": {
+            "cents": 64000,
+            "text": "640,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "10/04/2026",
+          "doc": "R-011",
+          "descricao": "Serenata para empresa",
+          "atividade": "Funcionamento",
+          "rubrica": "Atuações e serenatas",
+          "valor": {
+            "cents": 90000,
+            "text": "900,00 €"
+          },
+          "entrada": {
+            "cents": 90000,
+            "text": "900,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "17/04/2026",
+          "doc": "P-013",
+          "descricao": "Taxa de registo",
+          "atividade": "Funcionamento",
+          "rubrica": "Taxas e licenças",
+          "valor": {
+            "cents": -4000,
+            "text": "−40,00 €"
+          },
+          "saida": {
+            "cents": 4000,
+            "text": "40,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "18/04/2026",
+          "doc": "R-012",
+          "descricao": "Quotas 2026 em numerário (17 membros)",
+          "atividade": "Funcionamento",
+          "rubrica": "Quotas",
+          "valor": {
+            "cents": 34000,
+            "text": "340,00 €"
+          },
+          "entrada": {
+            "cents": 34000,
+            "text": "340,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "20/04/2026",
+          "doc": "R-013",
+          "descricao": "Apoio da Junta de Freguesia",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Apoio Junta de Freguesia",
+          "valor": {
+            "cents": 50000,
+            "text": "500,00 €"
+          },
+          "entrada": {
+            "cents": 50000,
+            "text": "500,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "22/04/2026",
+          "doc": "P-014",
+          "descricao": "Som e luz",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Som e luz",
+          "valor": {
+            "cents": -390000,
+            "text": "−3.900,00 €"
+          },
+          "saida": {
+            "cents": 390000,
+            "text": "3.900,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "24/04/2026",
+          "doc": "P-015",
+          "descricao": "Palco e estruturas",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Palco e estruturas",
+          "valor": {
+            "cents": -115000,
+            "text": "−1.150,00 €"
+          },
+          "saida": {
+            "cents": 115000,
+            "text": "1.150,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "28/04/2026",
+          "doc": "P-016",
+          "descricao": "Compras para o bar",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Compras para o bar",
+          "valor": {
+            "cents": -298060,
+            "text": "−2.980,60 €"
+          },
+          "saida": {
+            "cents": 298060,
+            "text": "2.980,60 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "02/05/2026",
+          "doc": "R-014",
+          "descricao": "Bilheteira (TPA)",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Bilheteira",
+          "valor": {
+            "cents": 387000,
+            "text": "3.870,00 €"
+          },
+          "entrada": {
+            "cents": 387000,
+            "text": "3.870,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "03/05/2026",
+          "doc": "R-015",
+          "descricao": "Bar (TPA)",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Bar",
+          "valor": {
+            "cents": 631520,
+            "text": "6.315,20 €"
+          },
+          "entrada": {
+            "cents": 631520,
+            "text": "6.315,20 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "03/05/2026",
+          "doc": "R-016",
+          "descricao": "Merchandising",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Merchandising",
+          "valor": {
+            "cents": 64000,
+            "text": "640,00 €"
+          },
+          "entrada": {
+            "cents": 64000,
+            "text": "640,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "04/05/2026",
+          "doc": "P-017",
+          "descricao": "Refeições das tunas",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Refeições das tunas",
+          "valor": {
+            "cents": -328000,
+            "text": "−3.280,00 €"
+          },
+          "saida": {
+            "cents": 328000,
+            "text": "3.280,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "04/05/2026",
+          "doc": "P-018",
+          "descricao": "Júri",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Júri",
+          "valor": {
+            "cents": -42000,
+            "text": "−420,00 €"
+          },
+          "saida": {
+            "cents": 42000,
+            "text": "420,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "05/05/2026",
+          "doc": "P-019",
+          "descricao": "Alojamento",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Alojamento",
+          "valor": {
+            "cents": -164000,
+            "text": "−1.640,00 €"
+          },
+          "saida": {
+            "cents": 164000,
+            "text": "1.640,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "06/05/2026",
+          "doc": "P-020",
+          "descricao": "Prémios e troféus",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Prémios e troféus",
+          "valor": {
+            "cents": -86000,
+            "text": "−860,00 €"
+          },
+          "saida": {
+            "cents": 86000,
+            "text": "860,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "15/05/2026",
+          "doc": "P-021",
+          "descricao": "Despesas bancárias de janeiro a maio",
+          "atividade": "Funcionamento",
+          "rubrica": "Despesas bancárias",
+          "valor": {
+            "cents": -4660,
+            "text": "−46,60 €"
+          },
+          "saida": {
+            "cents": 4660,
+            "text": "46,60 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "23/05/2026",
+          "doc": "R-017",
+          "descricao": "Atuação em jantar de curso",
+          "atividade": "Funcionamento",
+          "rubrica": "Atuações e serenatas",
+          "valor": {
+            "cents": 100000,
+            "text": "1.000,00 €"
+          },
+          "entrada": {
+            "cents": 100000,
+            "text": "1.000,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "30/05/2026",
+          "doc": "P-022",
+          "descricao": "Gasolina e portagens",
+          "atividade": "Funcionamento",
+          "rubrica": "Deslocações",
+          "valor": {
+            "cents": -43000,
+            "text": "−430,00 €"
+          },
+          "saida": {
+            "cents": 43000,
+            "text": "430,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "05/06/2026",
+          "doc": "P-023",
+          "descricao": "Deslocação a festival de tunas",
+          "atividade": "Festivais",
+          "rubrica": "Deslocações",
+          "valor": {
+            "cents": -121000,
+            "text": "−1.210,00 €"
+          },
+          "saida": {
+            "cents": 121000,
+            "text": "1.210,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "12/06/2026",
+          "doc": "P-024",
+          "descricao": "Reparação de instrumentos",
+          "atividade": "Funcionamento",
+          "rubrica": "Instrumentos e manutenção",
+          "valor": {
+            "cents": -6000,
+            "text": "−60,00 €"
+          },
+          "saida": {
+            "cents": 6000,
+            "text": "60,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "15/06/2026",
+          "doc": "P-025",
+          "descricao": "Diversos",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Diversos",
+          "valor": {
+            "cents": -9640,
+            "text": "−96,40 €"
+          },
+          "saida": {
+            "cents": 9640,
+            "text": "96,40 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "20/06/2026",
+          "doc": "R-018",
+          "descricao": "Donativo de angariação online",
+          "atividade": "Funcionamento",
+          "rubrica": "Donativos",
+          "valor": {
+            "cents": 31010,
+            "text": "310,10 €"
+          },
+          "entrada": {
+            "cents": 31010,
+            "text": "310,10 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "22/06/2026",
+          "doc": "P-026",
+          "descricao": "Aluguer de som em festival",
+          "atividade": "Festivais",
+          "rubrica": "Som e luz",
+          "valor": {
+            "cents": -20000,
+            "text": "−200,00 €"
+          },
+          "saida": {
+            "cents": 20000,
+            "text": "200,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "04/07/2026",
+          "doc": "R-019",
+          "descricao": "Venda de material antigo",
+          "atividade": "Funcionamento",
+          "rubrica": "Outros recebimentos",
+          "valor": {
+            "cents": 7990,
+            "text": "79,90 €"
+          },
+          "entrada": {
+            "cents": 7990,
+            "text": "79,90 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "10/07/2026",
+          "doc": "P-027",
+          "descricao": "Material de escritório e diversos",
+          "atividade": "Funcionamento",
+          "rubrica": "Diversos",
+          "valor": {
+            "cents": -9520,
+            "text": "−95,20 €"
+          },
+          "saida": {
+            "cents": 9520,
+            "text": "95,20 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "18/07/2026",
+          "doc": "R-020",
+          "descricao": "Atuação em festival (cachet)",
+          "atividade": "Festivais",
+          "rubrica": "Atuações e serenatas",
+          "valor": {
+            "cents": 25000,
+            "text": "250,00 €"
+          },
+          "entrada": {
+            "cents": 25000,
+            "text": "250,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        }
+      ],
+      "outside": {
+        "title": "Movimentos fora do resultado",
+        "rows": [
+          {
+            "data": "16/03/2026",
+            "doc": "T-001",
+            "descricao": "Depósito do numerário do evento (saída)",
+            "atividade": "Zumba na Caneca",
+            "rubrica": "Transferências internas",
+            "valor": {
+              "cents": -252950,
+              "text": "−2.529,50 €"
+            },
+            "saida": {
+              "cents": 252950,
+              "text": "2.529,50 €"
+            },
+            "refund": false,
+            "outsideResult": true
+          },
+          {
+            "data": "16/03/2026",
+            "doc": "T-001",
+            "descricao": "Depósito do numerário do evento (entrada)",
+            "atividade": "Zumba na Caneca",
+            "rubrica": "Transferências internas",
+            "valor": {
+              "cents": 252950,
+              "text": "2.529,50 €"
+            },
+            "entrada": {
+              "cents": 252950,
+              "text": "2.529,50 €"
+            },
+            "refund": false,
+            "outsideResult": true
+          }
+        ],
+        "subtotal": {
+          "cents": 0,
+          "text": "0,00 €"
+        }
+      },
+      "footer": [
+        {
+          "label": "Entradas brutas",
+          "value": {
+            "cents": 2779270,
+            "text": "27.792,70 €"
+          }
+        },
+        {
+          "label": "Saídas brutas",
+          "value": {
+            "cents": 2054620,
+            "text": "20.546,20 €"
+          }
+        },
+        {
+          "label": "Recebido (entradas brutas − reembolsos)",
+          "value": {
+            "cents": 2779270,
+            "text": "27.792,70 €"
+          }
+        },
+        {
+          "label": "Pago (saídas brutas − reembolsos)",
+          "value": {
+            "cents": 2054620,
+            "text": "20.546,20 €"
+          }
+        },
+        {
+          "label": "Movimentos fora do resultado",
+          "value": {
+            "cents": 0,
+            "text": "0,00 €"
+          }
+        },
+        {
+          "label": "Variação no período",
+          "value": {
+            "cents": 724650,
+            "text": "7.246,50 €"
+          }
+        }
+      ]
+    }
+  ],
+  "signatures": [
+    {
+      "title": "Tesoureiro(a)"
+    },
+    {
+      "title": "Presidente da Direção"
+    }
+  ],
+  "trace": {
+    "generatedAt": "2026-10-07T12:00:00Z",
+    "generatedAtLabel": "07/10/2026 12:00",
+    "sources": [
+      {
+        "name": "tesouraria.xlsx",
+        "sha256Short": "17fb76f7fac1"
+      }
+    ],
+    "generatorVersion": "0.1.0",
+    "attachReport": true
+  }
+}

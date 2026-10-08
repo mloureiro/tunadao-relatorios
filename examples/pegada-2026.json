@@ -1,0 +1,485 @@
+{
+  "schemaVersion": 1,
+  "tipo": "pegada",
+  "theme": {
+    "navy": "#1D2F6F",
+    "light": "#F3F5F9",
+    "accentRed": "#B3262E",
+    "accentGold": "#C9A227"
+  },
+  "header": {
+    "org": "TUNADÃO 1998",
+    "subtitle": "Tuna do Instituto Politécnico de Viseu",
+    "title": "Pegada de direção",
+    "periodLabel": "01/09/2026 a 30/09/2026",
+    "lead": "Passagem de Direção 2025/26 para Direção 2026/27 em 30/09/2026"
+  },
+  "sections": [
+    {
+      "kind": "kpis",
+      "cards": [
+        {
+          "label": "Saldo entregue",
+          "value": "13.844 €"
+        },
+        {
+          "label": "Caixa",
+          "value": "579 €"
+        },
+        {
+          "label": "Banco",
+          "value": "13.265 €"
+        },
+        {
+          "label": "Posição líquida",
+          "value": "13.964 €"
+        }
+      ]
+    },
+    {
+      "kind": "position",
+      "title": "Posição financeira na passagem",
+      "segments": [
+        {
+          "label": "Caixa",
+          "value": {
+            "cents": 57900,
+            "text": "579,00 €"
+          },
+          "permille": 40,
+          "negative": false
+        },
+        {
+          "label": "Banco",
+          "value": {
+            "cents": 1326505,
+            "text": "13.265,05 €"
+          },
+          "permille": 926,
+          "negative": false
+        },
+        {
+          "label": "A receber",
+          "value": {
+            "cents": 30000,
+            "text": "300,00 €"
+          },
+          "permille": 21,
+          "negative": false
+        },
+        {
+          "label": "Dívidas",
+          "value": {
+            "cents": 18000,
+            "text": "180,00 €"
+          },
+          "permille": 13,
+          "negative": true
+        }
+      ],
+      "net": {
+        "cents": 1396405,
+        "text": "13.964,05 €"
+      }
+    },
+    {
+      "kind": "bridge",
+      "title": "Ponte entre o saldo inicial e o saldo final",
+      "rows": [
+        {
+          "label": "Saldo inicial",
+          "value": {
+            "cents": 1347805,
+            "text": "13.478,05 €"
+          }
+        },
+        {
+          "label": "(+) Recebimentos",
+          "value": {
+            "cents": 72000,
+            "text": "720,00 €"
+          }
+        },
+        {
+          "label": "(−) Pagamentos",
+          "value": {
+            "cents": 35400,
+            "text": "354,00 €"
+          }
+        },
+        {
+          "label": "Saldo final",
+          "value": {
+            "cents": 1384405,
+            "text": "13.844,05 €"
+          },
+          "emphasis": true
+        },
+        {
+          "label": "Em caixa",
+          "value": {
+            "cents": 57900,
+            "text": "579,00 €"
+          }
+        },
+        {
+          "label": "Em banco",
+          "value": {
+            "cents": 1326505,
+            "text": "13.265,05 €"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "movements",
+      "title": "Movimentos desde o último relatório",
+      "columns": "signed",
+      "rows": [
+        {
+          "data": "08/09/2026",
+          "doc": "R-021",
+          "descricao": "Quotas recebidas (6 membros, regularização)",
+          "atividade": "Funcionamento",
+          "rubrica": "Quotas",
+          "valor": {
+            "cents": 12000,
+            "text": "120,00 €"
+          },
+          "entrada": {
+            "cents": 12000,
+            "text": "120,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "12/09/2026",
+          "doc": "R-022",
+          "descricao": "Atuação · receção ao caloiro",
+          "atividade": "Funcionamento",
+          "rubrica": "Atuações e serenatas",
+          "valor": {
+            "cents": 35000,
+            "text": "350,00 €"
+          },
+          "entrada": {
+            "cents": 35000,
+            "text": "350,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "15/09/2026",
+          "doc": "P-028",
+          "descricao": "Reparação de guitarra",
+          "atividade": "Funcionamento",
+          "rubrica": "Instrumentos e manutenção",
+          "valor": {
+            "cents": -8500,
+            "text": "−85,00 €"
+          },
+          "saida": {
+            "cents": 8500,
+            "text": "85,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "18/09/2026",
+          "doc": "R-023",
+          "descricao": "Patrocinador do 20º CITADÃO (saldo)",
+          "atividade": "20º CITADÃO",
+          "rubrica": "Patrocínios",
+          "valor": {
+            "cents": 25000,
+            "text": "250,00 €"
+          },
+          "entrada": {
+            "cents": 25000,
+            "text": "250,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "22/09/2026",
+          "doc": "P-029",
+          "descricao": "Renovação do seguro do equipamento",
+          "atividade": "Funcionamento",
+          "rubrica": "Seguro",
+          "valor": {
+            "cents": -19850,
+            "text": "−198,50 €"
+          },
+          "saida": {
+            "cents": 19850,
+            "text": "198,50 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "26/09/2026",
+          "doc": "P-030",
+          "descricao": "Reembolso a membro (cordas, julho)",
+          "atividade": "Funcionamento",
+          "rubrica": "Instrumentos e manutenção",
+          "valor": {
+            "cents": -6430,
+            "text": "−64,30 €"
+          },
+          "saida": {
+            "cents": 6430,
+            "text": "64,30 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "30/09/2026",
+          "doc": "P-031",
+          "descricao": "Despesas bancárias de setembro",
+          "atividade": "Funcionamento",
+          "rubrica": "Despesas bancárias",
+          "valor": {
+            "cents": -620,
+            "text": "−6,20 €"
+          },
+          "saida": {
+            "cents": 620,
+            "text": "6,20 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        }
+      ],
+      "footer": [
+        {
+          "label": "Entradas brutas",
+          "value": {
+            "cents": 72000,
+            "text": "720,00 €"
+          }
+        },
+        {
+          "label": "Saídas brutas",
+          "value": {
+            "cents": 35400,
+            "text": "354,00 €"
+          }
+        },
+        {
+          "label": "Recebido (entradas brutas − reembolsos)",
+          "value": {
+            "cents": 72000,
+            "text": "720,00 €"
+          }
+        },
+        {
+          "label": "Pago (saídas brutas − reembolsos)",
+          "value": {
+            "cents": 35400,
+            "text": "354,00 €"
+          }
+        },
+        {
+          "label": "Variação no período",
+          "value": {
+            "cents": 36600,
+            "text": "366,00 €"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "reconciliation",
+      "title": "Reconciliação bancária",
+      "rows": [
+        {
+          "label": "Saldo segundo o extrato bancário",
+          "value": {
+            "cents": 1326505,
+            "text": "13.265,05 €"
+          }
+        },
+        {
+          "label": "Saldo bancário ajustado",
+          "value": {
+            "cents": 1326505,
+            "text": "13.265,05 €"
+          },
+          "emphasis": true
+        },
+        {
+          "label": "Saldo de banco nos livros",
+          "value": {
+            "cents": 1326505,
+            "text": "13.265,05 €"
+          }
+        }
+      ],
+      "difference": {
+        "cents": 0,
+        "text": "0,00 €"
+      }
+    },
+    {
+      "kind": "cashCount",
+      "title": "Contagem de caixa",
+      "rows": [
+        {
+          "label": "Notas de 50,00 €",
+          "qty": "8",
+          "value": {
+            "cents": 40000,
+            "text": "400,00 €"
+          }
+        },
+        {
+          "label": "Notas de 20,00 €",
+          "qty": "5",
+          "value": {
+            "cents": 10000,
+            "text": "100,00 €"
+          }
+        },
+        {
+          "label": "Notas de 10,00 €",
+          "qty": "3",
+          "value": {
+            "cents": 3000,
+            "text": "30,00 €"
+          }
+        },
+        {
+          "label": "Notas de 5,00 €",
+          "qty": "5",
+          "value": {
+            "cents": 2500,
+            "text": "25,00 €"
+          }
+        },
+        {
+          "label": "Moedas de 2,00 €",
+          "qty": "6",
+          "value": {
+            "cents": 1200,
+            "text": "12,00 €"
+          }
+        },
+        {
+          "label": "Moedas de 1,00 €",
+          "qty": "6",
+          "value": {
+            "cents": 600,
+            "text": "6,00 €"
+          }
+        },
+        {
+          "label": "Moedas pequenas",
+          "qty": "",
+          "value": {
+            "cents": 600,
+            "text": "6,00 €"
+          }
+        }
+      ],
+      "total": {
+        "cents": 57900,
+        "text": "579,00 €"
+      },
+      "book": {
+        "cents": 57900,
+        "text": "579,00 €"
+      },
+      "difference": {
+        "cents": 0,
+        "text": "0,00 €"
+      }
+    },
+    {
+      "kind": "pending",
+      "title": "Pendentes na passagem",
+      "refLabel": "Situação a 30/09/2026",
+      "receber": [
+        {
+          "entidade": "Noivos (exemplo)",
+          "descricao": "Atuação em casamento de outubro: sinal por receber",
+          "atividade": "Funcionamento",
+          "registo": "21/09/2026",
+          "valor": {
+            "cents": 30000,
+            "text": "300,00 €"
+          },
+          "notas": "Confirmado por e-mail"
+        }
+      ],
+      "pagar": [
+        {
+          "entidade": "Gráfica (exemplo)",
+          "descricao": "Cartazes do Arraial de outono",
+          "atividade": "Festivais",
+          "registo": "24/09/2026",
+          "valor": {
+            "cents": 18000,
+            "text": "180,00 €"
+          },
+          "notas": "Fatura a emitir"
+        }
+      ],
+      "totals": {
+        "receber": {
+          "cents": 30000,
+          "text": "300,00 €"
+        },
+        "pagar": {
+          "cents": 18000,
+          "text": "180,00 €"
+        }
+      }
+    },
+    {
+      "kind": "text",
+      "title": "Notas / Comentários",
+      "paragraphs": [
+        "Valores, pendentes e acessos conferidos pelas duas direções e pelo Conselho Fiscal."
+      ]
+    },
+    {
+      "kind": "declaration",
+      "title": "Declaração",
+      "paragraphs": [
+        "Declaramos que, em 30/09/2026, os saldos, os valores pendentes e a contagem de caixa indicados neste documento foram conferidos entre Direção 2025/26 (direção cessante) e Direção 2026/27 (direção entrante).",
+        "O Conselho Fiscal acompanhou a conferência e subscreve esta declaração."
+      ]
+    }
+  ],
+  "signatures": [
+    {
+      "title": "Direção cessante",
+      "name": "Direção 2025/26"
+    },
+    {
+      "title": "Direção entrante",
+      "name": "Direção 2026/27"
+    },
+    {
+      "title": "Conselho Fiscal"
+    }
+  ],
+  "trace": {
+    "generatedAt": "2026-10-07T12:00:00Z",
+    "generatedAtLabel": "07/10/2026 12:00",
+    "sources": [
+      {
+        "name": "tesouraria.xlsx",
+        "sha256Short": "17fb76f7fac1"
+      }
+    ],
+    "generatorVersion": "0.1.0",
+    "attachReport": true
+  }
+}

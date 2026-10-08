@@ -1,0 +1,449 @@
+{
+  "schemaVersion": 1,
+  "tipo": "evento",
+  "theme": {
+    "navy": "#1D2F6F",
+    "light": "#F3F5F9",
+    "accentRed": "#B3262E",
+    "accentGold": "#C9A227"
+  },
+  "header": {
+    "org": "TUNADÃO 1998",
+    "subtitle": "Tuna do Instituto Politécnico de Viseu",
+    "title": "Relatório de evento",
+    "periodLabel": "14/03/2026",
+    "lead": "Zumba na Caneca · Movimentos de 03/03/2026 a 18/03/2026"
+  },
+  "sections": [
+    {
+      "kind": "kpis",
+      "cards": [
+        {
+          "label": "Recebido",
+          "value": "2.928 €",
+          "caption": "4 movimentos"
+        },
+        {
+          "label": "Pago",
+          "value": "1.447 €",
+          "caption": "6 movimentos"
+        },
+        {
+          "label": "Resultado",
+          "value": "1.480 €"
+        },
+        {
+          "label": "Por receber",
+          "value": "0 €"
+        },
+        {
+          "label": "Por pagar",
+          "value": "0 €"
+        },
+        {
+          "label": "Resultado previsto",
+          "value": "1.480 €",
+          "caption": "Resultado + por receber − por pagar"
+        }
+      ]
+    },
+    {
+      "kind": "composition",
+      "title": "Composição do recebido",
+      "total": {
+        "cents": 292750,
+        "text": "2.927,50 €"
+      },
+      "segments": [
+        {
+          "label": "Bar",
+          "value": {
+            "cents": 148250,
+            "text": "1.482,50 €"
+          },
+          "permille": 506,
+          "shareText": "51%"
+        },
+        {
+          "label": "Inscrições",
+          "value": {
+            "cents": 123500,
+            "text": "1.235,00 €"
+          },
+          "permille": 422,
+          "shareText": "42%"
+        },
+        {
+          "label": "Patrocínio do evento",
+          "value": {
+            "cents": 15000,
+            "text": "150,00 €"
+          },
+          "permille": 51,
+          "shareText": "5%"
+        },
+        {
+          "label": "Donativos",
+          "value": {
+            "cents": 6000,
+            "text": "60,00 €"
+          },
+          "permille": 20,
+          "shareText": "2%"
+        }
+      ]
+    },
+    {
+      "kind": "composition",
+      "title": "Composição do pago",
+      "total": {
+        "cents": 144740,
+        "text": "1.447,40 €"
+      },
+      "segments": [
+        {
+          "label": "Bebidas e consumíveis",
+          "value": {
+            "cents": 61240,
+            "text": "612,40 €"
+          },
+          "permille": 423,
+          "shareText": "42%"
+        },
+        {
+          "label": "Merchandising e trajes",
+          "value": {
+            "cents": 34200,
+            "text": "342,00 €"
+          },
+          "permille": 236,
+          "shareText": "24%"
+        },
+        {
+          "label": "Outros",
+          "value": {
+            "cents": 20000,
+            "text": "200,00 €"
+          },
+          "permille": 138,
+          "shareText": "14%"
+        },
+        {
+          "label": "Som e luz",
+          "value": {
+            "cents": 18000,
+            "text": "180,00 €"
+          },
+          "permille": 124,
+          "shareText": "12%"
+        },
+        {
+          "label": "Licenças e SPA",
+          "value": {
+            "cents": 6500,
+            "text": "65,00 €"
+          },
+          "permille": 45,
+          "shareText": "5%"
+        },
+        {
+          "label": "Cartazes e impressões",
+          "value": {
+            "cents": 4800,
+            "text": "48,00 €"
+          },
+          "permille": 33,
+          "shareText": "3%"
+        }
+      ]
+    },
+    {
+      "kind": "indicators",
+      "title": "Indicadores",
+      "rows": [
+        {
+          "label": "Inscrições",
+          "value": "247"
+        },
+        {
+          "label": "Por participante",
+          "value": "5,99 €"
+        }
+      ]
+    },
+    {
+      "kind": "text",
+      "title": "Notas / Comentários",
+      "paragraphs": [
+        "O resultado do evento reverte para o 20º CITADÃO. O numerário do evento (2.777,50 € recebidos, 248,00 € pagos em mão) foi depositado no banco a 16/03/2026."
+      ]
+    },
+    {
+      "kind": "movements",
+      "title": "Livro de caixa do evento",
+      "columns": "cashbook",
+      "rows": [
+        {
+          "data": "03/03/2026",
+          "doc": "P-003",
+          "descricao": "Cartazes e impressões",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Cartazes e impressões",
+          "valor": {
+            "cents": -4800,
+            "text": "−48,00 €"
+          },
+          "saida": {
+            "cents": 4800,
+            "text": "48,00 €"
+          },
+          "acumulado": {
+            "cents": -4800,
+            "text": "−48,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "05/03/2026",
+          "doc": "P-004",
+          "descricao": "Canecas personalizadas (300 un.)",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Merchandising e trajes",
+          "valor": {
+            "cents": -34200,
+            "text": "−342,00 €"
+          },
+          "saida": {
+            "cents": 34200,
+            "text": "342,00 €"
+          },
+          "acumulado": {
+            "cents": -39000,
+            "text": "−390,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "10/03/2026",
+          "doc": "R-004",
+          "descricao": "Patrocínio ginásio local",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Patrocínio do evento",
+          "valor": {
+            "cents": 15000,
+            "text": "150,00 €"
+          },
+          "entrada": {
+            "cents": 15000,
+            "text": "150,00 €"
+          },
+          "acumulado": {
+            "cents": -24000,
+            "text": "−240,00 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "13/03/2026",
+          "doc": "P-005",
+          "descricao": "Bebidas e consumíveis",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Bebidas e consumíveis",
+          "valor": {
+            "cents": -61240,
+            "text": "−612,40 €"
+          },
+          "saida": {
+            "cents": 61240,
+            "text": "612,40 €"
+          },
+          "acumulado": {
+            "cents": -85240,
+            "text": "−852,40 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "14/03/2026",
+          "doc": "R-005",
+          "descricao": "Inscrições (247 × 5 €)",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Inscrições",
+          "valor": {
+            "cents": 123500,
+            "text": "1.235,00 €"
+          },
+          "entrada": {
+            "cents": 123500,
+            "text": "1.235,00 €"
+          },
+          "acumulado": {
+            "cents": 38260,
+            "text": "382,60 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "14/03/2026",
+          "doc": "R-006",
+          "descricao": "Receita de bar",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Bar",
+          "valor": {
+            "cents": 148250,
+            "text": "1.482,50 €"
+          },
+          "entrada": {
+            "cents": 148250,
+            "text": "1.482,50 €"
+          },
+          "acumulado": {
+            "cents": 186510,
+            "text": "1.865,10 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "14/03/2026",
+          "doc": "R-007",
+          "descricao": "Donativos na caixa do evento",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Donativos",
+          "valor": {
+            "cents": 6000,
+            "text": "60,00 €"
+          },
+          "entrada": {
+            "cents": 6000,
+            "text": "60,00 €"
+          },
+          "acumulado": {
+            "cents": 192510,
+            "text": "1.925,10 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "14/03/2026",
+          "doc": "P-006",
+          "descricao": "Instrutora de zumba",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Outros",
+          "valor": {
+            "cents": -20000,
+            "text": "−200,00 €"
+          },
+          "saida": {
+            "cents": 20000,
+            "text": "200,00 €"
+          },
+          "acumulado": {
+            "cents": 172510,
+            "text": "1.725,10 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "16/03/2026",
+          "doc": "P-007",
+          "descricao": "Aluguer de som",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Som e luz",
+          "valor": {
+            "cents": -18000,
+            "text": "−180,00 €"
+          },
+          "saida": {
+            "cents": 18000,
+            "text": "180,00 €"
+          },
+          "acumulado": {
+            "cents": 154510,
+            "text": "1.545,10 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        },
+        {
+          "data": "18/03/2026",
+          "doc": "P-008",
+          "descricao": "Licença de ruído e SPA",
+          "atividade": "Zumba na Caneca",
+          "rubrica": "Licenças e SPA",
+          "valor": {
+            "cents": -6500,
+            "text": "−65,00 €"
+          },
+          "saida": {
+            "cents": 6500,
+            "text": "65,00 €"
+          },
+          "acumulado": {
+            "cents": 148010,
+            "text": "1.480,10 €"
+          },
+          "refund": false,
+          "outsideResult": false
+        }
+      ],
+      "footer": [
+        {
+          "label": "Entradas brutas",
+          "value": {
+            "cents": 292750,
+            "text": "2.927,50 €"
+          }
+        },
+        {
+          "label": "Saídas brutas",
+          "value": {
+            "cents": 144740,
+            "text": "1.447,40 €"
+          }
+        },
+        {
+          "label": "Recebido (entradas brutas − reembolsos)",
+          "value": {
+            "cents": 292750,
+            "text": "2.927,50 €"
+          }
+        },
+        {
+          "label": "Pago (saídas brutas − reembolsos)",
+          "value": {
+            "cents": 144740,
+            "text": "1.447,40 €"
+          }
+        }
+      ]
+    }
+  ],
+  "signatures": [
+    {
+      "title": "Coordenação do evento"
+    },
+    {
+      "title": "Tesoureiro(a)"
+    }
+  ],
+  "trace": {
+    "generatedAt": "2026-10-07T12:00:00Z",
+    "generatedAtLabel": "07/10/2026 12:00",
+    "sources": [
+      {
+        "name": "tesouraria.xlsx",
+        "sha256Short": "17fb76f7fac1"
+      }
+    ],
+    "generatorVersion": "0.1.0",
+    "attachReport": true
+  }
+}
