@@ -215,19 +215,24 @@ function budgetRow(
   };
 }
 
+const DESPESA_DESVIO_NOTE =
+  'Nas despesas, desvio positivo significa que se gastou mais do que o orçado.';
+
 export function budgetSections(tables: BudgetTables | null): BudgetSection[] {
   if (tables === null) return [];
   const sides = [
-    ['Receitas: orçado e realizado', tables.receitas],
-    ['Despesas: orçado e realizado', tables.despesas],
+    ['Receitas: orçado e realizado', 'receita', tables.receitas],
+    ['Despesas: orçado e realizado', 'despesa', tables.despesas],
   ] as const;
   return sides
-    .filter(([, table]) => table.rows.length > 0)
-    .map(([title, table]) => ({
+    .filter(([, , table]) => table.rows.length > 0)
+    .map(([title, side, table]) => ({
       kind: 'budget',
       title,
+      side,
       rows: table.rows.map((row) => budgetRow(row.label, row)),
       total: budgetRow('Total', table.total),
+      ...(side === 'despesa' ? { note: DESPESA_DESVIO_NOTE } : {}),
     }));
 }
 

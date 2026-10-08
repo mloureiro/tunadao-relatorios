@@ -98,6 +98,7 @@
     {
       "kind": "budget",
       "title": "Receitas: orçado e realizado",
+      "side": "receita",
       "rows": [
         {
           "label": "Quotas",
@@ -248,6 +249,7 @@
     {
       "kind": "budget",
       "title": "Despesas: orçado e realizado",
+      "side": "despesa",
       "rows": [
         {
           "label": "Produção (som, luz, palco)",
@@ -441,7 +443,8 @@
           "text": "+941,90 €"
         },
         "execucao": "104,4%"
-      }
+      },
+      "note": "Nas despesas, desvio positivo significa que se gastou mais do que o orçado."
     },
     {
       "kind": "byActivity",

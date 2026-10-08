@@ -74,8 +74,10 @@ export interface BudgetRow {
 export interface BudgetSection {
   readonly kind: 'budget';
   readonly title: string;
+  readonly side: 'receita' | 'despesa';
   readonly rows: readonly BudgetRow[];
   readonly total: BudgetRow;
+  readonly note?: string;
 }
 
 export interface ActivityRow {
