@@ -1,4 +1,4 @@
-import helloSample from '@/engine/hello-sample.json';
+import type { TemplateId } from '@/engine/renderer';
 import { createWebRenderer, type WebRenderer } from '@/engine/typst-web';
 import { getState, setState } from './state';
 
@@ -36,15 +36,18 @@ export function startEngine(): Promise<WebRenderer> {
   return warmUp.then(() => active);
 }
 
-export async function renderTestPdf(): Promise<Uint8Array | null> {
+export async function renderReport(
+  templateId: TemplateId,
+  report: unknown,
+): Promise<Uint8Array> {
   try {
     const active = await startEngine();
     setEngine({ status: 'busy' });
-    const { pdf } = await active.render('hello', helloSample);
+    const { pdf } = await active.render(templateId, report);
     setEngine({ status: 'ready' });
     return pdf;
   } catch (error) {
     setEngine({ status: 'error', message: failure(error) });
-    return null;
+    throw error;
   }
 }

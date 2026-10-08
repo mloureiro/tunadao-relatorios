@@ -1,13 +1,13 @@
 const STEPS = ['Dados', 'Relatório', 'PDF'] as const;
 
-export function Stepper() {
+export function Stepper({ current }: { current: number }) {
   return (
     <ol class="stepper" aria-label="Passos">
       {STEPS.map((label, index) => (
         <li
           key={label}
-          class={index === 0 ? 'step step-active' : 'step'}
-          aria-current={index === 0 ? 'step' : undefined}
+          class={index === current ? 'step step-active' : 'step'}
+          aria-current={index === current ? 'step' : undefined}
         >
           <span class="step-number" aria-hidden="true">
             {index + 1}
