@@ -3,6 +3,8 @@ import type {
   Conta,
   Dataset,
   Direcao,
+  Genero,
+  LinhaOrcamento,
   Lists,
   Movimento,
   Pendente,
@@ -142,3 +144,45 @@ export function pendente(overrides: Partial<Pendente> = {}): Pendente {
     ...overrides,
   };
 }
+
+export function linha(
+  overrides: Partial<LinhaOrcamento> & { orcadoCents: number },
+): LinhaOrcamento {
+  const tipo = overrides.tipo ?? 'Entrada';
+  const rubrica =
+    overrides.rubrica ?? (tipo === 'Entrada' ? 'Bilheteira' : 'Licenças e SPA');
+  return {
+    ambito: 'Festival Alfa',
+    tipo,
+    rubrica,
+    subRubrica: rubrica,
+    src: { file: FILE, tab: 'Orçamento', row: nextRow++ },
+    ...overrides,
+  };
+}
+
+export function genero(overrides: Partial<Genero> = {}): Genero {
+  return {
+    data: null,
+    atividade: 'Festival Alfa',
+    tipo: 'Cedência de sala',
+    quantidade: null,
+    emFalta: null,
+    valorEstimadoCents: 10000,
+    src: { file: FILE, tab: 'Géneros', row: nextRow++ },
+    ...overrides,
+  };
+}
+
+export const LISTS_WITH_VIP: Lists = {
+  ...LISTS,
+  subRubricas: [
+    ...LISTS.subRubricas,
+    {
+      subRubrica: 'Bilhetes VIP',
+      rubrica: 'Bilheteira',
+      order: 2,
+      src: { file: FILE, tab: 'Listas', row: 6 },
+    },
+  ],
+};
