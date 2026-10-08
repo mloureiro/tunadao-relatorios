@@ -3,7 +3,7 @@ import { formatMoney } from '@/core/format';
 import type { LoadResult } from '@/core/pipeline';
 import type { ReportTipo } from '@/core/reports';
 import { config } from './config';
-import { renderReport } from './engine';
+import { EngineLoadError, renderReport } from './engine';
 import type { FormApi } from './form-controls';
 import { lisbonDateTime } from './lisbon-time';
 import { PreviewPanel, type GeneratedReport } from './PreviewPanel';
@@ -201,9 +201,11 @@ export function ReportFlow({
       });
       setPreviewing(true);
       onAnnounce('PDF gerado. A pré-visualização está disponível.');
-    } catch {
-      setFailure(GENERIC_FAILURE);
-      onAnnounce(GENERIC_FAILURE);
+    } catch (error) {
+      const message =
+        error instanceof EngineLoadError ? error.message : GENERIC_FAILURE;
+      setFailure(message);
+      onAnnounce(message);
     } finally {
       setGenerating(false);
     }

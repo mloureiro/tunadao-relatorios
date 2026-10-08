@@ -5,12 +5,17 @@ import { getState, setState } from './state';
 const LOAD_FAILURE =
   'Não foi possível carregar o motor de PDF. Verifique a ligação e tente de novo.';
 
+export class EngineLoadError extends Error {
+  constructor() {
+    super(LOAD_FAILURE);
+    this.name = 'EngineLoadError';
+  }
+}
+
+const RENDER_FAILURE = 'Erro interno ao gerar o relatório.';
+
 let renderer: WebRenderer | null = null;
 let warmUp: Promise<void> | null = null;
-
-function failure(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
 
 function setEngine(patch: Partial<ReturnType<typeof getState>['engine']>) {
   setState({ engine: { ...getState().engine, ...patch } });
@@ -29,11 +34,11 @@ export function startEngine(): Promise<WebRenderer> {
       () => {
         setEngine({ status: 'ready' });
       },
-      (error: unknown) => {
+      () => {
         warmUp = null;
         renderer = null;
         setEngine({ status: 'error', message: LOAD_FAILURE });
-        throw error;
+        throw new EngineLoadError();
       },
     );
   }
@@ -51,7 +56,9 @@ export async function renderReport(
     setEngine({ status: 'ready' });
     return pdf;
   } catch (error) {
-    setEngine({ status: 'error', message: failure(error) });
+    if (!(error instanceof EngineLoadError)) {
+      setEngine({ status: 'error', message: RENDER_FAILURE });
+    }
     throw error;
   }
 }

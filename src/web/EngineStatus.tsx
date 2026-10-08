@@ -22,12 +22,5 @@ export function EngineStatus() {
       </footer>
     );
   }
-  if (engine.status === 'error') {
-    return (
-      <footer class="engine">
-        <p role="alert">{engine.message}</p>
-      </footer>
-    );
-  }
   return null;
 }
