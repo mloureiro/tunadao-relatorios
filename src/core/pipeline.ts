@@ -1,3 +1,4 @@
+import type { Config } from './config/schema.ts';
 import type { Dataset } from './dataset/types.ts';
 import { closestTab } from './input/columns.ts';
 import { readCsv } from './input/csv.ts';
@@ -6,6 +7,17 @@ import { readXlsx } from './input/xlsx.ts';
 import { issueMessages, makeIssue, type Issue } from './issues.ts';
 import { normaliseTables } from './normalise/normalise-tables.ts';
 import type { UnresolvedMovimento } from './normalise/movimentos.ts';
+import {
+  buildEvento,
+  buildFiscal,
+  buildLetivo,
+  buildPegada,
+  type BuildContext,
+  type BuildOutput,
+  type ParamsByTipo,
+  type ReportJson,
+  type ReportTipo,
+} from './reports/index.ts';
 import { validateDataset } from './validate/validate-dataset.ts';
 
 export interface InputFile {
@@ -105,4 +117,65 @@ export async function loadDataset(
     ],
     unresolved,
   };
+}
+
+export interface ReportContext {
+  readonly config: Config;
+  readonly now: string;
+  readonly generatorVersion: string;
+}
+
+export type BuildReportResult =
+  | {
+      readonly status: 'report';
+      readonly report: ReportJson;
+      readonly issues: Issue[];
+    }
+  | { readonly status: 'blocked'; readonly issues: Issue[] }
+  | { readonly status: 'failure'; readonly message: string };
+
+type Builder<T extends ReportTipo> = (
+  dataset: Dataset,
+  params: ParamsByTipo[T],
+  config: Config,
+  ctx: BuildContext,
+) => BuildOutput;
+
+const BUILDERS: { [T in ReportTipo]: Builder<T> } = {
+  evento: buildEvento,
+  pegada: buildPegada,
+  letivo: buildLetivo,
+  fiscal: buildFiscal,
+};
+
+const hasErrors = (issues: readonly Issue[]): boolean =>
+  issues.some((issue) => issue.severity === 'error');
+
+export function buildReport<T extends ReportTipo>(
+  tipo: T,
+  loadResult: LoadResult,
+  params: ParamsByTipo[T],
+  ctx: ReportContext,
+): BuildReportResult {
+  if (hasErrors(loadResult.issues)) {
+    return { status: 'blocked', issues: loadResult.issues };
+  }
+
+  let output: BuildOutput;
+  try {
+    output = BUILDERS[tipo](loadResult.dataset, params, ctx.config, {
+      now: ctx.now,
+      sources: loadResult.dataset.sources,
+      generatorVersion: ctx.generatorVersion,
+    });
+  } catch (error) {
+    return {
+      status: 'failure',
+      message: error instanceof Error ? error.message : String(error),
+    };
+  }
+
+  return hasErrors(output.issues)
+    ? { status: 'blocked', issues: output.issues }
+    : { status: 'report', report: output.report, issues: output.issues };
 }
