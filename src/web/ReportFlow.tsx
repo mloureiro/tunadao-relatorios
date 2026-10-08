@@ -5,7 +5,7 @@ import type { ReportTipo } from '@/core/reports';
 import { config } from './config';
 import { EngineLoadError, renderReport } from './engine';
 import type { FormApi } from './form-controls';
-import { lisbonDateTime } from './lisbon-time';
+import { lisbonDateTime } from '@/host/lisbon-time';
 import { PreviewPanel, type GeneratedReport } from './PreviewPanel';
 import { ReportFields } from './ReportFields';
 import {
