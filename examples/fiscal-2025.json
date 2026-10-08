@@ -1,0 +1,936 @@
+{
+  "schemaVersion": 1,
+  "tipo": "fiscal",
+  "theme": {
+    "navy": "#1D2F6F",
+    "light": "#F3F5F9",
+    "accentRed": "#B3262E",
+    "accentGold": "#C9A227"
+  },
+  "header": {
+    "org": "TUNADÃO 1998",
+    "subtitle": "Tuna do Instituto Politécnico de Viseu",
+    "title": "Relatório de fim de ano fiscal",
+    "periodLabel": "01/01/2025 a 31/12/2025",
+    "lead": "Exercício de 2025"
+  },
+  "sections": [
+    {
+      "kind": "kpis",
+      "cards": [
+        {
+          "label": "Saldo inicial",
+          "value": "4.098 €"
+        },
+        {
+          "label": "Recebimentos",
+          "value": "24.445 €",
+          "caption": "22 movimentos"
+        },
+        {
+          "label": "Pagamentos",
+          "value": "22.312 €",
+          "caption": "24 movimentos"
+        },
+        {
+          "label": "Saldo final",
+          "value": "6.232 €",
+          "caption": "Caixa 240 € · Banco 5.992 €"
+        }
+      ]
+    },
+    {
+      "kind": "bridge",
+      "title": "Ponte entre o saldo inicial e o saldo final",
+      "rows": [
+        {
+          "label": "Saldo inicial",
+          "value": {
+            "cents": 409815,
+            "text": "4.098,15 €"
+          }
+        },
+        {
+          "label": "(+) Recebimentos",
+          "value": {
+            "cents": 2444530,
+            "text": "24.445,30 €"
+          }
+        },
+        {
+          "label": "(−) Pagamentos",
+          "value": {
+            "cents": 2231190,
+            "text": "22.311,90 €"
+          }
+        },
+        {
+          "label": "Saldo final",
+          "value": {
+            "cents": 623155,
+            "text": "6.231,55 €"
+          },
+          "emphasis": true
+        },
+        {
+          "label": "Em caixa",
+          "value": {
+            "cents": 24000,
+            "text": "240,00 €"
+          }
+        },
+        {
+          "label": "Em banco",
+          "value": {
+            "cents": 599155,
+            "text": "5.991,55 €"
+          }
+        },
+        {
+          "label": "Saldo conferido com o extrato de 31/12/2025",
+          "value": {
+            "cents": 599155,
+            "text": "5.991,55 €"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "budget",
+      "title": "Receitas: orçado e realizado",
+      "rows": [
+        {
+          "label": "Quotas",
+          "orcado": {
+            "cents": 120000,
+            "text": "1.200,00 €"
+          },
+          "realizado": {
+            "cents": 126000,
+            "text": "1.260,00 €"
+          },
+          "desvio": {
+            "cents": 6000,
+            "text": "+60,00 €"
+          },
+          "execucao": "105,0%"
+        },
+        {
+          "label": "Donativos",
+          "orcado": {
+            "cents": 80000,
+            "text": "800,00 €"
+          },
+          "realizado": {
+            "cents": 85000,
+            "text": "850,00 €"
+          },
+          "desvio": {
+            "cents": 5000,
+            "text": "+50,00 €"
+          },
+          "execucao": "106,3%"
+        },
+        {
+          "label": "Subsídios e apoios",
+          "orcado": {
+            "cents": 450000,
+            "text": "4.500,00 €"
+          },
+          "realizado": {
+            "cents": 450000,
+            "text": "4.500,00 €"
+          },
+          "desvio": {
+            "cents": 0,
+            "text": "0,00 €"
+          },
+          "execucao": "100,0%"
+        },
+        {
+          "label": "Atuações e serenatas",
+          "orcado": {
+            "cents": 360000,
+            "text": "3.600,00 €"
+          },
+          "realizado": {
+            "cents": 342000,
+            "text": "3.420,00 €"
+          },
+          "desvio": {
+            "cents": -18000,
+            "text": "−180,00 €"
+          },
+          "execucao": "95,0%"
+        },
+        {
+          "label": "Inscrições e bilheteira",
+          "orcado": {
+            "cents": 600000,
+            "text": "6.000,00 €"
+          },
+          "realizado": {
+            "cents": 618000,
+            "text": "6.180,00 €"
+          },
+          "desvio": {
+            "cents": 18000,
+            "text": "+180,00 €"
+          },
+          "execucao": "103,0%"
+        },
+        {
+          "label": "Bar e merchandising",
+          "orcado": {
+            "cents": 550000,
+            "text": "5.500,00 €"
+          },
+          "realizado": {
+            "cents": 594000,
+            "text": "5.940,00 €"
+          },
+          "desvio": {
+            "cents": 44000,
+            "text": "+440,00 €"
+          },
+          "execucao": "108,0%"
+        },
+        {
+          "label": "Patrocínios",
+          "orcado": {
+            "cents": 250000,
+            "text": "2.500,00 €"
+          },
+          "realizado": {
+            "cents": 220000,
+            "text": "2.200,00 €"
+          },
+          "desvio": {
+            "cents": -30000,
+            "text": "−300,00 €"
+          },
+          "execucao": "88,0%"
+        },
+        {
+          "label": "Outros recebimentos",
+          "orcado": {
+            "cents": 10000,
+            "text": "100,00 €"
+          },
+          "realizado": {
+            "cents": 9530,
+            "text": "95,30 €"
+          },
+          "desvio": {
+            "cents": -470,
+            "text": "−4,70 €"
+          },
+          "execucao": "95,3%"
+        }
+      ],
+      "total": {
+        "label": "Total",
+        "orcado": {
+          "cents": 2420000,
+          "text": "24.200,00 €"
+        },
+        "realizado": {
+          "cents": 2444530,
+          "text": "24.445,30 €"
+        },
+        "desvio": {
+          "cents": 24530,
+          "text": "+245,30 €"
+        },
+        "execucao": "101,0%"
+      }
+    },
+    {
+      "kind": "budget",
+      "title": "Despesas: orçado e realizado",
+      "rows": [
+        {
+          "label": "Produção (som, luz, palco)",
+          "orcado": {
+            "cents": 620000,
+            "text": "6.200,00 €"
+          },
+          "realizado": {
+            "cents": 635000,
+            "text": "6.350,00 €"
+          },
+          "desvio": {
+            "cents": 15000,
+            "text": "+150,00 €"
+          },
+          "execucao": "102,4%"
+        },
+        {
+          "label": "Alimentação e alojamento",
+          "orcado": {
+            "cents": 460000,
+            "text": "4.600,00 €"
+          },
+          "realizado": {
+            "cents": 487000,
+            "text": "4.870,00 €"
+          },
+          "desvio": {
+            "cents": 27000,
+            "text": "+270,00 €"
+          },
+          "execucao": "105,9%"
+        },
+        {
+          "label": "Compras para o bar",
+          "orcado": {
+            "cents": 300000,
+            "text": "3.000,00 €"
+          },
+          "realizado": {
+            "cents": 321560,
+            "text": "3.215,60 €"
+          },
+          "desvio": {
+            "cents": 21560,
+            "text": "+215,60 €"
+          },
+          "execucao": "107,2%"
+        },
+        {
+          "label": "Deslocações",
+          "orcado": {
+            "cents": 300000,
+            "text": "3.000,00 €"
+          },
+          "realizado": {
+            "cents": 294000,
+            "text": "2.940,00 €"
+          },
+          "desvio": {
+            "cents": -6000,
+            "text": "−60,00 €"
+          },
+          "execucao": "98,0%"
+        },
+        {
+          "label": "Prémios e troféus",
+          "orcado": {
+            "cents": 80000,
+            "text": "800,00 €"
+          },
+          "realizado": {
+            "cents": 78000,
+            "text": "780,00 €"
+          },
+          "desvio": {
+            "cents": -2000,
+            "text": "−20,00 €"
+          },
+          "execucao": "97,5%"
+        },
+        {
+          "label": "Instrumentos e manutenção",
+          "orcado": {
+            "cents": 90000,
+            "text": "900,00 €"
+          },
+          "realizado": {
+            "cents": 112000,
+            "text": "1.120,00 €"
+          },
+          "desvio": {
+            "cents": 22000,
+            "text": "+220,00 €"
+          },
+          "execucao": "124,4%"
+        },
+        {
+          "label": "Merchandising e trajes",
+          "orcado": {
+            "cents": 130000,
+            "text": "1.300,00 €"
+          },
+          "realizado": {
+            "cents": 145000,
+            "text": "1.450,00 €"
+          },
+          "desvio": {
+            "cents": 15000,
+            "text": "+150,00 €"
+          },
+          "execucao": "111,5%"
+        },
+        {
+          "label": "Comunicação e gráfica",
+          "orcado": {
+            "cents": 60000,
+            "text": "600,00 €"
+          },
+          "realizado": {
+            "cents": 61000,
+            "text": "610,00 €"
+          },
+          "desvio": {
+            "cents": 1000,
+            "text": "+10,00 €"
+          },
+          "execucao": "101,7%"
+        },
+        {
+          "label": "Seguros e despesas bancárias",
+          "orcado": {
+            "cents": 42000,
+            "text": "420,00 €"
+          },
+          "realizado": {
+            "cents": 41240,
+            "text": "412,40 €"
+          },
+          "desvio": {
+            "cents": -760,
+            "text": "−7,60 €"
+          },
+          "execucao": "98,2%"
+        },
+        {
+          "label": "Taxas e licenças",
+          "orcado": {
+            "cents": 40000,
+            "text": "400,00 €"
+          },
+          "realizado": {
+            "cents": 39500,
+            "text": "395,00 €"
+          },
+          "desvio": {
+            "cents": -500,
+            "text": "−5,00 €"
+          },
+          "execucao": "98,8%"
+        },
+        {
+          "label": "Outros pagamentos",
+          "orcado": {
+            "cents": 15000,
+            "text": "150,00 €"
+          },
+          "realizado": {
+            "cents": 16890,
+            "text": "168,90 €"
+          },
+          "desvio": {
+            "cents": 1890,
+            "text": "+18,90 €"
+          },
+          "execucao": "112,6%"
+        }
+      ],
+      "total": {
+        "label": "Total",
+        "orcado": {
+          "cents": 2137000,
+          "text": "21.370,00 €"
+        },
+        "realizado": {
+          "cents": 2231190,
+          "text": "22.311,90 €"
+        },
+        "desvio": {
+          "cents": 94190,
+          "text": "+941,90 €"
+        },
+        "execucao": "104,4%"
+      }
+    },
+    {
+      "kind": "byActivity",
+      "title": "Resultado por atividade",
+      "rows": [
+        {
+          "atividade": "Funcionamento",
+          "recebido": {
+            "cents": 612530,
+            "text": "6.125,30 €"
+          },
+          "pago": {
+            "cents": 344130,
+            "text": "3.441,30 €"
+          },
+          "resultado": {
+            "cents": 268400,
+            "text": "2.684,00 €"
+          }
+        },
+        {
+          "atividade": "Zumba na Caneca 2025",
+          "recebido": {
+            "cents": 310000,
+            "text": "3.100,00 €"
+          },
+          "pago": {
+            "cents": 177500,
+            "text": "1.775,00 €"
+          },
+          "resultado": {
+            "cents": 132500,
+            "text": "1.325,00 €"
+          }
+        },
+        {
+          "atividade": "19º CITADÃO",
+          "recebido": {
+            "cents": 1402000,
+            "text": "14.020,00 €"
+          },
+          "pago": {
+            "cents": 1364560,
+            "text": "13.645,60 €"
+          },
+          "resultado": {
+            "cents": 37440,
+            "text": "374,40 €"
+          }
+        },
+        {
+          "atividade": "Festivais",
+          "recebido": {
+            "cents": 120000,
+            "text": "1.200,00 €"
+          },
+          "pago": {
+            "cents": 345000,
+            "text": "3.450,00 €"
+          },
+          "resultado": {
+            "cents": -225000,
+            "text": "−2.250,00 €"
+          }
+        }
+      ],
+      "total": {
+        "recebido": {
+          "cents": 2444530,
+          "text": "24.445,30 €"
+        },
+        "pago": {
+          "cents": 2231190,
+          "text": "22.311,90 €"
+        },
+        "resultado": {
+          "cents": 213340,
+          "text": "2.133,40 €"
+        }
+      }
+    },
+    {
+      "kind": "pending",
+      "title": "Pendentes a 31 de dezembro",
+      "refLabel": "Situação a 31/12/2025",
+      "receber": [
+        {
+          "entidade": "Câmara Municipal",
+          "descricao": "Apoio ao 19º CITADÃO: 2.ª tranche (Protocolo 2025)",
+          "atividade": "Funcionamento",
+          "registo": "15/04/2025",
+          "valor": {
+            "cents": 100000,
+            "text": "1.000,00 €"
+          }
+        }
+      ],
+      "pagar": [
+        {
+          "entidade": "Fornecedor de som",
+          "descricao": "Saldo do Arraial 2025 (fatura FT 2025/311)",
+          "atividade": "Festivais",
+          "registo": "25/08/2025",
+          "valor": {
+            "cents": 45000,
+            "text": "450,00 €"
+          }
+        }
+      ],
+      "totals": {
+        "receber": {
+          "cents": 100000,
+          "text": "1.000,00 €"
+        },
+        "pagar": {
+          "cents": 45000,
+          "text": "450,00 €"
+        }
+      }
+    },
+    {
+      "kind": "yearComparison",
+      "title": "Comparação com o período homólogo",
+      "status": "ok",
+      "labels": [
+        "2024",
+        "2025"
+      ],
+      "rows": [
+        {
+          "label": "Saldo inicial",
+          "kind": "saldo",
+          "previous": "2.058,60 €",
+          "current": "4.098,15 €",
+          "variation": "+2.039,55 €"
+        },
+        {
+          "label": "Quotas",
+          "kind": "receita",
+          "previous": "1.180,00 €",
+          "current": "1.260,00 €",
+          "variation": "+80,00 €"
+        },
+        {
+          "label": "Donativos",
+          "kind": "receita",
+          "previous": "620,00 €",
+          "current": "850,00 €",
+          "variation": "+230,00 €"
+        },
+        {
+          "label": "Subsídios e apoios",
+          "kind": "receita",
+          "previous": "4.000,00 €",
+          "current": "4.500,00 €",
+          "variation": "+500,00 €"
+        },
+        {
+          "label": "Atuações e serenatas",
+          "kind": "receita",
+          "previous": "2.980,00 €",
+          "current": "3.420,00 €",
+          "variation": "+440,00 €"
+        },
+        {
+          "label": "Inscrições e bilheteira",
+          "kind": "receita",
+          "previous": "5.710,00 €",
+          "current": "6.180,00 €",
+          "variation": "+470,00 €"
+        },
+        {
+          "label": "Bar e merchandising",
+          "kind": "receita",
+          "previous": "5.320,00 €",
+          "current": "5.940,00 €",
+          "variation": "+620,00 €"
+        },
+        {
+          "label": "Patrocínios",
+          "kind": "receita",
+          "previous": "1.850,00 €",
+          "current": "2.200,00 €",
+          "variation": "+350,00 €"
+        },
+        {
+          "label": "Outros recebimentos",
+          "kind": "receita",
+          "previous": "40,00 €",
+          "current": "95,30 €",
+          "variation": "+55,30 €"
+        },
+        {
+          "label": "Total recebido",
+          "kind": "total",
+          "previous": "21.700,00 €",
+          "current": "24.445,30 €",
+          "variation": "+2.745,30 €"
+        },
+        {
+          "label": "Produção (som, luz, palco)",
+          "kind": "despesa",
+          "previous": "5.920,00 €",
+          "current": "6.350,00 €",
+          "variation": "+430,00 €"
+        },
+        {
+          "label": "Alimentação e alojamento",
+          "kind": "despesa",
+          "previous": "4.410,00 €",
+          "current": "4.870,00 €",
+          "variation": "+460,00 €"
+        },
+        {
+          "label": "Compras para o bar",
+          "kind": "despesa",
+          "previous": "2.960,00 €",
+          "current": "3.215,60 €",
+          "variation": "+255,60 €"
+        },
+        {
+          "label": "Deslocações",
+          "kind": "despesa",
+          "previous": "2.610,00 €",
+          "current": "2.940,00 €",
+          "variation": "+330,00 €"
+        },
+        {
+          "label": "Prémios e troféus",
+          "kind": "despesa",
+          "previous": "720,00 €",
+          "current": "780,00 €",
+          "variation": "+60,00 €"
+        },
+        {
+          "label": "Instrumentos e manutenção",
+          "kind": "despesa",
+          "previous": "640,00 €",
+          "current": "1.120,00 €",
+          "variation": "+480,00 €"
+        },
+        {
+          "label": "Merchandising e trajes",
+          "kind": "despesa",
+          "previous": "980,00 €",
+          "current": "1.450,00 €",
+          "variation": "+470,00 €"
+        },
+        {
+          "label": "Comunicação e gráfica",
+          "kind": "despesa",
+          "previous": "540,00 €",
+          "current": "610,00 €",
+          "variation": "+70,00 €"
+        },
+        {
+          "label": "Seguros e despesas bancárias",
+          "kind": "despesa",
+          "previous": "398,10 €",
+          "current": "412,40 €",
+          "variation": "+14,30 €"
+        },
+        {
+          "label": "Taxas e licenças",
+          "kind": "despesa",
+          "previous": "360,00 €",
+          "current": "395,00 €",
+          "variation": "+35,00 €"
+        },
+        {
+          "label": "Outros pagamentos",
+          "kind": "despesa",
+          "previous": "122,35 €",
+          "current": "168,90 €",
+          "variation": "+46,55 €"
+        },
+        {
+          "label": "Total pago",
+          "kind": "total",
+          "previous": "19.660,45 €",
+          "current": "22.311,90 €",
+          "variation": "+2.651,45 €"
+        },
+        {
+          "label": "Resultado",
+          "kind": "total",
+          "previous": "2.039,55 €",
+          "current": "2.133,40 €",
+          "variation": "+93,85 €"
+        },
+        {
+          "label": "Saldo final",
+          "kind": "saldo",
+          "previous": "4.098,15 €",
+          "current": "6.231,55 €",
+          "variation": "+2.133,40 €"
+        }
+      ],
+      "bars": [
+        {
+          "label": "Quotas",
+          "side": "receita",
+          "previousText": "1.180,00 €",
+          "currentText": "1.260,00 €",
+          "previousPermille": 186,
+          "currentPermille": 198
+        },
+        {
+          "label": "Donativos",
+          "side": "receita",
+          "previousText": "620,00 €",
+          "currentText": "850,00 €",
+          "previousPermille": 98,
+          "currentPermille": 134
+        },
+        {
+          "label": "Subsídios e apoios",
+          "side": "receita",
+          "previousText": "4.000,00 €",
+          "currentText": "4.500,00 €",
+          "previousPermille": 630,
+          "currentPermille": 709
+        },
+        {
+          "label": "Atuações e serenatas",
+          "side": "receita",
+          "previousText": "2.980,00 €",
+          "currentText": "3.420,00 €",
+          "previousPermille": 469,
+          "currentPermille": 539
+        },
+        {
+          "label": "Inscrições e bilheteira",
+          "side": "receita",
+          "previousText": "5.710,00 €",
+          "currentText": "6.180,00 €",
+          "previousPermille": 899,
+          "currentPermille": 973
+        },
+        {
+          "label": "Bar e merchandising",
+          "side": "receita",
+          "previousText": "5.320,00 €",
+          "currentText": "5.940,00 €",
+          "previousPermille": 838,
+          "currentPermille": 935
+        },
+        {
+          "label": "Patrocínios",
+          "side": "receita",
+          "previousText": "1.850,00 €",
+          "currentText": "2.200,00 €",
+          "previousPermille": 291,
+          "currentPermille": 346
+        },
+        {
+          "label": "Outros recebimentos",
+          "side": "receita",
+          "previousText": "40,00 €",
+          "currentText": "95,30 €",
+          "previousPermille": 6,
+          "currentPermille": 15
+        },
+        {
+          "label": "Produção (som, luz, palco)",
+          "side": "despesa",
+          "previousText": "5.920,00 €",
+          "currentText": "6.350,00 €",
+          "previousPermille": 932,
+          "currentPermille": 1000
+        },
+        {
+          "label": "Alimentação e alojamento",
+          "side": "despesa",
+          "previousText": "4.410,00 €",
+          "currentText": "4.870,00 €",
+          "previousPermille": 694,
+          "currentPermille": 767
+        },
+        {
+          "label": "Compras para o bar",
+          "side": "despesa",
+          "previousText": "2.960,00 €",
+          "currentText": "3.215,60 €",
+          "previousPermille": 466,
+          "currentPermille": 506
+        },
+        {
+          "label": "Deslocações",
+          "side": "despesa",
+          "previousText": "2.610,00 €",
+          "currentText": "2.940,00 €",
+          "previousPermille": 411,
+          "currentPermille": 463
+        },
+        {
+          "label": "Prémios e troféus",
+          "side": "despesa",
+          "previousText": "720,00 €",
+          "currentText": "780,00 €",
+          "previousPermille": 113,
+          "currentPermille": 123
+        },
+        {
+          "label": "Instrumentos e manutenção",
+          "side": "despesa",
+          "previousText": "640,00 €",
+          "currentText": "1.120,00 €",
+          "previousPermille": 101,
+          "currentPermille": 176
+        },
+        {
+          "label": "Merchandising e trajes",
+          "side": "despesa",
+          "previousText": "980,00 €",
+          "currentText": "1.450,00 €",
+          "previousPermille": 154,
+          "currentPermille": 228
+        },
+        {
+          "label": "Comunicação e gráfica",
+          "side": "despesa",
+          "previousText": "540,00 €",
+          "currentText": "610,00 €",
+          "previousPermille": 85,
+          "currentPermille": 96
+        },
+        {
+          "label": "Seguros e despesas bancárias",
+          "side": "despesa",
+          "previousText": "398,10 €",
+          "currentText": "412,40 €",
+          "previousPermille": 63,
+          "currentPermille": 65
+        },
+        {
+          "label": "Taxas e licenças",
+          "side": "despesa",
+          "previousText": "360,00 €",
+          "currentText": "395,00 €",
+          "previousPermille": 57,
+          "currentPermille": 62
+        },
+        {
+          "label": "Outros pagamentos",
+          "side": "despesa",
+          "previousText": "122,35 €",
+          "currentText": "168,90 €",
+          "previousPermille": 19,
+          "currentPermille": 27
+        }
+      ]
+    },
+    {
+      "kind": "text",
+      "title": "Parecer do Conselho Fiscal",
+      "paragraphs": [
+        "O Conselho Fiscal verificou os mapas, os extratos bancários e os documentos de suporte e emite parecer favorável à aprovação das contas de 2025."
+      ]
+    },
+    {
+      "kind": "text",
+      "title": "Notas / Comentários",
+      "paragraphs": [
+        "Resultado de caixa positivo, com o saldo bancário conferido com o extrato de 31/12/2025."
+      ]
+    }
+  ],
+  "signatures": [
+    {
+      "title": "Presidente da Direção"
+    },
+    {
+      "title": "Tesoureiro(a)"
+    },
+    {
+      "title": "Presidente do Conselho Fiscal"
+    }
+  ],
+  "trace": {
+    "generatedAt": "2026-10-07T12:00:00Z",
+    "generatedAtLabel": "07/10/2026 12:00",
+    "sources": [
+      {
+        "name": "tesouraria.xlsx",
+        "sha256Short": "17fb76f7fac1"
+      }
+    ],
+    "generatorVersion": "0.1.0",
+    "attachReport": true
+  }
+}
