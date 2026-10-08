@@ -8,6 +8,7 @@ import {
 import type { ColumnMapping } from '@/core/input/csv';
 import { loadDataset, type InputFile } from '@/core/pipeline';
 import { startEngine } from './engine';
+import { UpdateNotice } from './UpdateNotice';
 import { IssuesPanel } from './IssuesPanel';
 import { prepareInputs, readInputFiles, selectionProblem } from './load-files';
 import { MappingPanel } from './MappingPanel';
@@ -169,6 +170,8 @@ export function App() {
       <p role="status" class="visually-hidden">
         {reportAnnouncement === '' ? announcement : reportAnnouncement}
       </p>
+
+      <UpdateNotice />
 
       <main>
         {inReport ? (

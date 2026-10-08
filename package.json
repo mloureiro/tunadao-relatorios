@@ -17,7 +17,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:visual": "tsx tests/visual/run.ts",
-    "test:e2e:deployed": "playwright test smoke engine",
+    "test:e2e:deployed": "playwright test smoke engine offline",
     "build": "vite build",
     "dev": "vite",
     "preview": "vite preview",
