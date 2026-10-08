@@ -1,5 +1,5 @@
 import type { Dataset, Direcao, Lists, SourceRef } from '../dataset/types.ts';
-import { issueMessages, makeIssue, type Issue } from '../issues.ts';
+import { didYouMean, issueMessages, makeIssue, type Issue } from '../issues.ts';
 import type { UnresolvedMovimento } from '../normalise/movimentos.ts';
 import { closest } from '../text.ts';
 
@@ -55,8 +55,8 @@ function subRubricaSuggestion(
     const names = elsewhere.map((name) => `"${name}"`).join(', ');
     return `A sub-rubrica "${subRubrica}" existe na rubrica ${names}.`;
   }
-  return (
-    closest(subRubrica, index.subsOfRubrica.get(rubrica) ?? []) ?? undefined
+  return didYouMean(
+    closest(subRubrica, index.subsOfRubrica.get(rubrica) ?? []),
   );
 }
 
@@ -73,7 +73,7 @@ function checkRubrica(
         'unknown-rubrica',
         issueMessages['unknown-rubrica'](rubrica, null),
         at(src, 'Rubrica'),
-        closest(rubrica, [...index.rubricas.keys()]) ?? undefined,
+        didYouMean(closest(rubrica, [...index.rubricas.keys()])),
       ),
     );
     return;
@@ -105,7 +105,7 @@ function checkAtividade(
       'unknown-atividade',
       issueMessages['unknown-atividade'](atividade),
       at(src, 'Atividade'),
-      closest(atividade, [...index.atividades]) ?? undefined,
+      didYouMean(closest(atividade, [...index.atividades])),
     ),
   );
 }
@@ -122,7 +122,7 @@ function checkMeio(
       'unknown-meio',
       issueMessages['unknown-meio'](meio),
       at(src, 'Meio'),
-      closest(meio, [...index.meios]) ?? undefined,
+      didYouMean(closest(meio, [...index.meios])),
     ),
   );
 }
@@ -164,7 +164,7 @@ export function membershipIssues(
         'unknown-rubrica',
         issueMessages['unknown-rubrica'](def.rubrica, null),
         at(def.src, 'Rubrica'),
-        closest(def.rubrica, [...index.rubricas.keys()]) ?? undefined,
+        didYouMean(closest(def.rubrica, [...index.rubricas.keys()])),
       ),
     );
   }

@@ -175,3 +175,7 @@ export function makeIssue(
     ...(suggestion === undefined ? {} : { suggestion }),
   };
 }
+
+export function didYouMean(candidate: string | null): string | undefined {
+  return candidate === null ? undefined : `Quis dizer "${candidate}"?`;
+}

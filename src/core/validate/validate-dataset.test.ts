@@ -293,7 +293,7 @@ describe('validateDataset()', () => {
           code: 'unknown-rubrica',
           tab: 'Movimentos',
           column: 'Rubrica',
-          suggestion: 'Licenças e SPA',
+          suggestion: 'Quis dizer "Licenças e SPA"?',
         },
       ]);
     });
@@ -335,7 +335,7 @@ describe('validateDataset()', () => {
       });
 
       expect(validateDataset(dataset, [])).toMatchObject([
-        { code: 'unknown-rubrica', suggestion: 'Bilhetes' },
+        { code: 'unknown-rubrica', suggestion: 'Quis dizer "Bilhetes"?' },
       ]);
     });
 
@@ -392,7 +392,11 @@ describe('validateDataset()', () => {
       });
 
       expect(validateDataset(dataset, [])).toMatchObject([
-        { code: 'unknown-atividade', tab: 'Pendentes', suggestion: 'Serenata' },
+        {
+          code: 'unknown-atividade',
+          tab: 'Pendentes',
+          suggestion: 'Quis dizer "Serenata"?',
+        },
         { code: 'unknown-atividade', tab: 'Géneros', row: 3 },
       ]);
     });
@@ -419,7 +423,7 @@ describe('validateDataset()', () => {
           code: 'unknown-rubrica',
           tab: 'Listas',
           row: 9,
-          suggestion: 'Bilheteira',
+          suggestion: 'Quis dizer "Bilheteira"?',
         },
       ]);
     });
@@ -454,9 +458,9 @@ describe('validateDataset()', () => {
       expect(
         issues.map((issue) => [issue.code, issue.row, issue.suggestion]),
       ).toEqual([
-        ['unknown-rubrica', 6, 'Licenças e SPA'],
-        ['unknown-atividade', 6, 'Serenata'],
-        ['unknown-meio', 6, 'Banco'],
+        ['unknown-rubrica', 6, 'Quis dizer "Licenças e SPA"?'],
+        ['unknown-atividade', 6, 'Quis dizer "Serenata"?'],
+        ['unknown-meio', 6, 'Quis dizer "Banco"?'],
       ]);
     });
 
@@ -469,7 +473,7 @@ describe('validateDataset()', () => {
         {
           code: 'unknown-rubrica',
           column: 'Sub-rubrica',
-          suggestion: 'Bilhetes',
+          suggestion: 'Quis dizer "Bilhetes"?',
         },
       ]);
     });
