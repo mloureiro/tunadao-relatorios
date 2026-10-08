@@ -177,6 +177,10 @@ e responde só a pedidos da própria origem; os restantes seguem para a rede. A 
 a página mostra «Nova versão disponível» e, ao carregar em «Recarregar», o worker novo assume e a página recarrega.
 Sem esse clique, o worker novo assume quando o separador for fechado e reaberto.
 
+O motor de PDF começa a carregar quando o navegador está livre. Na primeira visita (ainda sem service worker a controlar a
+página) espera que o worker esteja ativo, para que o wasm seja descarregado uma só vez, pela pré-colocação em cache; se o
+registo falhar, carrega na mesma.
+
 O Playwright WebKit não consegue simular «offline» numa página servida por um service worker, por isso o percurso
 offline corre em chromium e firefox e o webkit só verifica a cache. O Safari deve ser confirmado à mão no
 endereço publicado.
