@@ -255,6 +255,7 @@
     {
       "kind": "budget",
       "title": "Receitas: orçado e realizado",
+      "side": "receita",
       "rows": [
         {
           "label": "Apoio CMV",
@@ -405,6 +406,7 @@
     {
       "kind": "budget",
       "title": "Despesas: orçado e realizado",
+      "side": "despesa",
       "rows": [
         {
           "label": "Som e luz",
@@ -614,7 +616,8 @@
           "text": "+392,00 €"
         },
         "execucao": "102,5%"
-      }
+      },
+      "note": "Nas despesas, desvio positivo significa que se gastou mais do que o orçado."
     },
     {
       "kind": "indicators",

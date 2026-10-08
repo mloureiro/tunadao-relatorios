@@ -153,6 +153,31 @@ describe('buildEvento()', () => {
     expect(other.total.orcado.cents).toBe(777);
   });
 
+  it('tags each budget table with its side and explains the deviation sign only for expenses', () => {
+    const dataset = emptyDataset({
+      movimentos,
+      orcamento: [
+        linha({ ambito: 'Festival Alfa', orcadoCents: 12000 }),
+        linha({
+          ambito: 'Festival Alfa',
+          tipo: 'Saída',
+          rubrica: 'Licenças e SPA',
+          orcadoCents: 400,
+        }),
+      ],
+    });
+    const { report } = build(dataset);
+
+    const receitas = budgetOf(report, 'Receitas: orçado e realizado');
+    const despesas = budgetOf(report, 'Despesas: orçado e realizado');
+
+    expect([receitas.side, receitas.note]).toEqual(['receita', undefined]);
+    expect([despesas.side, despesas.note]).toEqual([
+      'despesa',
+      'Nas despesas, desvio positivo significa que se gastou mais do que o orçado.',
+    ]);
+  });
+
   it('labels a one-day event with a single date and the lead with the movement span', () => {
     const { report } = build(emptyDataset({ movimentos }), {
       eventoInicio: '2026-05-01',
