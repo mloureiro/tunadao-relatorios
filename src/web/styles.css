@@ -20,19 +20,20 @@
 }
 
 :root {
-  --paper: #eef2ea;
-  --sheet: #fbfcf8;
-  --ink: #1c2b2a;
-  --ink-soft: #4a5d5a;
-  --rule: #c5d3c7;
-  --ruled: #dfe8e0;
-  --margin: #b3243b;
-  --ok: #1d6a47;
-  --ok-bg: #deefe4;
+  --paper: #f3f5f9;
+  --sheet: #ffffff;
+  --ink: #1d2f6f;
+  --ink-soft: #4a5470;
+  --rule: #b9bec9;
+  --margin: #b3262e;
+  --ok: #0a7a3d;
+  --ok-bg: #ddefe4;
   --warn: #6f4a00;
   --warn-bg: #fbefce;
   --err: #9a1a2e;
   --err-bg: #fae3e6;
+  --head-bg: #e3e8f4;
+  --disabled-bg: #dce0e8;
   --focus: #1a4fb0;
   --radius: 6px;
   --font-body: 'Lato', 'Segoe UI', system-ui, sans-serif;
@@ -187,21 +188,9 @@ main > section {
   min-height: 11rem;
   padding: 1.5rem 1.5rem 1.5rem 4.25rem;
   background-color: var(--sheet);
-  background-image:
-    linear-gradient(var(--margin), var(--margin)),
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 1.9rem,
-      var(--ruled) 1.9rem,
-      var(--ruled) calc(1.9rem + 1px)
-    );
-  background-size:
-    2px 100%,
-    100% 100%;
-  background-position:
-    3rem 0,
-    0 0;
+  background-image: linear-gradient(var(--margin), var(--margin));
+  background-size: 2px 100%;
+  background-position: 3rem 0;
   background-repeat: no-repeat;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
@@ -250,12 +239,12 @@ main > section {
 }
 
 .button:hover:not(:disabled) {
-  background: #0f1918;
+  background: #14214f;
 }
 
 .button:disabled {
-  background: var(--rule);
-  border-color: var(--rule);
+  background: var(--disabled-bg);
+  border-color: var(--disabled-bg);
   color: var(--ink-soft);
   cursor: not-allowed;
 }
@@ -415,7 +404,7 @@ table.issues td {
 }
 
 table.issues th {
-  background: #e3ebe2;
+  background: var(--head-bg);
   font-weight: 700;
   white-space: nowrap;
 }

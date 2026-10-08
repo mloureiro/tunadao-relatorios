@@ -28,7 +28,7 @@ export function IssuesPanel({ issues, valid, blockedByMapping }: Props) {
   return (
     <section class="validation" aria-labelledby="validacao-titulo">
       <h2 id="validacao-titulo">Validação</h2>
-      <div class="summary" role="status">
+      <div class="summary">
         {valid && <strong class="badge-ok">Dados válidos</strong>}
         {blockedByMapping && (
           <strong class="badge-wait">Falta associar as colunas</strong>
