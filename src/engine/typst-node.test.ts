@@ -76,7 +76,16 @@ describe('createNodeRenderer', () => {
   });
 
   it('rejects when the template cannot be compiled', async () => {
-    await expect(renderer.render('pegada', helloSample)).rejects.toThrow(
+    const withoutPegada = await createNodeRenderer({
+      manifest: {
+        ...defaultManifest,
+        templates: defaultManifest.templates.filter(
+          (t) => !t.endsWith('pegada.typ'),
+        ),
+      },
+    });
+
+    await expect(withoutPegada.render('pegada', helloSample)).rejects.toThrow(
       /error: \/templates\/pegada\.typ: failed to load file/,
     );
   });

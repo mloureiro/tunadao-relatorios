@@ -1,5 +1,5 @@
-#import "/templates/lib/page.typ": green, light, muted, navy, red, report, rule-grey
-#import "/templates/lib/charts.typ": composition-bar, composition-legend
+#import "/templates/lib/page.typ": green, light, muted, navy, red, page-top, report, rule-grey, theme
+#import "/templates/lib/charts.typ": composition-bar, composition-legend, grouped-bars, net-label, position-bar, position-legend
 
 #let short-table-rows = 15
 
@@ -11,9 +11,9 @@
 
 #let head-cell(content) = table.cell(
   stroke: (bottom: 0.8pt + navy),
-)[#text(size: 8pt, weight: "bold", fill: muted, tracking: 0.3pt, upper(content))]
+)[#text(size: 8pt, weight: "bold", fill: muted, tracking: 0.3pt, if content.find(regex("\\d")) == none { upper(content) } else { content })]
 
-#let styled-table(columns, align, headers, ..cells) = {
+#let styled-table(columns, align, headers, header: true, ..cells) = {
   set text(size: 8.5pt)
   set table.cell(breakable: false)
   table(
@@ -21,9 +21,29 @@
     align: (x, y) => align.at(x),
     stroke: (x, y) => (bottom: 0.4pt + rule-grey),
     inset: (x: 4pt, y: 5pt),
-    table.header(..headers.map(head-cell)),
+    ..if header { (table.header(..headers.map(head-cell)),) } else { () },
     ..cells,
   )
+}
+
+#let tail-rows = 2
+
+#let split-table(columns, align, headers, rows, footer, last) = {
+  let all = rows + footer
+  if all.len() <= short-table-rows {
+    block(spacing: 0pt, breakable: false, sticky: last, styled-table(columns, align, headers, ..all.flatten()))
+  } else if last {
+    let keep = calc.min(rows.len(), tail-rows)
+    let head = rows.slice(0, rows.len() - keep)
+    let tail = rows.slice(rows.len() - keep) + footer
+    block(spacing: 0pt, styled-table(columns, align, headers, ..head.flatten()))
+    block(spacing: 0pt, sticky: true, breakable: false, context {
+      let starts-page = here().position().y < page-top + 2pt
+      styled-table(columns, align, headers, header: starts-page, ..tail.flatten())
+    })
+  } else {
+    block(spacing: 0pt, styled-table(columns, align, headers, ..all.flatten()))
+  }
 }
 
 #let total-cell(..args, body) = table.cell(fill: light, ..args)[#text(weight: "bold", body)]
@@ -115,7 +135,7 @@
   }
 })
 
-#let indicators(section) = {
+#let indicators(section) = keep-whole(section.rows.len(), {
   heading(level: 2, section.title)
   set text(size: 9pt)
   table(
@@ -125,7 +145,7 @@
     inset: (x: 4pt, y: 5pt),
     ..section.rows.map(row => (row.label, text(weight: "bold", row.value))).flatten(),
   )
-}
+})
 
 #let in-kind(section) = keep-whole(section.rows.len() + 1, {
   heading(level: 2, section.title)
@@ -232,15 +252,16 @@
 
 #let balance-ink(cents) = if cents < 0 { red } else { black }
 
-#let movements-table(section) = {
-  heading(level: 2, section.title)
-  let cells = section.rows.map(row => (
+#let refund-mark(row) = if row.refund { text(style: "italic", fill: navy)[ · reembolso] }
+
+#let cashbook-layout = (
+  columns: (1.9cm, 1.35cm, 1fr, 1.3cm, 2.1cm, 2.1cm, 2.3cm),
+  align: (left, left, left, left, right, right, right),
+  headers: ("Data", "Doc.", "Descrição", "Meio", "Entrada", "Saída", "Acumulado"),
+  cells: row => (
     row.data,
     row.doc,
-    {
-      row.descricao
-      if row.refund { text(style: "italic", fill: navy)[ · reembolso] }
-    },
+    [#row.descricao#refund-mark(row)],
     row.meio,
     row.at("entrada", default: (text: "")).text,
     row.at("saida", default: (text: "")).text,
@@ -248,43 +269,220 @@
       let balance = row.at("acumulado", default: none)
       if balance != none { text(fill: balance-ink(balance.cents), balance.text) }
     },
-  )).flatten()
-  let footer = section.footer.map(line => (
-    total-cell(colspan: 6, line.label),
-    total-cell(align: right, line.value.text),
-  )).flatten()
-  styled-table(
-    (1.9cm, 1.35cm, 1fr, 1.3cm, 2.1cm, 2.1cm, 2.3cm),
-    (left, left, left, left, right, right, right),
-    ("Data", "Doc.", "Descrição", "Meio", "Entrada", "Saída", "Acumulado"),
-    ..cells,
-    ..footer,
+  ),
+  footer-span: 6,
+)
+
+#let signed-layout = (
+  columns: (1.9cm, 1.35cm, 1fr, 1.5cm, 2.6cm),
+  align: (left, left, left, left, right),
+  headers: ("Data", "Doc.", "Descrição", "Meio", "Valor"),
+  cells: row => (
+    row.data,
+    row.doc,
+    [#row.descricao#refund-mark(row)],
+    row.meio,
+    text(fill: balance-ink(row.valor.cents), row.valor.text),
+  ),
+  footer-span: 4,
+)
+
+#let footer-rows(layout, lines) = lines.map(line => (
+  total-cell(colspan: layout.footer-span, line.label),
+  total-cell(align: right, line.value.text),
+))
+
+#let movements(section, last: false) = {
+  let layout = if section.columns == "cashbook" { cashbook-layout } else if section.columns == "signed" {
+    signed-layout
+  } else {
+    panic("movements: o formato '" + section.columns + "' não é suportado por este modelo")
+  }
+  let outside = section.at("outside", default: none)
+  let footer = footer-rows(layout, section.footer)
+  heading(level: 2, section.title)
+  let rows = section.rows.map(layout.cells)
+  if outside == none {
+    split-table(layout.columns, layout.align, layout.headers, rows, footer, last)
+  } else {
+    split-table(layout.columns, layout.align, layout.headers, rows, (), false)
+    heading(level: 3, outside.title)
+    split-table(layout.columns, layout.align, layout.headers, outside.rows.map(layout.cells), footer, last)
+  }
+}
+
+#let text-section(section, last: false) = {
+  let body = {
+    heading(level: 2, section.title)
+    for paragraph in section.paragraphs { par(paragraph) }
+  }
+  if last { block(sticky: true, breakable: false, body) } else { body }
+}
+
+#let summary(section) = block(
+  width: 100%,
+  fill: rgb(theme.accentGold).lighten(88%),
+  stroke: (left: 3pt + rgb(theme.accentGold)),
+  radius: (right: 3pt),
+  inset: (x: 0.45cm, y: 0.35cm),
+  below: 0.5cm,
+  text(size: 10.5pt, section.text),
+)
+
+#let key-value-table(rows) = {
+  set text(size: 9pt)
+  table(
+    columns: (1fr, 3.4cm),
+    align: (left, right),
+    stroke: (x, y) => (bottom: 0.4pt + rule-grey),
+    inset: (x: 4pt, y: 5pt),
+    ..rows.map(row => if row.at("emphasis", default: false) {
+      (total-cell(row.label), total-cell(align: right, row.value.text))
+    } else {
+      (row.label, row.value.text)
+    }).flatten(),
   )
 }
 
-#let movements(section) = {
-  if section.columns != "cashbook" {
-    panic("movements: o formato '" + section.columns + "' não é suportado por este modelo")
-  }
-  keep-whole(section.rows.len() + section.footer.len(), movements-table(section))
+#let bridge(section) = keep-whole(section.rows.len(), {
+  heading(level: 2, section.title)
+  key-value-table(section.rows)
+})
+
+#let difference-ink(cents) = if cents == 0 { green } else { red }
+
+#let difference-row(label, difference) = (
+  label: label,
+  value: (text: text(weight: "bold", fill: difference-ink(difference.cents), difference.text)),
+)
+
+#let reconciliation(section) = keep-whole(section.rows.len() + 1, {
+  heading(level: 2, section.title)
+  set text(size: 9pt)
+  table(
+    columns: (1fr, 3.4cm),
+    align: (left, right),
+    stroke: (x, y) => (bottom: 0.4pt + rule-grey),
+    inset: (x: 4pt, y: 5pt),
+    ..section.rows.map(row => if row.at("emphasis", default: false) {
+      (total-cell(row.label), total-cell(align: right, row.value.text))
+    } else {
+      (row.label, row.value.text)
+    }).flatten(),
+    total-cell("Diferença para os livros"),
+    table.cell(fill: light, align: right, text(weight: "bold", fill: difference-ink(section.difference.cents), section.difference.text)),
+  )
+})
+
+#let cash-count(section) = keep-whole(section.rows.len() + 3, {
+  heading(level: 2, section.title)
+  styled-table(
+    (1fr, 2.4cm, 3.4cm),
+    (left, right, right),
+    ("Denominação", "Quantidade", "Valor"),
+    ..section.rows.map(row => (row.label, row.qty, row.value.text)).flatten(),
+    total-cell(colspan: 2, "Total contado"),
+    total-cell(align: right, section.total.text),
+    table.cell(colspan: 2)[Caixa nos livros],
+    section.book.text,
+    total-cell(colspan: 2, "Diferença"),
+    table.cell(fill: light, align: right, text(weight: "bold", fill: difference-ink(section.difference.cents), section.difference.text)),
+  )
+})
+
+#let position(section) = block(breakable: false, above: 0.75cm, {
+  heading(level: 2, section.title)
+  grid(
+    columns: (1fr, auto),
+    column-gutter: 0.6cm,
+    align: horizon,
+    position-bar(section.segments),
+    net-label(section.net),
+  )
+  v(0.3cm)
+  position-legend(section.segments)
+})
+
+#let by-activity(section) = keep-whole(section.rows.len() + 1, {
+  heading(level: 2, section.title)
+  styled-table(
+    (1fr, 2.8cm, 2.8cm, 2.8cm),
+    (left, right, right, right),
+    ("Atividade", "Recebido", "Pago", "Resultado"),
+    ..section.rows.map(row => (
+      row.atividade,
+      row.recebido.text,
+      row.pago.text,
+      text(fill: balance-ink(row.resultado.cents), row.resultado.text),
+    )).flatten(),
+    total-cell("Total"),
+    total-cell(align: right, section.total.recebido.text),
+    total-cell(align: right, section.total.pago.text),
+    total-cell(align: right, section.total.resultado.text),
+  )
+})
+
+#let comparison-row(row) = {
+  let wrap = if row.kind == "saldo" or row.kind == "total" { body => total-cell(body) } else { body => body }
+  (
+    wrap(row.label),
+    wrap(align(right, row.previous)),
+    wrap(align(right, row.current)),
+    wrap(align(right, row.variation)),
+  )
 }
 
-#let text-section(section) = {
+#let year-comparison(section) = {
+  pagebreak(weak: true)
   heading(level: 2, section.title)
-  for paragraph in section.paragraphs { par(paragraph) }
+  if section.status == "sem-dados" {
+    block(
+      width: 100%,
+      fill: light,
+      stroke: 0.5pt + rule-grey,
+      radius: 3pt,
+      inset: 0.4cm,
+      text(size: 9.5pt, fill: muted, section.at("message", default: "Sem dados no período de comparação.")),
+    )
+  } else {
+    styled-table(
+      (1fr, 3.1cm, 3.1cm, 2.7cm),
+      (left, right, right, right),
+      ("Rubrica", section.labels.at(0), section.labels.at(1), "Variação"),
+      ..section.rows.map(comparison-row).flatten(),
+    )
+    let bars = section.at("bars", default: ())
+    for (side, title) in (("receita", "Recebido por rubrica"), ("despesa", "Pago por rubrica")) {
+      let side-bars = bars.filter(bar => bar.side == side)
+      if side-bars.len() > 0 {
+        heading(level: 3, title)
+        grouped-bars(side-bars, section.labels)
+      }
+    }
+  }
+  if report.tipo == "letivo" { pagebreak(weak: true) }
 }
 
 #let render-sections(report) = {
-  for section in report.sections {
+  let count = report.sections.len()
+  for (index, section) in report.sections.enumerate() {
     let kind = section.kind
-    if kind == "kpis" { kpis(section) }
+    let last = index == count - 1
+    if kind == "summary" { summary(section) }
+    else if kind == "kpis" { kpis(section) }
+    else if kind == "bridge" { bridge(section) }
     else if kind == "composition" { composition(section) }
+    else if kind == "position" { position(section) }
     else if kind == "budget" { budget(section) }
+    else if kind == "byActivity" { by-activity(section) }
     else if kind == "indicators" { indicators(section) }
     else if kind == "inKind" { in-kind(section) }
     else if kind == "pending" { pending(section) }
-    else if kind == "movements" { movements(section) }
-    else if kind == "text" { text-section(section) }
+    else if kind == "reconciliation" { reconciliation(section) }
+    else if kind == "cashCount" { cash-count(section) }
+    else if kind == "movements" { movements(section, last: last) }
+    else if kind == "yearComparison" { year-comparison(section) }
+    else if kind == "text" or kind == "declaration" { text-section(section, last: last) }
     else { panic("secção desconhecida: " + kind) }
   }
 }
