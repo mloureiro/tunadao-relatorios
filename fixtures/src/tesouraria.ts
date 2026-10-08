@@ -6,7 +6,7 @@ import type {
   WorkbookSpec,
 } from '../../scripts/lib/workbook-writer.ts';
 import { cents, ordenarENumerar } from './linhas.ts';
-import { LISTAS } from './listas.ts';
+import { FIXTURE_LISTAS } from './listas.ts';
 import { MOVIMENTOS_2024 } from './movimentos-2024.ts';
 import { MOVIMENTOS_2025 } from './movimentos-2025.ts';
 import { MOVIMENTOS_2026 } from './movimentos-2026.ts';
@@ -155,8 +155,20 @@ const ORCAMENTO: readonly OrcamentoSpec[] = [
   orcado('20º CITADÃO', 'Entrada', 'Bar e merchandising', 800, 'Merchandising'),
   orcado('20º CITADÃO', 'Entrada', 'Patrocínios', 3000),
   orcado('20º CITADÃO', 'Entrada', 'Subsídios e apoios', 2500, 'Apoio CMV'),
-  orcado('20º CITADÃO', 'Entrada', 'Subsídios e apoios', 1500, 'Apoio UPV'),
-  orcado('20º CITADÃO', 'Entrada', 'Subsídios e apoios', 500, 'Apoio Junta'),
+  orcado(
+    '20º CITADÃO',
+    'Entrada',
+    'Subsídios e apoios',
+    1500,
+    'Apoio UPV (via AE ESAV)',
+  ),
+  orcado(
+    '20º CITADÃO',
+    'Entrada',
+    'Subsídios e apoios',
+    500,
+    'Apoio Junta de Freguesia',
+  ),
   orcado(
     '20º CITADÃO',
     'Saída',
@@ -235,7 +247,7 @@ export const SALDOS: readonly SaldoSpec[] = [
 ];
 
 export const TESOURARIA: WorkbookSpec = {
-  listas: LISTAS,
+  listas: FIXTURE_LISTAS,
   movimentos: ordenarENumerar([
     ...MOVIMENTOS_2024,
     ...MOVIMENTOS_2025,

@@ -235,6 +235,7 @@ export const TEMPLATE_SPEC: WorkbookSpec = {
         'A sub-rubrica é opcional. Quando a deixa vazia, o movimento fica na própria rubrica.',
         'Escolha rubricas, sub-rubricas, atividades e meios nas listas suspensas. A lista da sub-rubrica mostra todas as sub-rubricas; escolha uma que pertença à rubrica indicada.',
         'Nunca edite as colunas Conta, Valor com sinal (€) e Conta para o resultado: são calculadas automaticamente a partir das restantes, até à linha 5000.',
+        'Cada edição de um evento que se repete usa a sua própria Atividade (por exemplo, "20º CITADÃO" ou "Zumba na Caneca 2025"), porque o relatório do evento soma todos os movimentos da atividade.',
         'Para acrescentar uma rubrica, atividade ou meio, escreva-o no fim da respetiva coluna do separador Listas. As listas suspensas passam a incluí-lo.',
       ],
     },

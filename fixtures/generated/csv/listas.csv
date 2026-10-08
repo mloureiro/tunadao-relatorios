@@ -1,12 +1,12 @@
 ﻿Rubrica;Tipo;Conta para o resultado;;Sub-rubrica;Rubrica;;Atividade;;Meio;Conta
 Quotas;Entrada;Sim;;Apoio CMV;Subsídios e apoios;;Funcionamento;;Caixa;Caixa
-Donativos;Entrada;Sim;;Apoio UPV;Subsídios e apoios;;Zumba na Caneca;;Banco;Banco
-Subsídios e apoios;Entrada;Sim;;Apoio Junta;Subsídios e apoios;;18º CITADÃO;;MB Way;Banco
-Atuações e serenatas;Entrada;Sim;;Inscrições de tunas;Inscrições e bilheteira;;19º CITADÃO;;TPA;Banco
-Inscrições e bilheteira;Entrada;Sim;;Bilheteira;Inscrições e bilheteira;;20º CITADÃO;;;
-Bar e merchandising;Entrada;Sim;;Inscrições;Inscrições e bilheteira;;Festivais;;;
-Patrocínios;Entrada;Sim;;Bar;Bar e merchandising;;;;;
-Outros recebimentos;Entrada;Sim;;Merchandising;Bar e merchandising;;;;;
+Donativos;Entrada;Sim;;Apoio UPV (via AE ESAV);Subsídios e apoios;;Zumba na Caneca 2024;;Banco;Banco
+Subsídios e apoios;Entrada;Sim;;Apoio Junta de Freguesia;Subsídios e apoios;;Zumba na Caneca 2025;;MB Way;Banco
+Atuações e serenatas;Entrada;Sim;;Inscrições de tunas;Inscrições e bilheteira;;Zumba na Caneca;;TPA;Banco
+Inscrições e bilheteira;Entrada;Sim;;Bilheteira;Inscrições e bilheteira;;18º CITADÃO;;;
+Bar e merchandising;Entrada;Sim;;Inscrições;Inscrições e bilheteira;;19º CITADÃO;;;
+Patrocínios;Entrada;Sim;;Bar;Bar e merchandising;;20º CITADÃO;;;
+Outros recebimentos;Entrada;Sim;;Merchandising;Bar e merchandising;;Festivais;;;
 Produção (som, luz, palco);Saída;Sim;;Patrocínio do evento;Patrocínios;;;;;
 Alimentação e alojamento;Saída;Sim;;Outros;Outros recebimentos;;;;;
 Compras para o bar;Saída;Sim;;Som e luz;Produção (som, luz, palco);;;;;

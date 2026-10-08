@@ -59,7 +59,12 @@ export const LISTAS: ListasSpec = {
     { rubrica: 'Transferências internas', tipo: null, contaResultado: false },
   ],
   subRubricas: [
-    ...sub('Subsídios e apoios', 'Apoio CMV', 'Apoio UPV', 'Apoio Junta'),
+    ...sub(
+      'Subsídios e apoios',
+      'Apoio CMV',
+      'Apoio UPV (via AE ESAV)',
+      'Apoio Junta de Freguesia',
+    ),
     ...sub(
       'Inscrições e bilheteira',
       'Inscrições de tunas',
@@ -79,18 +84,25 @@ export const LISTAS: ListasSpec = {
     ...sub('Taxas e licenças', 'Licenças e SPA'),
     ...sub('Outros pagamentos', 'Diversos', 'Outros'),
   ],
-  atividades: [
-    'Funcionamento',
-    'Zumba na Caneca',
-    '18º CITADÃO',
-    '19º CITADÃO',
-    '20º CITADÃO',
-    'Festivais',
-  ],
+  atividades: ['Funcionamento', 'Zumba na Caneca', '20º CITADÃO', 'Festivais'],
   meios: [
     { meio: 'Caixa', conta: 'Caixa' },
     { meio: 'Banco', conta: 'Banco' },
     { meio: 'MB Way', conta: 'Banco' },
     { meio: 'TPA', conta: 'Banco' },
+  ],
+};
+
+export const FIXTURE_LISTAS: ListasSpec = {
+  ...LISTAS,
+  atividades: [
+    'Funcionamento',
+    'Zumba na Caneca 2024',
+    'Zumba na Caneca 2025',
+    'Zumba na Caneca',
+    '18º CITADÃO',
+    '19º CITADÃO',
+    '20º CITADÃO',
+    'Festivais',
   ],
 };
