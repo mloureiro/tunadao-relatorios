@@ -78,7 +78,7 @@ interface ColumnDef {
 const DATE_FORMAT = 'dd/mm/yyyy';
 const MONEY_FORMAT = '#,##0.00 "€"';
 const LAST_ROW = 1048576;
-const DERIVED_ROWS = 500;
+export const DERIVED_ROWS = 5000;
 const FIXED_TIMESTAMP = new Date(Date.UTC(2026, 0, 1));
 
 const date = { width: 13, format: DATE_FORMAT };
