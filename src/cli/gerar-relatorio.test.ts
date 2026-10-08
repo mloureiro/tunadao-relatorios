@@ -244,12 +244,12 @@ describe('main()', () => {
     [
       'a non-numeric number',
       ['--tipo', 'fiscal', '--param', 'ano=abc'],
-      'ERRO parâmetro ano: Tem de ser um número. (recebido: "abc")',
+      'ERRO parâmetro ano: Tem de ser um número (recebido: "abc").',
     ],
     [
       'a fractional integer',
       ['--tipo', 'fiscal', '--param', 'ano=2025.5'],
-      'ERRO parâmetro ano: Tem de ser um número inteiro. (recebido: "2025.5")',
+      'ERRO parâmetro ano: Tem de ser um número inteiro (recebido: "2025.5").',
     ],
     [
       'an unknown key',
@@ -266,7 +266,7 @@ describe('main()', () => {
         '--param',
         'contagem.50=abc',
       ],
-      'ERRO parâmetro contagem.50: Tem de ser um número. (recebido: "abc")',
+      'ERRO parâmetro contagem.50: Tem de ser um número (recebido: "abc").',
     ],
     [
       'a missing money param',
