@@ -153,6 +153,43 @@ describe('buildFiscal()', () => {
     ]);
   });
 
+  it('compares at the configured level', () => {
+    const detailed = emptyDataset({
+      saldos: openingBalances,
+      movimentos: [
+        mov({ data: '2024-05-01', cents: 4000, subRubrica: 'Bilhetes' }),
+        mov({ data: '2025-05-01', cents: 8000, subRubrica: 'Bilhetes' }),
+      ],
+    });
+    const config = {
+      ...CONFIG,
+      aggregation: { ...CONFIG.aggregation, comparison: 'subRubrica' as const },
+    };
+
+    const byRubrica = sectionOf(
+      buildFiscal(
+        detailed,
+        fiscalParamsSchema.parse({ ano: 2025 }),
+        CONFIG,
+        CONTEXT,
+      ).report,
+      'yearComparison',
+    );
+    const bySub = sectionOf(
+      buildFiscal(
+        detailed,
+        fiscalParamsSchema.parse({ ano: 2025 }),
+        config,
+        CONTEXT,
+      ).report,
+      'yearComparison',
+    );
+
+    expect(byRubrica.rows.map((r) => r.label)).toContain('Bilheteira');
+    expect(bySub.rows.map((r) => r.label)).toContain('Bilhetes');
+    expect(bySub.rows.map((r) => r.label)).not.toContain('Bilheteira');
+  });
+
   it('prints n.d. for a previous opening balance the ledger cannot supply', () => {
     const comparison = sectionOf(build(year).report, 'yearComparison');
 

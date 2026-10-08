@@ -246,14 +246,15 @@ export function pendingSection(
   title: string,
   ref: IsoDate,
   pending: PendingResult,
-): PendingSection | null {
-  if (pending.receber.length === 0 && pending.pagar.length === 0) return null;
+): PendingSection {
   return {
     kind: 'pending',
     title,
     refLabel: `Situação a ${formatDate(ref)}`,
     receber: pendingRows(pending.receber),
     pagar: pendingRows(pending.pagar),
+    ...(pending.receber.length === 0 ? { emptyReceber: 'Nada a receber' } : {}),
+    ...(pending.pagar.length === 0 ? { emptyPagar: 'Nada a pagar' } : {}),
     totals: {
       receber: money(pending.porReceberCents),
       pagar: money(pending.porPagarCents),
@@ -295,6 +296,7 @@ export function movementRow(
     doc: movimento.doc ?? '',
     descricao: movimento.descricao,
     atividade: movimento.atividade,
+    meio: movimento.meio,
     rubrica: level === 'subRubrica' ? movimento.subRubrica : movimento.rubrica,
     valor: money(movimento.signedCents),
     ...(entrada ? { entrada: money(movimento.valorCents) } : {}),

@@ -100,6 +100,10 @@ export function buildPegada(
 
   const sections: Section[] = [
     {
+      kind: 'summary',
+      text: `Valor entregue: ${formatMoney(period.closing.totalCents)} (caixa ${formatMoney(period.closing.caixaCents)}, banco ${formatMoney(period.closing.bancoCents)}). Com os pendentes, a posição líquida é ${formatMoney(pegada.position.netCents)}.`,
+    },
+    {
       kind: 'kpis',
       cards: [
         card('Saldo entregue', period.closing.totalCents),
@@ -158,12 +162,10 @@ export function buildPegada(
       book: money(pegada.cashCount.bookCaixaCents),
       difference: money(pegada.cashCount.differenceCents),
     },
-    ...present(
-      pendingSection(
-        'Pendentes na passagem',
-        params.dataPassagem,
-        pegada.pending,
-      ),
+    pendingSection(
+      'Direitos e compromissos à data da entrega',
+      params.dataPassagem,
+      pegada.pending,
     ),
     ...present(textSection('Notas / Comentários', params.notas)),
     {

@@ -360,7 +360,7 @@
     },
     {
       "kind": "pending",
-      "title": "Pendentes no fim do período",
+      "title": "Direitos e compromissos a 31/08/2026",
       "refLabel": "Situação a 31/08/2026",
       "receber": [
         {
@@ -645,6 +645,7 @@
           "doc": "R-001",
           "descricao": "Apoio da Câmara Municipal (2.ª tranche do 19º CITADÃO)",
           "atividade": "Funcionamento",
+          "meio": "Banco",
           "rubrica": "Apoio CMV",
           "valor": {
             "cents": 100000,
@@ -662,6 +663,7 @@
           "doc": "P-001",
           "descricao": "Fornecedor de som: saldo do Arraial 2025 (FT 2025/311)",
           "atividade": "Festivais",
+          "meio": "Banco",
           "rubrica": "Som e luz",
           "valor": {
             "cents": -45000,
@@ -679,6 +681,7 @@
           "doc": "R-002",
           "descricao": "Apoio da Câmara Municipal",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Apoio CMV",
           "valor": {
             "cents": 250000,
@@ -696,6 +699,7 @@
           "doc": "P-002",
           "descricao": "Cartazes e programa",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Comunicação e gráfica",
           "valor": {
             "cents": -51500,
@@ -713,6 +717,7 @@
           "doc": "R-003",
           "descricao": "Apoio da universidade (via AE ESAV)",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Apoio UPV (via AE ESAV)",
           "valor": {
             "cents": 150000,
@@ -730,6 +735,7 @@
           "doc": "P-003",
           "descricao": "Cartazes e impressões",
           "atividade": "Zumba na Caneca",
+          "meio": "Caixa",
           "rubrica": "Cartazes e impressões",
           "valor": {
             "cents": -4800,
@@ -747,6 +753,7 @@
           "doc": "P-004",
           "descricao": "Canecas personalizadas (300 un.)",
           "atividade": "Zumba na Caneca",
+          "meio": "Banco",
           "rubrica": "Merchandising e trajes",
           "valor": {
             "cents": -34200,
@@ -764,6 +771,7 @@
           "doc": "R-004",
           "descricao": "Patrocínio ginásio local",
           "atividade": "Zumba na Caneca",
+          "meio": "Banco",
           "rubrica": "Patrocínio do evento",
           "valor": {
             "cents": 15000,
@@ -781,6 +789,7 @@
           "doc": "P-005",
           "descricao": "Bebidas e consumíveis",
           "atividade": "Zumba na Caneca",
+          "meio": "Banco",
           "rubrica": "Bebidas e consumíveis",
           "valor": {
             "cents": -61240,
@@ -798,6 +807,7 @@
           "doc": "R-005",
           "descricao": "Inscrições (247 × 5 €)",
           "atividade": "Zumba na Caneca",
+          "meio": "Caixa",
           "rubrica": "Inscrições",
           "valor": {
             "cents": 123500,
@@ -815,6 +825,7 @@
           "doc": "R-006",
           "descricao": "Receita de bar",
           "atividade": "Zumba na Caneca",
+          "meio": "Caixa",
           "rubrica": "Bar",
           "valor": {
             "cents": 148250,
@@ -832,6 +843,7 @@
           "doc": "R-007",
           "descricao": "Donativos na caixa do evento",
           "atividade": "Zumba na Caneca",
+          "meio": "Caixa",
           "rubrica": "Donativos",
           "valor": {
             "cents": 6000,
@@ -849,6 +861,7 @@
           "doc": "P-006",
           "descricao": "Instrutora de zumba",
           "atividade": "Zumba na Caneca",
+          "meio": "Caixa",
           "rubrica": "Outros",
           "valor": {
             "cents": -20000,
@@ -866,6 +879,7 @@
           "doc": "P-007",
           "descricao": "Aluguer de som",
           "atividade": "Zumba na Caneca",
+          "meio": "Banco",
           "rubrica": "Som e luz",
           "valor": {
             "cents": -18000,
@@ -883,6 +897,7 @@
           "doc": "P-008",
           "descricao": "Licença de ruído e SPA",
           "atividade": "Zumba na Caneca",
+          "meio": "Banco",
           "rubrica": "Licenças e SPA",
           "valor": {
             "cents": -6500,
@@ -900,6 +915,7 @@
           "doc": "P-009",
           "descricao": "T-shirts do evento",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "T-shirts",
           "valor": {
             "cents": -59000,
@@ -917,6 +933,7 @@
           "doc": "P-010",
           "descricao": "Licenças e SPA",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Licenças e SPA",
           "valor": {
             "cents": -31000,
@@ -934,6 +951,7 @@
           "doc": "R-008",
           "descricao": "Inscrições das tunas",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Inscrições de tunas",
           "valor": {
             "cents": 240000,
@@ -951,6 +969,7 @@
           "doc": "P-011",
           "descricao": "Seguro do evento",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Seguro",
           "valor": {
             "cents": -18500,
@@ -968,6 +987,7 @@
           "doc": "R-009",
           "descricao": "Patrocínios do evento",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Patrocínios",
           "valor": {
             "cents": 250000,
@@ -985,6 +1005,7 @@
           "doc": "R-010",
           "descricao": "Quotas 2026 (38 membros)",
           "atividade": "Funcionamento",
+          "meio": "Banco",
           "rubrica": "Quotas",
           "valor": {
             "cents": 76000,
@@ -1002,6 +1023,7 @@
           "doc": "P-012",
           "descricao": "Deslocação a atuação",
           "atividade": "Funcionamento",
+          "meio": "Banco",
           "rubrica": "Deslocações",
           "valor": {
             "cents": -64000,
@@ -1019,6 +1041,7 @@
           "doc": "R-011",
           "descricao": "Serenata para empresa",
           "atividade": "Funcionamento",
+          "meio": "Banco",
           "rubrica": "Atuações e serenatas",
           "valor": {
             "cents": 90000,
@@ -1036,6 +1059,7 @@
           "doc": "P-013",
           "descricao": "Taxa de registo",
           "atividade": "Funcionamento",
+          "meio": "Banco",
           "rubrica": "Taxas e licenças",
           "valor": {
             "cents": -4000,
@@ -1053,6 +1077,7 @@
           "doc": "R-012",
           "descricao": "Quotas 2026 em numerário (17 membros)",
           "atividade": "Funcionamento",
+          "meio": "Caixa",
           "rubrica": "Quotas",
           "valor": {
             "cents": 34000,
@@ -1070,6 +1095,7 @@
           "doc": "R-013",
           "descricao": "Apoio da Junta de Freguesia",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Apoio Junta de Freguesia",
           "valor": {
             "cents": 50000,
@@ -1087,6 +1113,7 @@
           "doc": "P-014",
           "descricao": "Som e luz",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Som e luz",
           "valor": {
             "cents": -390000,
@@ -1104,6 +1131,7 @@
           "doc": "P-015",
           "descricao": "Palco e estruturas",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Palco e estruturas",
           "valor": {
             "cents": -115000,
@@ -1121,6 +1149,7 @@
           "doc": "P-016",
           "descricao": "Compras para o bar",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Compras para o bar",
           "valor": {
             "cents": -298060,
@@ -1138,6 +1167,7 @@
           "doc": "R-014",
           "descricao": "Bilheteira (TPA)",
           "atividade": "20º CITADÃO",
+          "meio": "TPA",
           "rubrica": "Bilheteira",
           "valor": {
             "cents": 387000,
@@ -1155,6 +1185,7 @@
           "doc": "R-015",
           "descricao": "Bar (TPA)",
           "atividade": "20º CITADÃO",
+          "meio": "TPA",
           "rubrica": "Bar",
           "valor": {
             "cents": 631520,
@@ -1172,6 +1203,7 @@
           "doc": "R-016",
           "descricao": "Merchandising",
           "atividade": "20º CITADÃO",
+          "meio": "Caixa",
           "rubrica": "Merchandising",
           "valor": {
             "cents": 64000,
@@ -1189,6 +1221,7 @@
           "doc": "P-017",
           "descricao": "Refeições das tunas",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Refeições das tunas",
           "valor": {
             "cents": -328000,
@@ -1206,6 +1239,7 @@
           "doc": "P-018",
           "descricao": "Júri",
           "atividade": "20º CITADÃO",
+          "meio": "Caixa",
           "rubrica": "Júri",
           "valor": {
             "cents": -42000,
@@ -1223,6 +1257,7 @@
           "doc": "P-019",
           "descricao": "Alojamento",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Alojamento",
           "valor": {
             "cents": -164000,
@@ -1240,6 +1275,7 @@
           "doc": "P-020",
           "descricao": "Prémios e troféus",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Prémios e troféus",
           "valor": {
             "cents": -86000,
@@ -1257,6 +1293,7 @@
           "doc": "P-021",
           "descricao": "Despesas bancárias de janeiro a maio",
           "atividade": "Funcionamento",
+          "meio": "Banco",
           "rubrica": "Despesas bancárias",
           "valor": {
             "cents": -4660,
@@ -1274,6 +1311,7 @@
           "doc": "R-017",
           "descricao": "Atuação em jantar de curso",
           "atividade": "Funcionamento",
+          "meio": "Banco",
           "rubrica": "Atuações e serenatas",
           "valor": {
             "cents": 100000,
@@ -1291,6 +1329,7 @@
           "doc": "P-022",
           "descricao": "Gasolina e portagens",
           "atividade": "Funcionamento",
+          "meio": "Caixa",
           "rubrica": "Deslocações",
           "valor": {
             "cents": -43000,
@@ -1308,6 +1347,7 @@
           "doc": "P-023",
           "descricao": "Deslocação a festival de tunas",
           "atividade": "Festivais",
+          "meio": "Banco",
           "rubrica": "Deslocações",
           "valor": {
             "cents": -121000,
@@ -1325,6 +1365,7 @@
           "doc": "P-024",
           "descricao": "Reparação de instrumentos",
           "atividade": "Funcionamento",
+          "meio": "Banco",
           "rubrica": "Instrumentos e manutenção",
           "valor": {
             "cents": -6000,
@@ -1342,6 +1383,7 @@
           "doc": "P-025",
           "descricao": "Diversos",
           "atividade": "20º CITADÃO",
+          "meio": "Caixa",
           "rubrica": "Diversos",
           "valor": {
             "cents": -9640,
@@ -1359,6 +1401,7 @@
           "doc": "R-018",
           "descricao": "Donativo de angariação online",
           "atividade": "Funcionamento",
+          "meio": "Banco",
           "rubrica": "Donativos",
           "valor": {
             "cents": 31010,
@@ -1376,6 +1419,7 @@
           "doc": "P-026",
           "descricao": "Aluguer de som em festival",
           "atividade": "Festivais",
+          "meio": "Banco",
           "rubrica": "Som e luz",
           "valor": {
             "cents": -20000,
@@ -1393,6 +1437,7 @@
           "doc": "R-019",
           "descricao": "Venda de material antigo",
           "atividade": "Funcionamento",
+          "meio": "Caixa",
           "rubrica": "Outros recebimentos",
           "valor": {
             "cents": 7990,
@@ -1410,6 +1455,7 @@
           "doc": "P-027",
           "descricao": "Material de escritório e diversos",
           "atividade": "Funcionamento",
+          "meio": "Caixa",
           "rubrica": "Diversos",
           "valor": {
             "cents": -9520,
@@ -1427,6 +1473,7 @@
           "doc": "R-020",
           "descricao": "Atuação em festival (cachet)",
           "atividade": "Festivais",
+          "meio": "Banco",
           "rubrica": "Atuações e serenatas",
           "valor": {
             "cents": 25000,
@@ -1448,6 +1495,7 @@
             "doc": "T-001",
             "descricao": "Depósito do numerário do evento (saída)",
             "atividade": "Zumba na Caneca",
+            "meio": "Caixa",
             "rubrica": "Transferências internas",
             "valor": {
               "cents": -252950,
@@ -1465,6 +1513,7 @@
             "doc": "T-001",
             "descricao": "Depósito do numerário do evento (entrada)",
             "atividade": "Zumba na Caneca",
+            "meio": "Banco",
             "rubrica": "Transferências internas",
             "valor": {
               "cents": 252950,

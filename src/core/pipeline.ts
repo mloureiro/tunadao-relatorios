@@ -5,6 +5,7 @@ import { readCsv } from './input/csv.ts';
 import type { RawTable } from './input/raw-table.ts';
 import { readXlsx } from './input/xlsx.ts';
 import { issueMessages, makeIssue, type Issue } from './issues.ts';
+import { closest } from './text.ts';
 import { normaliseTables } from './normalise/normalise-tables.ts';
 import type { UnresolvedMovimento } from './normalise/movimentos.ts';
 import {
@@ -151,6 +152,23 @@ const BUILDERS: { [T in ReportTipo]: Builder<T> } = {
 const hasErrors = (issues: readonly Issue[]): boolean =>
   issues.some((issue) => issue.severity === 'error');
 
+function unknownActivity(
+  tipo: ReportTipo,
+  dataset: Dataset,
+  params: ParamsByTipo[ReportTipo],
+): Issue | null {
+  if (tipo !== 'evento' || !('atividade' in params)) return null;
+  const { atividade } = params;
+  const { atividades } = dataset.lists;
+  if (atividades.includes(atividade)) return null;
+  return makeIssue(
+    'unknown-atividade',
+    issueMessages['unknown-atividade'](atividade),
+    {},
+    closest(atividade, atividades) ?? undefined,
+  );
+}
+
 export function buildReport<T extends ReportTipo>(
   tipo: T,
   loadResult: LoadResult,
@@ -160,6 +178,9 @@ export function buildReport<T extends ReportTipo>(
   if (hasErrors(loadResult.issues)) {
     return { status: 'blocked', issues: loadResult.issues };
   }
+
+  const unknown = unknownActivity(tipo, loadResult.dataset, params);
+  if (unknown !== null) return { status: 'blocked', issues: [unknown] };
 
   let output: BuildOutput;
   try {

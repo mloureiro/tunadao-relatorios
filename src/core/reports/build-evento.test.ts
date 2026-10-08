@@ -58,6 +58,11 @@ describe('buildEvento()', () => {
     ]);
     expect(section.rows.map((row) => row.refund)).toEqual([false, false, true]);
     expect(section.rows.some((row) => row.outsideResult)).toBe(false);
+    expect(section.rows.map((row) => row.meio)).toEqual([
+      'Caixa',
+      'Caixa',
+      'Caixa',
+    ]);
     expect(section.outside).toBeUndefined();
     expect(
       section.footer.find((line) => line.label.startsWith('Recebido'))?.value
@@ -105,6 +110,7 @@ describe('buildEvento()', () => {
       'kpis',
       'composition',
       'composition',
+      'pending',
       'movements',
     ]);
     expect(

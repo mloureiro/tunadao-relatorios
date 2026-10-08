@@ -22,7 +22,6 @@ export const configSchema = z.strictObject({
     fiscal: signatureTitles,
   }),
   aggregation: z.strictObject({
-    summary: level,
     budgetPeriod: level,
     budgetEvent: level,
     compositionEvent: level,

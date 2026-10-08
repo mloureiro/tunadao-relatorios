@@ -11,6 +11,7 @@ import {
 import type { Config } from '../config/schema.ts';
 import type { Dataset } from '../dataset/types.ts';
 import { addMonths } from '../dates.ts';
+import { formatDate } from '../format.ts';
 import {
   activitySection,
   bridgeSection,
@@ -67,11 +68,14 @@ export function buildLetivo(
       periodLabel(inicio, fim),
     ],
     false,
+    config.aggregation.comparison,
   );
   const negativeNets = negativeNetIssues(inside, lists, [
     config.aggregation.compositionPeriod,
     ...(budget?.tables == null ? [] : [config.aggregation.budgetPeriod]),
-    ...(comparison.section.status === 'ok' ? (['rubrica'] as const) : []),
+    ...(comparison.section.status === 'ok'
+      ? [config.aggregation.comparison]
+      : []),
   ]);
 
   const sections: Section[] = [
@@ -97,12 +101,10 @@ export function buildLetivo(
     ),
     ...budgetSections(budget?.tables ?? null),
     ...present(activitySection(byActivity(result, lists))),
-    ...present(
-      pendingSection(
-        'Pendentes no fim do período',
-        fim,
-        pendingAt(dataset, fim),
-      ),
+    pendingSection(
+      `Direitos e compromissos a ${formatDate(fim)}`,
+      fim,
+      pendingAt(dataset, fim),
     ),
     ...present(inKindSection(kind.rows, kind.totalCents)),
     ...present(textSection('Notas / Comentários', params.notas)),

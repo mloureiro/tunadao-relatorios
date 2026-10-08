@@ -1,8 +1,10 @@
 import {
   aggregate,
+  aggregationKey,
   compareListasOrder,
   previousPeriod,
   type AggregateRow,
+  type AggregationLevel,
   type PeriodFigures,
 } from '../calc/index.ts';
 import type { Cents, Dataset, Movimento } from '../dataset/types.ts';
@@ -20,6 +22,7 @@ const NOT_AVAILABLE = 'n.d.';
 
 interface Labelled {
   readonly rubrica: string;
+  readonly subRubrica?: string | undefined;
   readonly side: 'receita' | 'despesa';
   readonly previousCents: Cents;
   readonly currentCents: Cents;
@@ -52,6 +55,7 @@ function row(
 
 function mergeRubricas(
   dataset: Dataset,
+  level: AggregationLevel,
   previous: readonly AggregateRow[],
   current: readonly AggregateRow[],
 ): Labelled[] {
@@ -60,13 +64,19 @@ function mergeRubricas(
     source: AggregateRow,
     field: 'previousCents' | 'currentCents',
   ) => {
-    const existing = byRubrica.get(source.rubrica) ?? {
+    const key = aggregationKey(
+      level,
+      source.rubrica,
+      source.subRubrica ?? source.rubrica,
+    );
+    const existing = byRubrica.get(key) ?? {
       rubrica: source.rubrica,
+      subRubrica: source.subRubrica,
       side: source.side,
       previousCents: 0,
       currentCents: 0,
     };
-    byRubrica.set(source.rubrica, {
+    byRubrica.set(key, {
       ...existing,
       [field]: source.netCents,
     });
@@ -90,7 +100,7 @@ function barsOf(rubricas: readonly Labelled[]): ComparisonBar[] {
   const scaled = (cents: Cents) =>
     largest === 0 || cents <= 0 ? 0 : roundHalfAway(cents * 1000, largest);
   return rubricas.map((r) => ({
-    label: r.rubrica,
+    label: r.subRubrica ?? r.rubrica,
     side: r.side,
     previousText: formatMoney(r.previousCents),
     currentText: formatMoney(r.currentCents),
@@ -105,8 +115,9 @@ export function comparisonSection(
   periodMovements: readonly Movimento[],
   pair: readonly [string, string],
   withBars: boolean,
+  level: AggregationLevel,
 ): { section: YearComparisonSection; issues: Issue[] } {
-  const previous = previousPeriod(dataset, figures.start, figures.end);
+  const previous = previousPeriod(dataset, figures.start, figures.end, level);
   const title = 'Comparação com o período homólogo';
 
   if (previous.status === 'sem-dados') {
@@ -123,12 +134,14 @@ export function comparisonSection(
     };
   }
 
-  const current = aggregate(periodMovements, dataset.lists, 'rubrica').rows;
-  const rubricas = mergeRubricas(dataset, previous.rows, current);
+  const current = aggregate(periodMovements, dataset.lists, level).rows;
+  const rubricas = mergeRubricas(dataset, level, previous.rows, current);
   const ofSide = (side: 'receita' | 'despesa'): ComparisonRow[] =>
     rubricas
       .filter((r) => r.side === side)
-      .map((r) => row(r.rubrica, side, r.previousCents, r.currentCents));
+      .map((r) =>
+        row(r.subRubrica ?? r.rubrica, side, r.previousCents, r.currentCents),
+      );
 
   const { recebidoCents, pagoCents } = figures;
   const previousResultado = previous.recebidoCents - previous.pagoCents;

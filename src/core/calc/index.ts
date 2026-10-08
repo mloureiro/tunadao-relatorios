@@ -1,4 +1,4 @@
-export { aggregate, compareListasOrder } from './aggregate.ts';
+export { aggregate, aggregationKey, compareListasOrder } from './aggregate.ts';
 export type {
   AggregateResult,
   AggregateRow,

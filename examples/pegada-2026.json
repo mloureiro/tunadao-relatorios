@@ -16,6 +16,10 @@
   },
   "sections": [
     {
+      "kind": "summary",
+      "text": "Valor entregue: 13.844,05 € (caixa 579,00 €, banco 13.265,05 €). Com os pendentes, a posição líquida é 13.964,05 €."
+    },
+    {
       "kind": "kpis",
       "cards": [
         {
@@ -141,6 +145,7 @@
           "doc": "R-021",
           "descricao": "Quotas recebidas (6 membros, regularização)",
           "atividade": "Funcionamento",
+          "meio": "Caixa",
           "rubrica": "Quotas",
           "valor": {
             "cents": 12000,
@@ -158,6 +163,7 @@
           "doc": "R-022",
           "descricao": "Atuação · receção ao caloiro",
           "atividade": "Funcionamento",
+          "meio": "Caixa",
           "rubrica": "Atuações e serenatas",
           "valor": {
             "cents": 35000,
@@ -175,6 +181,7 @@
           "doc": "P-028",
           "descricao": "Reparação de guitarra",
           "atividade": "Funcionamento",
+          "meio": "Caixa",
           "rubrica": "Instrumentos e manutenção",
           "valor": {
             "cents": -8500,
@@ -192,6 +199,7 @@
           "doc": "R-023",
           "descricao": "Patrocinador do 20º CITADÃO (saldo)",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Patrocínios",
           "valor": {
             "cents": 25000,
@@ -209,6 +217,7 @@
           "doc": "P-029",
           "descricao": "Renovação do seguro do equipamento",
           "atividade": "Funcionamento",
+          "meio": "Banco",
           "rubrica": "Seguro",
           "valor": {
             "cents": -19850,
@@ -226,6 +235,7 @@
           "doc": "P-030",
           "descricao": "Reembolso a membro (cordas, julho)",
           "atividade": "Funcionamento",
+          "meio": "Caixa",
           "rubrica": "Instrumentos e manutenção",
           "valor": {
             "cents": -6430,
@@ -243,6 +253,7 @@
           "doc": "P-031",
           "descricao": "Despesas bancárias de setembro",
           "atividade": "Funcionamento",
+          "meio": "Banco",
           "rubrica": "Despesas bancárias",
           "valor": {
             "cents": -620,
@@ -402,7 +413,7 @@
     },
     {
       "kind": "pending",
-      "title": "Pendentes na passagem",
+      "title": "Direitos e compromissos à data da entrega",
       "refLabel": "Situação a 30/09/2026",
       "receber": [
         {
