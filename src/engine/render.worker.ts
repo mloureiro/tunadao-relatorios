@@ -20,6 +20,7 @@ function post(message: WorkerResponse, transfer: Transferable[] = []): void {
 async function fetchBytes(
   url: string,
   onChunk?: (loaded: number, total: number | null) => void,
+  decodedLength?: number,
 ): Promise<Uint8Array> {
   const response = await fetch(url);
   if (!response.ok || !response.body) {
@@ -28,7 +29,9 @@ async function fetchBytes(
   const length = Number(response.headers.get('content-length'));
   const encoded = response.headers.has('content-encoding');
   const total =
-    encoded || !Number.isFinite(length) || length === 0 ? null : length;
+    encoded || !Number.isFinite(length) || length === 0
+      ? (decodedLength ?? null)
+      : length;
 
   const chunks: Uint8Array[] = [];
   let loaded = 0;
@@ -51,9 +54,13 @@ async function fetchBytes(
 
 async function loadRenderer(assets: WorkerAssets): Promise<Renderer> {
   const [wasm, fonts, files] = await Promise.all([
-    fetchBytes(assets.wasmUrl, (loaded, total) => {
-      post({ type: 'progress', loaded, total });
-    }),
+    fetchBytes(
+      assets.wasmUrl,
+      (loaded, total) => {
+        post({ type: 'progress', loaded, total });
+      },
+      __WASM_BYTES__,
+    ),
     Promise.all(assets.fontUrls.map((url) => fetchBytes(url))),
     Promise.all(
       Object.entries(assets.fileUrls).map(
