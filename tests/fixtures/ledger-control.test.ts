@@ -42,4 +42,27 @@ describe('tesouraria.xlsx ledger', () => {
       expect((computed.caixa ?? 0) + (computed.banco ?? 0)).toBe(total);
     },
   );
+
+  it('keeps each event edition on its own activity', async () => {
+    const { dataset } = await loadGenerated('tesouraria.xlsx');
+    const totals = (atividade: string, upTo: string) => {
+      const rows = dataset.movimentos.filter(
+        (m) => m.atividade === atividade && m.contaResultado && m.data <= upTo,
+      );
+      const sum = (tipo: string) =>
+        rows
+          .filter((m) => m.tipo === tipo)
+          .reduce((total, m) => total + m.valorCents, 0);
+      return { recebido: sum('Entrada'), pago: sum('Saída') };
+    };
+
+    expect(totals('Zumba na Caneca', '9999-12-31')).toEqual({
+      recebido: 292750,
+      pago: 144740,
+    });
+    expect(totals('20º CITADÃO', '2026-06-15')).toEqual({
+      recebido: 2022520,
+      pago: 1592700,
+    });
+  });
 });

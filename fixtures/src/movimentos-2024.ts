@@ -1,7 +1,7 @@
 import { atividade, type Linha } from './linhas.ts';
 
 const funcionamento = atividade('Funcionamento');
-const zumba = atividade('Zumba na Caneca');
+const zumba = atividade('Zumba na Caneca 2024');
 const citadao = atividade('18º CITADÃO');
 const festivais = atividade('Festivais');
 

@@ -201,7 +201,7 @@ export const MOVIMENTOS_2026: readonly Linha[] = [
     'Subsídios e apoios',
     'Banco',
     1500,
-    'Apoio UPV',
+    'Apoio UPV (via AE ESAV)',
   ),
   citadao.entrada(
     '2026-03-28',
@@ -224,7 +224,7 @@ export const MOVIMENTOS_2026: readonly Linha[] = [
     'Subsídios e apoios',
     'Banco',
     500,
-    'Apoio Junta',
+    'Apoio Junta de Freguesia',
   ),
   citadao.entrada(
     '2026-05-02',
@@ -384,7 +384,7 @@ export const MOVIMENTOS_2026: readonly Linha[] = [
   ),
   funcionamento.entrada(
     '2026-09-12',
-    'Atuação: receção ao caloiro',
+    'Atuação · receção ao caloiro',
     'Atuações e serenatas',
     'Caixa',
     350,

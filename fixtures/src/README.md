@@ -10,7 +10,7 @@ Os ficheiros em `fixtures/generated/` são gerados com `npm run build:fixtures` 
 
 ## Ficheiros
 
-- `listas.ts`: rubricas, sub-rubricas, atividades e meios (partilhados com o modelo descarregável).
+- `listas.ts`: rubricas, sub-rubricas, atividades e meios do modelo descarregável, e as listas destes dados (com as atividades das edições anteriores).
 - `movimentos-2024.ts`, `movimentos-2025.ts`, `movimentos-2026.ts`: os movimentos de cada ano, agrupados por atividade.
 - `linhas.ts`: funções auxiliares (`entrada`, `saida`, `transferencia`) e a numeração dos documentos (R-, P- e T-, que recomeça em cada ano).
 - `tesouraria.ts`: junta tudo com os pendentes, o orçamento, os géneros e os saldos.
@@ -47,7 +47,7 @@ O saldo de 31/12/2023 só fixa o ponto de partida (a divisão entre caixa e banc
 ## Escolhas que o modelo não fixa
 
 - **Rubricas das despesas do 20º CITADÃO e da Zumba**: Prémios e Júri em `Prémios e troféus`, cartazes em `Comunicação e gráfica`, licenças em `Taxas e licenças`, seguro em `Seguros e despesas bancárias`, diversos e a instrutora em `Outros pagamentos`. Com as despesas bancárias, a reparação de instrumentos e a taxa de registo do Funcionamento, o grupo "outros pagamentos" soma 2.941,20 €, que arredonda para os 2.941 € do painel visual.
-- **Duas atividades extra** (`18º CITADÃO` e `19º CITADÃO`) para os eventos de 2024 e 2025, e as sub-rubricas `Inscrições` e `Despesas bancárias`.
+- **Uma atividade por edição**: os eventos de 2024 e 2025 usam `18º CITADÃO`, `19º CITADÃO`, `Zumba na Caneca 2024` e `Zumba na Caneca 2025`, só presentes nas listas destes dados (o modelo descarregável não as inclui). A edição de 2026 mantém `Zumba na Caneca`, para o relatório do evento não somar edições anteriores. As sub-rubricas `Inscrições` e `Despesas bancárias` são partilhadas com o modelo.
 - **Pendentes de 2025 liquidados em 2026**: o apoio da Câmara Municipal (1.000,00 €) e o saldo do fornecedor de som (450,00 €) entram em janeiro de 2026 em Funcionamento e Festivais, para o painel por atividade ficar só com as quatro atividades do período.
 - **Transferências**: as duas linhas de cada depósito levam a atividade de origem do numerário.
 - **Géneros**: datados de 30/04/2026 (início do evento), para não gerarem avisos de géneros sem data nos relatórios por período.
