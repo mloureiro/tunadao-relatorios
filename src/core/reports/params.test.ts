@@ -55,6 +55,18 @@ describe('date and money parsing', () => {
     ).toBe(cents);
   });
 
+  it('rejects a sub-cent amount at its own field instead of rounding it', () => {
+    const result = pegadaParamsSchema.safeParse({
+      ...pegada,
+      saldoExtrato: '10,005',
+    });
+
+    expect(result.error?.issues[0]).toMatchObject({
+      path: ['saldoExtrato'],
+      message: 'O valor "10,005" tem mais de 2 casas decimais.',
+    });
+  });
+
   it('rejects money that is not a number', () => {
     const result = pegadaParamsSchema.safeParse({
       ...pegada,
@@ -235,5 +247,53 @@ describe('letivo and fiscal rules', () => {
       letivoParamsSchema.safeParse({ inicio: '2026-09-01', fim: '2026-08-31' })
         .success,
     ).toBe(false);
+  });
+});
+
+describe('error messages', () => {
+  const ENGLISH =
+    /Invalid|expected|Unrecognized|Too small|Too big|Required|Input/;
+
+  it.each([
+    ['unknown key', eventoParamsSchema, { ...evento, extra: 1 }],
+    ['missing field', eventoParamsSchema, { ...evento, atividade: undefined }],
+    ['wrong type', eventoParamsSchema, { ...evento, atividade: 5 }],
+    ['blank text', eventoParamsSchema, { ...evento, atividade: '  ' }],
+    [
+      'bad flag',
+      letivoParamsSchema,
+      { inicio: '2026-01-01', fim: '2026-08-31', anexar: 'sim' },
+    ],
+    ['fraction year', fiscalParamsSchema, { ano: 2025.5 }],
+    ['text year', fiscalParamsSchema, { ano: 'abc' }],
+    ['small year', fiscalParamsSchema, { ano: 1800 }],
+    [
+      'negative count',
+      pegadaParamsSchema,
+      { ...pegada, contagem: { '5': -1 } },
+    ],
+    [
+      'fraction count',
+      pegadaParamsSchema,
+      { ...pegada, contagem: { '5': 2.5 } },
+    ],
+    ['bad list', pegadaParamsSchema, { ...pegada, naoDebitados: 'x' }],
+    [
+      'bad item',
+      pegadaParamsSchema,
+      { ...pegada, naoDebitados: [{ descricao: 1 }] },
+    ],
+    [
+      'bad opening',
+      pegadaParamsSchema,
+      { ...pegada, aberturaManual: { caixa: 'x', extra: 1 } },
+    ],
+  ])('speaks pt-PT for %s', (_, schema, input) => {
+    const result = schema.safeParse(input);
+
+    expect(result.success).toBe(false);
+    const messages = result.error?.issues.map((issue) => issue.message) ?? [];
+    expect(messages.length).toBeGreaterThan(0);
+    for (const message of messages) expect(message).not.toMatch(ENGLISH);
   });
 });
