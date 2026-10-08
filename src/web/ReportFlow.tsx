@@ -4,6 +4,7 @@ import type { LoadResult } from '@/core/pipeline';
 import type { ReportTipo } from '@/core/reports';
 import { config } from './config';
 import { EngineLoadError, renderReport } from './engine';
+import { engineProgressLabel } from './engine-progress';
 import type { FormApi } from './form-controls';
 import { lisbonDateTime } from '@/host/lisbon-time';
 import { PreviewPanel, type GeneratedReport } from './PreviewPanel';
@@ -49,10 +50,6 @@ const initialForms: Record<ReportTipo, ReportFormValues> = {
   letivo: emptyForm('letivo'),
   fiscal: emptyForm('fiscal'),
 };
-
-function megabytes(bytes: number): string {
-  return (bytes / 1_048_576).toFixed(1);
-}
 
 export function ReportFlow({
   loadResult,
@@ -205,7 +202,6 @@ export function ReportFlow({
       const message =
         error instanceof EngineLoadError ? error.message : GENERIC_FAILURE;
       setFailure(message);
-      onAnnounce(message);
     } finally {
       setGenerating(false);
     }
@@ -316,12 +312,7 @@ export function ReportFlow({
               <span class="hint">Resolva os erros acima para gerar o PDF.</span>
             )}
             {generating && engine.status === 'loading' && (
-              <span class="hint">
-                A preparar o motor de PDF
-                {engine.progress === null
-                  ? '…'
-                  : ` (${megabytes(engine.progress.loaded)} MB)`}
-              </span>
+              <span class="hint">{engineProgressLabel(engine.progress)}</span>
             )}
           </div>
         </form>

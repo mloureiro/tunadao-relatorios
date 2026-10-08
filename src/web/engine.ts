@@ -57,8 +57,17 @@ export async function renderReport(
     return pdf;
   } catch (error) {
     if (!(error instanceof EngineLoadError)) {
+      console.error('Falha ao gerar o PDF:', error);
       setEngine({ status: 'error', message: RENDER_FAILURE });
     }
     throw error;
   }
+}
+
+export function warmUpWhenIdle(): void {
+  const start = () => {
+    void startEngine().catch(() => undefined);
+  };
+  if ('requestIdleCallback' in window) window.requestIdleCallback(start);
+  else setTimeout(start, 200);
 }
