@@ -8,11 +8,10 @@ import {
   type ReportJson,
   type ReportTipo,
 } from '@/core/reports';
+import { fieldErrors, type FieldErrors } from '@/core/reports/field-errors';
 import { GENERATOR_VERSION } from '@/core/version';
 import { eventoStem, fiscalStem, letivoStem, pegadaStem } from './report-files';
 import { toRawParams, type ReportFormValues } from './report-form';
-
-export type FieldErrors = Readonly<Record<string, string>>;
 
 export type Evaluation =
   | { readonly status: 'invalid'; readonly errors: FieldErrors }
@@ -24,31 +23,6 @@ export type Evaluation =
       readonly issues: readonly Issue[];
       readonly stem: string;
     };
-
-export const REQUIRED_MESSAGE = 'Campo obrigatório.';
-
-function valueAt(source: unknown, path: readonly PropertyKey[]): unknown {
-  let current = source;
-  for (const step of path) {
-    if (typeof current !== 'object' || current === null) return undefined;
-    current = (current as Record<PropertyKey, unknown>)[step];
-  }
-  return current;
-}
-
-export function fieldErrors(
-  issues: readonly z.core.$ZodIssue[],
-  raw: unknown,
-): FieldErrors {
-  const errors: Record<string, string> = {};
-  for (const issue of issues) {
-    const key = issue.path.map(String).join('/');
-    const blank = valueAt(raw, issue.path);
-    errors[key] ??=
-      blank === undefined || blank === '' ? REQUIRED_MESSAGE : issue.message;
-  }
-  return errors;
-}
 
 function run<T extends ReportTipo>(
   tipo: T,

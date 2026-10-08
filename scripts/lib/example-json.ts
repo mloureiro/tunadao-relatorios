@@ -6,7 +6,7 @@ import { paramsSchemas } from '../../src/core/reports/index.ts';
 import type { ReportJson, ReportTipo } from '../../src/core/reports/index.ts';
 import { GENERATOR_VERSION } from '../../src/core/version.ts';
 
-export const EXAMPLE_NOW = '2026-10-07T12:00:00Z';
+export const EXAMPLE_NOW = '2026-10-07T12:00:00';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 

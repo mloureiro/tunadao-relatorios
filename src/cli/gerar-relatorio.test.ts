@@ -70,7 +70,7 @@ function writtenJson(run: Harness, path: string): Record<string, unknown> {
 
 function withoutTraceKey(
   report: Record<string, unknown>,
-  key: 'generatedAt' | 'sources',
+  key: 'sources',
 ): Record<string, unknown> {
   const copy = structuredClone(report) as { trace: Record<string, unknown> };
   return { ...copy, trace: { ...copy.trace, [key]: undefined } };
@@ -129,9 +129,7 @@ describe('main()', () => {
       );
 
       expect(code).toBe(EXIT.ok);
-      expect(
-        withoutTraceKey(writtenJson(run, 'r.json'), 'generatedAt'),
-      ).toEqual(withoutTraceKey(example, 'generatedAt'));
+      expect(writtenJson(run, 'r.json')).toEqual(example);
     },
   );
 
@@ -231,6 +229,119 @@ describe('main()', () => {
     expect(run.stderr()).toContain('ERRO parâmetro ano:');
     expect(run.written.size).toBe(0);
   });
+
+  it.each([
+    [
+      'a missing required param',
+      ['--tipo', 'fiscal'],
+      'ERRO parâmetro ano: Campo obrigatório.',
+    ],
+    [
+      'a blank required param',
+      ['--tipo', 'fiscal', '--param', 'ano='],
+      'ERRO parâmetro ano: Campo obrigatório.',
+    ],
+    [
+      'a non-numeric number',
+      ['--tipo', 'fiscal', '--param', 'ano=abc'],
+      'ERRO parâmetro ano: Tem de ser um número. (recebido: "abc")',
+    ],
+    [
+      'a fractional integer',
+      ['--tipo', 'fiscal', '--param', 'ano=2025.5'],
+      'ERRO parâmetro ano: Tem de ser um número inteiro. (recebido: "2025.5")',
+    ],
+    [
+      'an unknown key',
+      ['--tipo', 'fiscal', '--param', 'ano=2025', '--param', 'foo=1'],
+      'ERRO Parâmetro desconhecido: foo.',
+    ],
+    [
+      'a bad cash-count quantity',
+      [
+        '--tipo',
+        'pegada',
+        '--params',
+        `${PARAMS_DIR}pegada-2026.json`,
+        '--param',
+        'contagem.50=abc',
+      ],
+      'ERRO parâmetro contagem.50: Tem de ser um número. (recebido: "abc")',
+    ],
+    [
+      'a missing money param',
+      [
+        '--tipo',
+        'pegada',
+        '--param',
+        'dataUltimoRelatorio=2026-08-31',
+        '--param',
+        'dataPassagem=2026-09-30',
+        '--param',
+        'direcaoCessante=a',
+        '--param',
+        'direcaoEntrante=b',
+      ],
+      'ERRO parâmetro saldoExtrato: Campo obrigatório.',
+    ],
+  ])('reports %s in Portuguese with code 2', async (_name, args, line) => {
+    const run = harness();
+
+    const code = await main([...args, '--entrada', XLSX], run.io);
+
+    expect(code).toBe(EXIT.usage);
+    expect(run.stderr().split('\n')).toContain(line);
+    expect(run.written.size).toBe(0);
+  });
+
+  it.each([['__proto__.polluted=1'], ['constructor.prototype.polluted=1']])(
+    'rejects the unsafe param %s with code 2',
+    async (param) => {
+      const run = harness();
+
+      const code = await main(
+        ['--tipo', 'fiscal', '--entrada', XLSX, '--param', param],
+        run.io,
+      );
+
+      expect(code).toBe(EXIT.usage);
+      expect(run.stderr()).toContain('não é permitido');
+      expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    },
+  );
+
+  it.each([['--saida'], ['--json']])(
+    'exits 2, naming the path, when %s cannot be written',
+    async (flag) => {
+      const run = harness();
+      const failing: CliIo = {
+        ...run.io,
+        writeFile: (path) =>
+          path === '/nonexistent/out'
+            ? Promise.reject(new Error('ENOENT: no such directory'))
+            : Promise.resolve(),
+      };
+
+      const code = await main(
+        [
+          '--tipo',
+          'fiscal',
+          '--entrada',
+          XLSX,
+          '--params',
+          `${PARAMS_DIR}fiscal-2025.json`,
+          flag,
+          '/nonexistent/out',
+        ],
+        failing,
+      );
+
+      expect(code).toBe(EXIT.usage);
+      expect(run.stderr()).toContain(
+        'Não foi possível escrever "/nonexistent/out": ENOENT',
+      );
+    },
+  );
 
   it('exits 2 when an input file cannot be read', async () => {
     const run = harness();

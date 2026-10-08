@@ -7,6 +7,7 @@ import { EngineLoadError, renderReport } from './engine';
 import type { FormApi } from './form-controls';
 import { lisbonDateTime } from '@/host/lisbon-time';
 import { PreviewPanel, type GeneratedReport } from './PreviewPanel';
+import { REQUIRED_MESSAGE } from '@/core/reports/field-errors';
 import { ReportFields } from './ReportFields';
 import {
   emptyForm,
@@ -20,7 +21,6 @@ import {
 import { ReportIssues } from './ReportIssues';
 import { ReportPicker, REPORT_CHOICES } from './ReportPicker';
 import {
-  REQUIRED_MESSAGE,
   evaluateForm,
   needsManualOpening,
   reportIssues,

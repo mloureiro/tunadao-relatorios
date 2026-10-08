@@ -50,7 +50,8 @@ npm run gerar -- --tipo evento|pegada|letivo|fiscal --entrada <ficheiro> [--entr
 - `--params` lê um ficheiro JSON com os parâmetros; `--param chave=valor` acrescenta ou substitui um parâmetro.
   Campos aninhados usam pontos (`--param aberturaManual.caixa=100`). Listas (indicadores, contagem de caixa) só
   podem vir do ficheiro JSON.
-- `--saida` por omissão é `relatorio-<tipo>.pdf`. `--json` escreve também o JSON do relatório.
+- `--saida` por omissão é `relatorio-<tipo>.pdf`. `--json` escreve também o JSON do relatório. Ambos substituem um
+  ficheiro existente. `fixtures/params/*.json` mostra os parâmetros de cada tipo.
 - `--agora` é a data e hora de geração em hora de Lisboa; por omissão, a hora atual de Lisboa.
 - Os problemas dos dados saem em stderr, um por linha: `ERRO|AVISO <ficheiro> › <separador> linha N, coluna C:
 mensagem (sugestão: ...)`.
@@ -62,13 +63,14 @@ mensagem (sugestão: ...)`.
 | 2      | utilização incorreta: argumentos, ficheiros ou parâmetros inválidos |
 | 3      | erro interno ao gerar o relatório ou o PDF                          |
 
-Exemplos com os dados fictícios do repositório:
+Exemplos com os dados fictícios do repositório (a pasta `saida/` é ignorada pelo git e tem de existir):
 
 ```
-npm run gerar -- --tipo evento --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/evento-citadao.json
-npm run gerar -- --tipo pegada --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/pegada-2026.json
-npm run gerar -- --tipo letivo --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/letivo-2025-26.json
-npm run gerar -- --tipo fiscal --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/fiscal-2025.json --json fiscal.json
+mkdir -p saida
+npm run gerar -- --tipo evento --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/evento-citadao.json --saida saida/evento.pdf
+npm run gerar -- --tipo pegada --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/pegada-2026.json --saida saida/pegada.pdf
+npm run gerar -- --tipo letivo --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/letivo-2025-26.json --saida saida/letivo.pdf
+npm run gerar -- --tipo fiscal --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/fiscal-2025.json --saida saida/fiscal.pdf --json saida/fiscal.json
 ```
 
 ### Tamanhos medidos

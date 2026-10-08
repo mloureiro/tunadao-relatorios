@@ -24,7 +24,7 @@ vi.mock('./calc/index.ts', async (importOriginal) => {
 
 const ctx = {
   config: CONFIG,
-  now: '2026-10-07T12:00:00Z',
+  now: '2026-10-07T12:00:00',
   generatorVersion: '9.9.9',
 };
 
@@ -209,7 +209,7 @@ describe.each(['evento', 'pegada', 'letivo', 'fiscal'] as const)(
         tipo,
         theme: CONFIG.theme,
         trace: {
-          generatedAt: '2026-10-07T12:00:00Z',
+          generatedAt: '2026-10-07T12:00:00',
           generatedAtLabel: '07/10/2026 12:00',
           sources: [{ name: 'tesouraria.xlsx', sha256Short: 'abababababab' }],
           generatorVersion: '9.9.9',

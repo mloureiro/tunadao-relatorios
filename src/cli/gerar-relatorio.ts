@@ -17,6 +17,11 @@ import {
   type ParamsByTipo,
   type ReportTipo,
 } from '../core/reports/index.ts';
+import {
+  isBlank,
+  REQUIRED_MESSAGE,
+  valueAt,
+} from '../core/reports/field-errors.ts';
 import { GENERATOR_VERSION } from '../core/version.ts';
 import { createNodeRenderer } from '../engine/typst-node.ts';
 import type { Renderer } from '../engine/renderer.ts';
@@ -40,8 +45,11 @@ Opções:
   --params <ficheiro>    Ficheiro JSON com os parâmetros do relatório.
   --param chave=valor    Um parâmetro; repetível e prevalece sobre --params.
                          Use pontos para campos aninhados (aberturaManual.caixa=100).
-  --saida <ficheiro>     PDF a escrever (por omissão relatorio-<tipo>.pdf).
-  --json <ficheiro>      Escreve também o JSON do relatório.
+                         Listas (indicadores, naoDebitados, naoCreditados, contagem) só
+                         podem vir de --params; veja fixtures/params/*.json para os
+                         parâmetros de cada tipo.
+  --saida <ficheiro>     PDF a escrever (por omissão relatorio-<tipo>.pdf). Substitui um ficheiro existente.
+  --json <ficheiro>      Escreve também o JSON do relatório. Substitui um ficheiro existente.
   --agora <aaaa-mm-ddThh:mm>
                          Data e hora de geração, em hora de Lisboa (por omissão, agora).
   --ajuda                Mostra esta ajuda.
@@ -80,12 +88,17 @@ function reason(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+const UNSAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
 function setPath(
   target: Record<string, unknown>,
   key: string,
   value: string,
 ): void {
   const steps = key.split('.');
+  if (steps.some((step) => UNSAFE_KEYS.has(step))) {
+    throw new UsageError(`O parâmetro "${key}" não é permitido.`);
+  }
   const last = steps.pop() ?? key;
   let cursor = target;
   for (const step of steps) {
@@ -154,10 +167,27 @@ type Evaluation =
   | { readonly status: 'invalid'; readonly messages: readonly string[] }
   | BuildReportResult;
 
-function paramMessages(issues: readonly z.core.$ZodIssue[]): string[] {
+function describeReceived(value: unknown, message: string): string {
+  const primitive =
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean';
+  if (!primitive || message.includes(`"${String(value)}"`)) return '';
+  return ` (recebido: "${String(value)}")`;
+}
+
+function paramMessages(
+  issues: readonly z.core.$ZodIssue[],
+  raw: unknown,
+): string[] {
   return issues.map(({ path, message }) => {
-    const where = path.map(String).join('.');
-    return `ERRO parâmetro ${where === '' ? '' : `${where}: `}${message}`;
+    const value = valueAt(raw, path);
+    const text = isBlank(value)
+      ? REQUIRED_MESSAGE
+      : `${message}${describeReceived(value, message)}`;
+    return path.length === 0
+      ? `ERRO ${text}`
+      : `ERRO parâmetro ${path.map(String).join('.')}: ${text}`;
   });
 }
 
@@ -172,7 +202,10 @@ function evaluateWith<T extends ReportTipo>(
 ): Evaluation {
   const parsed = schema.safeParse(raw);
   if (!parsed.success) {
-    return { status: 'invalid', messages: paramMessages(parsed.error.issues) };
+    return {
+      status: 'invalid',
+      messages: paramMessages(parsed.error.issues, raw),
+    };
   }
   return buildReport(tipo, loaded, parsed.data, context);
 }
@@ -198,6 +231,20 @@ function evaluate(
 function printIssues(issues: readonly Issue[], io: CliIo): void {
   for (const issue of sortedForPrinting(issues)) {
     io.stderr(`${formatIssue(issue)}\n`);
+  }
+}
+
+async function writeOutput(
+  io: CliIo,
+  path: string,
+  data: Uint8Array | string,
+): Promise<void> {
+  try {
+    await io.writeFile(path, data);
+  } catch (error) {
+    throw new UsageError(
+      `Não foi possível escrever "${path}": ${reason(error)}`,
+    );
   }
 }
 
@@ -231,25 +278,26 @@ async function run(options: CliOptions, io: CliIo): Promise<number> {
   }
 
   printIssues(result.issues, io);
-  try {
-    if (options.json !== null) {
-      await io.writeFile(
-        options.json,
-        `${JSON.stringify(result.report, null, 2)}\n`,
-      );
-    }
-    const renderer = await io.createRenderer();
-    const { pdf, warnings } = await renderer.render(
-      options.tipo,
-      result.report,
+  if (options.json !== null) {
+    await writeOutput(
+      io,
+      options.json,
+      `${JSON.stringify(result.report, null, 2)}\n`,
     );
-    for (const warning of warnings)
+  }
+  let pdf: Uint8Array;
+  try {
+    const renderer = await io.createRenderer();
+    const rendered = await renderer.render(options.tipo, result.report);
+    for (const warning of rendered.warnings) {
       io.stderr(`AVISO motor de PDF: ${warning}\n`);
-    await io.writeFile(options.saida, pdf);
+    }
+    pdf = rendered.pdf;
   } catch (error) {
     io.stderr(`Erro ao gerar o PDF: ${reason(error)}\n`);
     return EXIT.internal;
   }
+  await writeOutput(io, options.saida, pdf);
 
   io.stdout(`PDF escrito em ${options.saida}\n`);
   return EXIT.ok;
