@@ -3,6 +3,12 @@ import globals from 'globals';
 import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
+const devOnlyImports = {
+  group: ['exceljs', 'jszip', '**/scripts/**', '**/fixtures/**'],
+  message:
+    'The workbook writer and fixtures are dev-only and must not reach the page bundle.',
+};
+
 const coreRestrictedProperty =
   'MemberExpression[property.name=/^(toLocaleString|localeCompare|parseFloat)$/]';
 
@@ -33,6 +39,17 @@ export default defineConfig(
     },
   },
   {
+    files: ['src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [devOnlyImports],
+        },
+      ],
+    },
+  },
+  {
     files: ['src/core/**/*.ts'],
     languageOptions: { globals: globals.es2023 },
     rules: {
@@ -40,6 +57,7 @@ export default defineConfig(
         'error',
         {
           patterns: [
+            devOnlyImports,
             {
               group: ['node:*'],
               message: 'src/core is pure: no Node built-ins.',
