@@ -1190,7 +1190,7 @@
         "sha256Short": "17fb76f7fac1"
       }
     ],
-    "generatorVersion": "0.1.0",
+    "generatorVersion": "1.0.0",
     "attachReport": true
   }
 }
