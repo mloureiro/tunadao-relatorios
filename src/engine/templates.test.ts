@@ -12,6 +12,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { PNG } from 'pngjs';
 import type {
   BudgetSection,
+  ByActivitySection,
   IndicatorsSection,
   MovementsSection,
   ReportJson,
@@ -57,17 +58,15 @@ function pdfPixels(pdf: Uint8Array): PNG {
   try {
     const file = join(dir, 'out.pdf');
     writeFileSync(file, pdf);
-    spawnSync('pdftoppm', [
-      '-r',
-      '72',
-      '-f',
-      '1',
-      '-l',
-      '1',
-      '-png',
-      file,
-      join(dir, 'page'),
-    ]);
+    const result = spawnSync(
+      'pdftoppm',
+      ['-r', '72', '-f', '1', '-l', '1', '-png', file, join(dir, 'page')],
+      { encoding: 'utf8' },
+    );
+    if (result.status !== 0)
+      throw new Error(
+        `pdftoppm failed: ${result.stderr || String(result.error)}`,
+      );
     const png = readdirSync(dir).find((name) => name.endsWith('.png'));
     if (png === undefined) throw new Error('pdftoppm produced no page');
     return PNG.sync.read(readFileSync(join(dir, png)));
@@ -83,6 +82,29 @@ function hasPixel(png: PNG, hex: string): boolean {
       return true;
   }
   return false;
+}
+
+function widestRun(png: PNG, hex: string) {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  let best = { x0: 0, x1: -1, y: 0 };
+  for (let y = 0; y < png.height; y += 1) {
+    let start = -1;
+    for (let x = 0; x <= png.width; x += 1) {
+      const i = (y * png.width + x) * 4;
+      const match =
+        x < png.width &&
+        png.data[i] === r &&
+        png.data[i + 1] === g &&
+        png.data[i + 2] === b;
+      if (match && start < 0) start = x;
+      if (!match && start >= 0) {
+        if (x - 1 - start > best.x1 - best.x0)
+          best = { x0: start, x1: x - 1, y };
+        start = -1;
+      }
+    }
+  }
+  return best;
 }
 
 function withMovementRows(
@@ -176,7 +198,7 @@ describe('evento template', () => {
       expect(warnings).toEqual([]);
       expect(text.match(/ACUMULADO/g)?.length).toBeGreaterThanOrEqual(3);
       expect(text).toContain('Movimento de teste 80');
-      expect(text).toContain('Pago (saídas brutas − reembolsos)');
+      expect(text).toContain('Saídas brutas');
     },
   );
 
@@ -347,31 +369,67 @@ describe('period report templates', () => {
     },
   );
 
-  it('paints the debts segment of the position bar in the theme red', async () => {
-    const report = example('pegada-2026');
-    const position = report.sections.find((s) => s.kind === 'position');
-    if (position?.kind !== 'position') throw new Error('no position section');
-    const render = async (negative: boolean) =>
-      pdfPixels(
+  it.skipIf(!hasPoppler)(
+    'paints the debts segment of the position bar in the theme red',
+    async () => {
+      const report = example('pegada-2026');
+      const position = report.sections.find((s) => s.kind === 'position');
+      if (position?.kind !== 'position') throw new Error('no position section');
+      const render = async (negative: boolean) =>
+        pdfPixels(
+          (
+            await renderer.render(
+              'pegada',
+              onlySections(report, [
+                {
+                  ...position,
+                  segments: position.segments.map((segment) => ({
+                    ...segment,
+                    negative: segment.negative && negative,
+                  })),
+                },
+              ]),
+            )
+          ).pdf,
+        );
+
+      expect(hasPixel(await render(true), report.theme.accentRed)).toBe(true);
+      expect(hasPixel(await render(false), report.theme.accentRed)).toBe(false);
+    },
+  );
+
+  it.skipIf(!hasPoppler)(
+    'draws assets and debts as two left-aligned rows on the same scale',
+    async () => {
+      const report = example('pegada-2026');
+      const position = report.sections.find((s) => s.kind === 'position');
+      if (position?.kind !== 'position') throw new Error('no position');
+      const [assets, debts] = [position.segments[0], position.segments[3]];
+      if (assets === undefined || debts === undefined)
+        throw new Error('segments');
+      const even = [
+        { ...assets, permille: 500 },
+        { ...debts, permille: 500 },
+      ];
+
+      const png = pdfPixels(
         (
           await renderer.render(
             'pegada',
-            onlySections(report, [
-              {
-                ...position,
-                segments: position.segments.map((segment) => ({
-                  ...segment,
-                  negative: segment.negative && negative,
-                })),
-              },
-            ]),
+            onlySections(report, [{ ...position, segments: even }]),
           )
         ).pdf,
       );
+      const top = widestRun(png, report.theme.segments[0] ?? '');
+      const bottom = widestRun(png, report.theme.accentRed);
 
-    expect(hasPixel(await render(true), report.theme.accentRed)).toBe(true);
-    expect(hasPixel(await render(false), report.theme.accentRed)).toBe(false);
-  });
+      expect(bottom.y).toBeGreaterThan(top.y);
+      expect(Math.abs(bottom.x0 - top.x0)).toBeLessThanOrEqual(2);
+      expect(
+        Math.abs(bottom.x1 - bottom.x0 - (top.x1 - top.x0)),
+      ).toBeLessThanOrEqual(4);
+    },
+  );
 
   it.skipIf(!hasPoppler)(
     'lists signed movements, the group outside the result and the variation footer',
@@ -451,27 +509,30 @@ describe('period report templates', () => {
     },
   );
 
-  it('paints the folded "Restantes rubricas" segment in the theme neutral grey', async () => {
-    const report = example('evento-citadao');
-    const render = async (keepFlag: boolean) => {
-      const sections = report.sections.map((section) =>
-        section.kind === 'composition'
-          ? {
-              ...section,
-              segments: section.segments.map(({ folded, ...segment }) =>
-                keepFlag && folded ? { ...segment, folded } : segment,
-              ),
-            }
-          : section,
-      );
-      return pdfPixels(
-        (await renderer.render('evento', { ...report, sections })).pdf,
-      );
-    };
+  it.skipIf(!hasPoppler)(
+    'paints the folded "Restantes rubricas" segment in the theme neutral grey',
+    async () => {
+      const report = example('evento-citadao');
+      const render = async (keepFlag: boolean) => {
+        const sections = report.sections.map((section) =>
+          section.kind === 'composition'
+            ? {
+                ...section,
+                segments: section.segments.map(({ folded, ...segment }) =>
+                  keepFlag && folded ? { ...segment, folded } : segment,
+                ),
+              }
+            : section,
+        );
+        return pdfPixels(
+          (await renderer.render('evento', { ...report, sections })).pdf,
+        );
+      };
 
-    expect(hasPixel(await render(true), report.theme.neutral)).toBe(true);
-    expect(hasPixel(await render(false), report.theme.neutral)).toBe(false);
-  });
+      expect(hasPixel(await render(true), report.theme.neutral)).toBe(true);
+      expect(hasPixel(await render(false), report.theme.neutral)).toBe(false);
+    },
+  );
 });
 
 describe('end of the report', () => {
@@ -494,7 +555,7 @@ describe('end of the report', () => {
         if (
           !last.includes('Gerado em') ||
           !last.includes(`Movimento de teste ${String(rows)}`) ||
-          !last.includes('Pago (saídas brutas − reembolsos)')
+          !last.includes('Saídas brutas')
         )
           lonely.push(rows);
       }
@@ -565,6 +626,86 @@ describe('indicators table', () => {
       }
 
       expect(split).toEqual([]);
+    },
+    120_000,
+  );
+});
+
+describe('table pagination', () => {
+  const sweep = async (
+    table: BudgetSection | ByActivitySection,
+    labels: readonly string[],
+  ) => {
+    const renderer = await createNodeRenderer();
+    const report = example('letivo-2025-26');
+    const pagesOfRows: number[][] = [];
+    for (let filler = 0; filler <= 44; filler += 1) {
+      const { pdf } = await renderer.render(
+        'letivo',
+        onlySections(report, [
+          textOf(
+            Array.from({ length: filler }, (_, i) => `Linha ${String(i + 1)}`),
+            'Enchimento',
+          ),
+          table,
+        ]),
+      );
+      const pages = pdfPages(pdf);
+      pagesOfRows.push(
+        pages
+          .map((page) => labels.filter((label) => page.includes(label)).length)
+          .filter((count) => count > 0),
+      );
+    }
+    return pagesOfRows;
+  };
+
+  it.skipIf(!hasPoppler)(
+    'keeps a table of six rows or fewer whole on one page',
+    async () => {
+      const report = example('letivo-2025-26');
+      const base = report.sections.find(
+        (s): s is ByActivitySection => s.kind === 'byActivity',
+      );
+      if (base === undefined) throw new Error('no byActivity');
+      const table: ByActivitySection = {
+        ...base,
+        rows: Array.from({ length: 6 }, (_, i) => ({
+          ...pick(base.rows, i),
+          atividade: `Atividade ${String(i + 1)}`,
+        })),
+      };
+
+      const spread = await sweep(
+        table,
+        table.rows.map((row) => row.atividade),
+      );
+
+      expect(spread.filter((counts) => counts.length > 1)).toEqual([]);
+    },
+    120_000,
+  );
+
+  it.skipIf(!hasPoppler)(
+    'breaks a longer table only with at least three rows before and two rows plus the total after',
+    async () => {
+      const report = example('evento-citadao');
+      const table = report.sections.find(
+        (s): s is BudgetSection => s.kind === 'budget' && s.side === 'despesa',
+      );
+      if (table === undefined) throw new Error('no budget');
+
+      const spread = await sweep(
+        table,
+        table.rows.map((row) => row.label),
+      );
+
+      const broken = spread.filter((counts) => counts.length > 1);
+      expect(broken.length).toBeGreaterThan(0);
+      for (const counts of broken) {
+        expect(counts[0]).toBeGreaterThanOrEqual(3);
+        expect(counts.at(-1)).toBeGreaterThanOrEqual(2);
+      }
     },
     120_000,
   );

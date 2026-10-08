@@ -13,7 +13,7 @@
   stroke: (bottom: 0.8pt + navy),
 )[#text(size: 8pt, weight: "bold", fill: muted, tracking: 0.3pt, if content.find(regex("\\d")) == none { upper(content) } else { content })]
 
-#let styled-table(columns, align, headers, header: true, ..cells) = {
+#let styled-table(columns, align, headers, ..cells) = {
   set text(size: 8.5pt)
   set table.cell(breakable: false)
   table(
@@ -21,28 +21,61 @@
     align: (x, y) => align.at(x),
     stroke: (x, y) => (bottom: 0.4pt + rule-grey),
     inset: (x: 4pt, y: 5pt),
-    ..if header { (table.header(..headers.map(head-cell)),) } else { () },
+    table.header(..headers.map(head-cell)),
     ..cells,
   )
 }
 
+#let whole-rows = 6
+#let head-rows = 3
 #let tail-rows = 2
 
-#let split-table(columns, align, headers, rows, footer, last) = {
-  let all = rows + footer
-  if all.len() <= short-table-rows {
-    block(spacing: 0pt, breakable: false, sticky: last, styled-table(columns, align, headers, ..all.flatten()))
+#let glue-cell(spanned) = table.cell(rowspan: spanned, breakable: false, stroke: none, inset: 0pt, fill: none)[]
+#let plain-glue = table.cell(stroke: none, inset: 0pt)[]
+
+#let glued-rows(rows, groups) = {
+  let out = ()
+  for (i, row) in rows.enumerate() {
+    let group = groups.find(g => g.at(0) <= i and i < g.at(0) + g.at(1))
+    if group == none { out.push(plain-glue) }
+    else if group.at(0) == i { out.push(glue-cell(group.at(1))) }
+    out += row
+  }
+  out
+}
+
+#let row-table(columns, align, headers, rows, groups: (), header: true) = {
+  set text(size: 8.5pt)
+  set table.cell(breakable: false)
+  table(
+    columns: (0pt,) + columns,
+    align: (x, y) => if x == 0 { left } else { align.at(x - 1) },
+    stroke: (x, y) => if x == 0 { none } else { (bottom: 0.4pt + rule-grey) },
+    inset: (x: 4pt, y: 5pt),
+    ..if header { (table.header(plain-glue, ..headers.map(head-cell)),) } else { () },
+    ..glued-rows(rows, groups),
+  )
+}
+
+#let note-row(span, note) = (
+  table.cell(colspan: span, stroke: none, inset: (x: 4pt, top: 6pt, bottom: 0pt), text(size: 8pt, style: "italic", fill: muted, note)),
+)
+
+#let split-table(columns, align, headers, rows, footer, last: false, note: none) = {
+  let tail = footer + if note == none { () } else { (note-row(columns.len(), note),) }
+  let count = rows.len()
+  if count <= whole-rows {
+    block(spacing: 0pt, breakable: false, sticky: last, row-table(columns, align, headers, rows + tail))
   } else if last {
-    let keep = calc.min(rows.len(), tail-rows)
-    let head = rows.slice(0, rows.len() - keep)
-    let tail = rows.slice(rows.len() - keep) + footer
-    block(spacing: 0pt, styled-table(columns, align, headers, ..head.flatten()))
+    let main = rows.slice(0, count - tail-rows)
+    block(spacing: 0pt, row-table(columns, align, headers, main, groups: ((0, head-rows),)))
     block(spacing: 0pt, sticky: true, breakable: false, context {
       let starts-page = here().position().y < page-top + 2pt
-      styled-table(columns, align, headers, header: starts-page, ..tail.flatten())
+      row-table(columns, align, headers, rows.slice(count - tail-rows) + tail, header: starts-page)
     })
   } else {
-    block(spacing: 0pt, styled-table(columns, align, headers, ..all.flatten()))
+    let groups = ((0, head-rows), (count - tail-rows, tail-rows + tail.len()))
+    block(spacing: 0pt, row-table(columns, align, headers, rows + tail, groups: groups))
   }
 }
 
@@ -119,21 +152,17 @@
   )
 }
 
-#let budget(section) = keep-whole(section.rows.len() + 1, {
+#let budget(section) = {
   heading(level: 2, section.title)
-  styled-table(
+  split-table(
     (1fr, 2.5cm, 2.5cm, 2.5cm, 1.9cm),
     (left, right, right, right, right),
     ("Rubrica", "Orçado", "Realizado", "Desvio", "Execução"),
-    ..section.rows.map(row => budget-row(section.side, row)).flatten(),
-    ..budget-row(section.side, section.total, total: true),
+    section.rows.map(row => budget-row(section.side, row)),
+    (budget-row(section.side, section.total, total: true),),
+    note: section.at("note", default: none),
   )
-  let note = section.at("note", default: none)
-  if note != none {
-    v(0.15cm)
-    text(size: 8pt, style: "italic", fill: muted, note)
-  }
-})
+}
 
 #let indicators(section) = keep-whole(section.rows.len(), {
   heading(level: 2, section.title)
@@ -202,52 +231,45 @@
       text(weight: "bold", total.text),
     )
   } else {
-    let cells = rows.map(row => (
-      row.entidade,
-      {
-        row.descricao
-        let notes = row.at("notas", default: none)
-        if notes != none {
-          linebreak()
-          text(size: 8pt, style: "italic", fill: muted, notes)
-        }
-      },
-      row.registo,
-      row.valor.text,
-    )).flatten()
-    styled-table(
+    split-table(
       (3.6cm, 1fr, 1.9cm, 2.4cm),
       (left, left, left, right),
       ("Entidade", "Descrição", "Registo", "Valor"),
-      ..cells,
-      total-cell(colspan: 3, total-label),
-      total-cell(total.text),
+      rows.map(row => (
+        row.entidade,
+        {
+          row.descricao
+          let notes = row.at("notas", default: none)
+          if notes != none {
+            linebreak()
+            text(size: 8pt, style: "italic", fill: muted, notes)
+          }
+        },
+        row.registo,
+        row.valor.text,
+      )),
+      ((total-cell(colspan: 3, total-label), total-cell(total.text)),),
     )
   }
 }
 
-#let pending-keep-together-rows = 12
-
 #let pending(section) = {
-  let keep-together = section.receber.len() + section.pagar.len() <= pending-keep-together-rows
-  block(above: 0.75cm, breakable: not keep-together, {
-    heading(level: 2, section.title)
-    text(size: 9pt, fill: muted, section.refLabel)
-    pending-side(
-      "A receber",
-      section.receber,
-      section.at("emptyReceber", default: "Nada a receber"),
-      section.totals.receber,
-      "Total a receber",
-    )
-    pending-side(
-      "A pagar",
-      section.pagar,
-      section.at("emptyPagar", default: "Nada a pagar"),
-      section.totals.pagar,
-      "Total a pagar",
-    )
-  })
+  heading(level: 2, section.title)
+  block(sticky: true, below: 0.2cm, text(size: 9pt, fill: muted, section.refLabel))
+  pending-side(
+    "A receber",
+    section.receber,
+    section.at("emptyReceber", default: "Nada a receber"),
+    section.totals.receber,
+    "Total a receber",
+  )
+  pending-side(
+    "A pagar",
+    section.pagar,
+    section.at("emptyPagar", default: "Nada a pagar"),
+    section.totals.pagar,
+    "Total a pagar",
+  )
 }
 
 #let balance-ink(cents) = if cents < 0 { red } else { black }
@@ -303,11 +325,11 @@
   heading(level: 2, section.title)
   let rows = section.rows.map(layout.cells)
   if outside == none {
-    split-table(layout.columns, layout.align, layout.headers, rows, footer, last)
+    split-table(layout.columns, layout.align, layout.headers, rows, footer, last: last)
   } else {
-    split-table(layout.columns, layout.align, layout.headers, rows, (), false)
+    split-table(layout.columns, layout.align, layout.headers, rows, ())
     heading(level: 3, outside.title)
-    split-table(layout.columns, layout.align, layout.headers, outside.rows.map(layout.cells), footer, last)
+    split-table(layout.columns, layout.align, layout.headers, outside.rows.map(layout.cells), footer, last: last)
   }
 }
 
@@ -403,24 +425,26 @@
   position-legend(section.segments)
 })
 
-#let by-activity(section) = keep-whole(section.rows.len() + 1, {
+#let by-activity(section) = {
   heading(level: 2, section.title)
-  styled-table(
+  split-table(
     (1fr, 2.8cm, 2.8cm, 2.8cm),
     (left, right, right, right),
     ("Atividade", "Recebido", "Pago", "Resultado"),
-    ..section.rows.map(row => (
+    section.rows.map(row => (
       row.atividade,
       row.recebido.text,
       row.pago.text,
       text(fill: balance-ink(row.resultado.cents), row.resultado.text),
-    )).flatten(),
-    total-cell("Total"),
-    total-cell(align: right, section.total.recebido.text),
-    total-cell(align: right, section.total.pago.text),
-    total-cell(align: right, section.total.resultado.text),
+    )),
+    ((
+      total-cell("Total"),
+      total-cell(align: right, section.total.recebido.text),
+      total-cell(align: right, section.total.pago.text),
+      total-cell(align: right, section.total.resultado.text),
+    ),),
   )
-})
+}
 
 #let comparison-row(row) = {
   let wrap = if row.kind == "saldo" or row.kind == "total" { body => total-cell(body) } else { body => body }
@@ -445,11 +469,12 @@
       text(size: 9.5pt, fill: muted, section.at("message", default: "Sem dados no período de comparação.")),
     )
   } else {
-    styled-table(
+    split-table(
       (1fr, 3.1cm, 3.1cm, 2.7cm),
       (left, right, right, right),
       ("Rubrica", section.labels.at(0), section.labels.at(1), "Variação"),
-      ..section.rows.map(comparison-row).flatten(),
+      section.rows.map(comparison-row),
+      (),
     )
     let bars = section.at("bars", default: ())
     for (side, title) in (("receita", "Recebido por rubrica"), ("despesa", "Pago por rubrica")) {

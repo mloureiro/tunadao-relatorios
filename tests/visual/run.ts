@@ -24,7 +24,7 @@ const DIFF_DIR = `${ROOT}tests/visual/diff/`;
 
 const RESOLUTION = '72';
 const PIXEL_THRESHOLD = 0.1;
-const MAX_DIFFERING_SHARE = 0.005;
+const MAX_DIFFERING_SHARE = 0.0002;
 
 const update = process.argv.includes('--update');
 
