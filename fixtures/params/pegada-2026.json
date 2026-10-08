@@ -1,0 +1,12 @@
+{
+  "dataUltimoRelatorio": "2026-08-31",
+  "dataPassagem": "2026-09-30",
+  "direcaoCessante": "Direção 2025/26",
+  "direcaoEntrante": "Direção 2026/27",
+  "saldoExtrato": 13265.05,
+  "naoDebitados": [],
+  "naoCreditados": [],
+  "contagem": { "50": 8, "20": 5, "10": 3, "5": 5, "2": 6, "1": 6 },
+  "moedasPequenas": 6,
+  "notas": "Valores, pendentes e acessos conferidos pelas duas direções e pelo Conselho Fiscal."
+}

@@ -1,0 +1,158 @@
+﻿Data;N.º doc;Descrição;Atividade;Rubrica;Sub-rubrica;Tipo;Meio;Valor (€);Conta;Valor com sinal (€);Conta para o resultado
+10/02/2024;R-001;Quotas 2024 (44 membros);Funcionamento;Quotas;;Entrada;Banco;880,00 €;Banco;880,00 €;Sim
+24/02/2024;P-001;Deslocação a festival de tunas;Festivais;Deslocações;;Saída;Banco;900,00 €;Banco;-900,00 €;Sim
+27/02/2024;P-002;Cartazes e impressões;Zumba na Caneca;Comunicação e gráfica;;Saída;Banco;180,00 €;Banco;-180,00 €;Sim
+02/03/2024;P-003;Canecas personalizadas;Zumba na Caneca;Merchandising e trajes;;Saída;Banco;300,00 €;Banco;-300,00 €;Sim
+05/03/2024;R-002;Patrocínio ginásio local;Zumba na Caneca;Patrocínios;;Entrada;Banco;350,00 €;Banco;350,00 €;Sim
+10/03/2024;P-004;Licença de ruído e SPA;Zumba na Caneca;Taxas e licenças;;Saída;Caixa;100,00 €;Caixa;-100,00 €;Sim
+12/03/2024;R-003;Apoio anual da Câmara Municipal;Funcionamento;Subsídios e apoios;;Entrada;Banco;2 500,00 €;Banco;2 500,00 €;Sim
+12/03/2024;P-005;Aluguer de som;Zumba na Caneca;Produção (som, luz, palco);;Saída;Banco;700,00 €;Banco;-700,00 €;Sim
+13/03/2024;P-006;Bebidas e consumíveis;Zumba na Caneca;Compras para o bar;;Saída;Banco;560,00 €;Banco;-560,00 €;Sim
+16/03/2024;R-004;Inscrições;Zumba na Caneca;Inscrições e bilheteira;;Entrada;Caixa;1 200,00 €;Caixa;1 200,00 €;Sim
+16/03/2024;R-005;Receita de bar;Zumba na Caneca;Bar e merchandising;;Entrada;Caixa;1 300,00 €;Caixa;1 300,00 €;Sim
+18/03/2024;T-001;Depósito do numerário do evento (saída);Zumba na Caneca;Transferências internas;;Saída;Caixa;2 500,00 €;Caixa;-2 500,00 €;Não
+18/03/2024;T-001;Depósito do numerário do evento (entrada);Zumba na Caneca;Transferências internas;;Entrada;Banco;2 500,00 €;Banco;2 500,00 €;Não
+22/03/2024;R-006;Serenata para empresa;Funcionamento;Atuações e serenatas;;Entrada;Banco;1 200,00 €;Banco;1 200,00 €;Sim
+28/03/2024;P-007;T-shirts do evento;18º CITADÃO;Merchandising e trajes;;Saída;Banco;680,00 €;Banco;-680,00 €;Sim
+28/03/2024;P-008;Cartazes e programa;18º CITADÃO;Comunicação e gráfica;;Saída;Banco;360,00 €;Banco;-360,00 €;Sim
+02/04/2024;R-007;Patrocínios do evento;18º CITADÃO;Patrocínios;;Entrada;Banco;1 500,00 €;Banco;1 500,00 €;Sim
+10/04/2024;R-008;Apoio anual da universidade;Funcionamento;Subsídios e apoios;;Entrada;Banco;1 500,00 €;Banco;1 500,00 €;Sim
+15/04/2024;P-009;Licenças e SPA;18º CITADÃO;Taxas e licenças;;Saída;Banco;260,00 €;Banco;-260,00 €;Sim
+20/04/2024;P-010;Som e luz;18º CITADÃO;Produção (som, luz, palco);;Saída;Banco;3 200,00 €;Banco;-3 200,00 €;Sim
+24/04/2024;P-011;Palco e estruturas;18º CITADÃO;Produção (som, luz, palco);;Saída;Banco;1 200,00 €;Banco;-1 200,00 €;Sim
+26/04/2024;R-009;Inscrições das tunas;18º CITADÃO;Inscrições e bilheteira;;Entrada;Banco;2 400,00 €;Banco;2 400,00 €;Sim
+28/04/2024;P-012;Compras para o bar;18º CITADÃO;Compras para o bar;;Saída;Banco;2 000,00 €;Banco;-2 000,00 €;Sim
+04/05/2024;R-010;Bilheteira;18º CITADÃO;Inscrições e bilheteira;;Entrada;Caixa;2 110,00 €;Caixa;2 110,00 €;Sim
+04/05/2024;R-011;Bar (TPA);18º CITADÃO;Bar e merchandising;;Entrada;TPA;2 500,00 €;Banco;2 500,00 €;Sim
+04/05/2024;R-012;Merchandising;18º CITADÃO;Bar e merchandising;;Entrada;Caixa;520,00 €;Caixa;520,00 €;Sim
+06/05/2024;T-002;Depósito do numerário do evento (saída);18º CITADÃO;Transferências internas;;Saída;Caixa;2 600,00 €;Caixa;-2 600,00 €;Não
+06/05/2024;T-002;Depósito do numerário do evento (entrada);18º CITADÃO;Transferências internas;;Entrada;Banco;2 600,00 €;Banco;2 600,00 €;Não
+08/05/2024;P-013;Refeições das tunas;18º CITADÃO;Alimentação e alojamento;;Saída;Banco;2 800,00 €;Banco;-2 800,00 €;Sim
+10/05/2024;P-014;Alojamento;18º CITADÃO;Alimentação e alojamento;;Saída;Banco;1 610,00 €;Banco;-1 610,00 €;Sim
+12/05/2024;P-015;Prémios e troféus;18º CITADÃO;Prémios e troféus;;Saída;Banco;720,00 €;Banco;-720,00 €;Sim
+20/05/2024;R-013;Donativo de antigo membro;Funcionamento;Donativos;;Entrada;Banco;400,00 €;Banco;400,00 €;Sim
+03/06/2024;P-016;Reparação de instrumentos;Funcionamento;Instrumentos e manutenção;;Saída;Banco;340,00 €;Banco;-340,00 €;Sim
+15/06/2024;R-014;Atuação em casamento;Funcionamento;Atuações e serenatas;;Entrada;Caixa;780,00 €;Caixa;780,00 €;Sim
+13/07/2024;P-017;Deslocação a festival de tunas;Festivais;Deslocações;;Saída;Banco;1 100,00 €;Banco;-1 100,00 €;Sim
+20/08/2024;P-018;Som do Arraial;Festivais;Produção (som, luz, palco);;Saída;Banco;820,00 €;Banco;-820,00 €;Sim
+20/08/2024;P-019;Compras para o bar do Arraial;Festivais;Compras para o bar;;Saída;Banco;400,00 €;Banco;-400,00 €;Sim
+24/08/2024;R-015;Bar do Arraial;Festivais;Bar e merchandising;;Entrada;TPA;1 000,00 €;Banco;1 000,00 €;Sim
+06/09/2024;P-020;Material de escritório e diversos;Funcionamento;Outros pagamentos;;Saída;Caixa;122,35 €;Caixa;-122,35 €;Sim
+12/09/2024;R-016;Venda de material antigo;Funcionamento;Outros recebimentos;;Entrada;Caixa;40,00 €;Caixa;40,00 €;Sim
+01/10/2024;P-021;Seguro de equipamento;Funcionamento;Seguros e despesas bancárias;;Saída;Banco;350,00 €;Banco;-350,00 €;Sim
+05/10/2024;R-017;Quotas 2024 em numerário (15 membros);Funcionamento;Quotas;;Entrada;Caixa;300,00 €;Caixa;300,00 €;Sim
+19/10/2024;P-022;Gasolina e portagens;Funcionamento;Deslocações;;Saída;Caixa;610,00 €;Caixa;-610,00 €;Sim
+09/11/2024;P-023;Cordas e acessórios;Funcionamento;Instrumentos e manutenção;;Saída;Banco;300,00 €;Banco;-300,00 €;Sim
+20/11/2024;R-018;Donativo em numerário;Funcionamento;Donativos;;Entrada;Caixa;220,00 €;Caixa;220,00 €;Sim
+07/12/2024;R-019;Atuação de Natal;Funcionamento;Atuações e serenatas;;Entrada;Banco;1 000,00 €;Banco;1 000,00 €;Sim
+20/12/2024;T-003;Depósito de numerário (saída);Funcionamento;Transferências internas;;Saída;Caixa;502,25 €;Caixa;-502,25 €;Não
+20/12/2024;T-003;Depósito de numerário (entrada);Funcionamento;Transferências internas;;Entrada;Banco;502,25 €;Banco;502,25 €;Não
+31/12/2024;P-024;Despesas bancárias de 2024;Funcionamento;Seguros e despesas bancárias;;Saída;Banco;48,10 €;Banco;-48,10 €;Sim
+08/02/2025;R-001;Quotas 2025 (48 membros);Funcionamento;Quotas;;Entrada;Banco;960,00 €;Banco;960,00 €;Sim
+22/02/2025;R-002;Serenata para empresa;Funcionamento;Atuações e serenatas;;Entrada;Banco;1 100,00 €;Banco;1 100,00 €;Sim
+26/02/2025;P-001;Deslocação a atuação;Funcionamento;Deslocações;;Saída;Banco;840,00 €;Banco;-840,00 €;Sim
+02/03/2025;P-002;Canecas personalizadas;Zumba na Caneca;Merchandising e trajes;;Saída;Banco;650,00 €;Banco;-650,00 €;Sim
+03/03/2025;P-003;Cartazes e impressões;Zumba na Caneca;Comunicação e gráfica;;Saída;Banco;210,00 €;Banco;-210,00 €;Sim
+04/03/2025;R-003;Patrocínio ginásio local;Zumba na Caneca;Patrocínios;;Entrada;Banco;500,00 €;Banco;500,00 €;Sim
+10/03/2025;P-004;Licença de ruído e SPA;Zumba na Caneca;Taxas e licenças;;Saída;Caixa;100,00 €;Caixa;-100,00 €;Sim
+11/03/2025;P-005;Bebidas e consumíveis;Zumba na Caneca;Compras para o bar;;Saída;Banco;615,00 €;Banco;-615,00 €;Sim
+12/03/2025;P-006;Aluguer de som;Zumba na Caneca;Produção (som, luz, palco);;Saída;Banco;200,00 €;Banco;-200,00 €;Sim
+14/03/2025;R-004;Apoio da Câmara Municipal (1.ª tranche);19º CITADÃO;Subsídios e apoios;;Entrada;Banco;2 000,00 €;Banco;2 000,00 €;Sim
+15/03/2025;R-005;Inscrições;Zumba na Caneca;Inscrições e bilheteira;;Entrada;Caixa;1 200,00 €;Caixa;1 200,00 €;Sim
+15/03/2025;R-006;Receita de bar;Zumba na Caneca;Bar e merchandising;;Entrada;Caixa;1 400,00 €;Caixa;1 400,00 €;Sim
+17/03/2025;T-001;Depósito do numerário do evento (saída);Zumba na Caneca;Transferências internas;;Saída;Caixa;2 600,00 €;Caixa;-2 600,00 €;Não
+17/03/2025;T-001;Depósito do numerário do evento (entrada);Zumba na Caneca;Transferências internas;;Entrada;Banco;2 600,00 €;Banco;2 600,00 €;Não
+28/03/2025;P-007;T-shirts do evento;19º CITADÃO;Merchandising e trajes;;Saída;Banco;800,00 €;Banco;-800,00 €;Sim
+01/04/2025;R-007;Patrocínios do evento;19º CITADÃO;Patrocínios;;Entrada;Banco;1 700,00 €;Banco;1 700,00 €;Sim
+02/04/2025;P-008;Cartazes e programa;19º CITADÃO;Comunicação e gráfica;;Saída;Banco;400,00 €;Banco;-400,00 €;Sim
+09/04/2025;R-008;Apoio da universidade (via AE ESAV);19º CITADÃO;Subsídios e apoios;;Entrada;Banco;1 500,00 €;Banco;1 500,00 €;Sim
+11/04/2025;R-009;Apoio da Junta de Freguesia;19º CITADÃO;Subsídios e apoios;;Entrada;Banco;500,00 €;Banco;500,00 €;Sim
+15/04/2025;P-009;Licenças e SPA;19º CITADÃO;Taxas e licenças;;Saída;Banco;295,00 €;Banco;-295,00 €;Sim
+22/04/2025;P-010;Som e luz;19º CITADÃO;Produção (som, luz, palco);;Saída;Banco;3 100,00 €;Banco;-3 100,00 €;Sim
+24/04/2025;P-011;Palco e estruturas;19º CITADÃO;Produção (som, luz, palco);;Saída;Banco;1 400,00 €;Banco;-1 400,00 €;Sim
+25/04/2025;R-010;Inscrições das tunas;19º CITADÃO;Inscrições e bilheteira;;Entrada;Banco;2 400,00 €;Banco;2 400,00 €;Sim
+28/04/2025;P-012;Compras para o bar;19º CITADÃO;Compras para o bar;;Saída;Banco;2 000,60 €;Banco;-2 000,60 €;Sim
+03/05/2025;R-011;Bilheteira;19º CITADÃO;Inscrições e bilheteira;;Entrada;Caixa;2 580,00 €;Caixa;2 580,00 €;Sim
+03/05/2025;R-012;Bar (TPA);19º CITADÃO;Bar e merchandising;;Entrada;TPA;2 800,00 €;Banco;2 800,00 €;Sim
+03/05/2025;R-013;Merchandising;19º CITADÃO;Bar e merchandising;;Entrada;Caixa;540,00 €;Caixa;540,00 €;Sim
+05/05/2025;T-002;Depósito do numerário do evento (saída);19º CITADÃO;Transferências internas;;Saída;Caixa;3 100,00 €;Caixa;-3 100,00 €;Não
+05/05/2025;T-002;Depósito do numerário do evento (entrada);19º CITADÃO;Transferências internas;;Entrada;Banco;3 100,00 €;Banco;3 100,00 €;Não
+06/05/2025;P-013;Refeições das tunas;19º CITADÃO;Alimentação e alojamento;;Saída;Banco;3 100,00 €;Banco;-3 100,00 €;Sim
+08/05/2025;P-014;Alojamento;19º CITADÃO;Alimentação e alojamento;;Saída;Banco;1 770,00 €;Banco;-1 770,00 €;Sim
+10/05/2025;P-015;Prémios e troféus;19º CITADÃO;Prémios e troféus;;Saída;Banco;780,00 €;Banco;-780,00 €;Sim
+18/05/2025;R-014;Donativo de antigo membro;Funcionamento;Donativos;;Entrada;Banco;500,00 €;Banco;500,00 €;Sim
+05/06/2025;P-016;Reparação de instrumentos;Funcionamento;Instrumentos e manutenção;;Saída;Banco;520,00 €;Banco;-520,00 €;Sim
+14/06/2025;R-015;Atuação em casamento;Funcionamento;Atuações e serenatas;;Entrada;Caixa;820,00 €;Caixa;820,00 €;Sim
+12/07/2025;P-017;Deslocação a festival de tunas;Festivais;Deslocações;;Saída;Banco;1 200,00 €;Banco;-1 200,00 €;Sim
+22/08/2025;P-018;Compras para o bar do Arraial;Festivais;Compras para o bar;;Saída;Banco;600,00 €;Banco;-600,00 €;Sim
+23/08/2025;R-016;Bar do Arraial;Festivais;Bar e merchandising;;Entrada;TPA;1 200,00 €;Banco;1 200,00 €;Sim
+25/08/2025;P-019;Som do Arraial (pagamento parcial);Festivais;Produção (som, luz, palco);;Saída;Banco;1 650,00 €;Banco;-1 650,00 €;Sim
+05/09/2025;P-020;Material de escritório e diversos;Funcionamento;Outros pagamentos;;Saída;Caixa;168,90 €;Caixa;-168,90 €;Sim
+12/09/2025;R-017;Apoio da Junta de Freguesia ao funcionamento;Funcionamento;Subsídios e apoios;;Entrada;Banco;500,00 €;Banco;500,00 €;Sim
+27/09/2025;R-018;Atuação em jantar de curso;Funcionamento;Atuações e serenatas;;Entrada;Banco;600,00 €;Banco;600,00 €;Sim
+01/10/2025;P-021;Seguro de equipamento;Funcionamento;Seguros e despesas bancárias;;Saída;Banco;360,00 €;Banco;-360,00 €;Sim
+04/10/2025;R-019;Quotas 2025 em numerário (15 membros);Funcionamento;Quotas;;Entrada;Caixa;300,00 €;Caixa;300,00 €;Sim
+17/10/2025;R-020;Venda de material antigo;Funcionamento;Outros recebimentos;;Entrada;Caixa;95,30 €;Caixa;95,30 €;Sim
+18/10/2025;P-022;Gasolina e portagens;Funcionamento;Deslocações;;Saída;Caixa;900,00 €;Caixa;-900,00 €;Sim
+08/11/2025;P-023;Cordas e acessórios;Funcionamento;Instrumentos e manutenção;;Saída;Banco;600,00 €;Banco;-600,00 €;Sim
+15/11/2025;R-021;Atuação de Natal;Funcionamento;Atuações e serenatas;;Entrada;Banco;900,00 €;Banco;900,00 €;Sim
+02/12/2025;R-022;Donativo em numerário;Funcionamento;Donativos;;Entrada;Caixa;350,00 €;Caixa;350,00 €;Sim
+20/12/2025;T-003;Depósito de numerário (saída);Funcionamento;Transferências internas;;Saída;Caixa;361,80 €;Caixa;-361,80 €;Não
+20/12/2025;T-003;Depósito de numerário (entrada);Funcionamento;Transferências internas;;Entrada;Banco;361,80 €;Banco;361,80 €;Não
+31/12/2025;P-024;Despesas bancárias de 2025;Funcionamento;Seguros e despesas bancárias;;Saída;Banco;52,40 €;Banco;-52,40 €;Sim
+12/01/2026;R-001;Apoio da Câmara Municipal (2.ª tranche do 19º CITADÃO);Funcionamento;Subsídios e apoios;Apoio CMV;Entrada;Banco;1 000,00 €;Banco;1 000,00 €;Sim
+20/01/2026;P-001;Fornecedor de som: saldo do Arraial 2025 (FT 2025/311);Festivais;Produção (som, luz, palco);Som e luz;Saída;Banco;450,00 €;Banco;-450,00 €;Sim
+20/02/2026;R-002;Apoio da Câmara Municipal;20º CITADÃO;Subsídios e apoios;Apoio CMV;Entrada;Banco;2 500,00 €;Banco;2 500,00 €;Sim
+24/02/2026;P-002;Cartazes e programa;20º CITADÃO;Comunicação e gráfica;;Saída;Banco;515,00 €;Banco;-515,00 €;Sim
+27/02/2026;R-003;Apoio da universidade (via AE ESAV);20º CITADÃO;Subsídios e apoios;Apoio UPV;Entrada;Banco;1 500,00 €;Banco;1 500,00 €;Sim
+03/03/2026;P-003;Cartazes e impressões;Zumba na Caneca;Comunicação e gráfica;Cartazes e impressões;Saída;Caixa;48,00 €;Caixa;-48,00 €;Sim
+05/03/2026;P-004;Canecas personalizadas (300 un.);Zumba na Caneca;Merchandising e trajes;;Saída;Banco;342,00 €;Banco;-342,00 €;Sim
+10/03/2026;R-004;Patrocínio ginásio local;Zumba na Caneca;Patrocínios;Patrocínio do evento;Entrada;Banco;150,00 €;Banco;150,00 €;Sim
+13/03/2026;P-005;Bebidas e consumíveis;Zumba na Caneca;Compras para o bar;Bebidas e consumíveis;Saída;Banco;612,40 €;Banco;-612,40 €;Sim
+14/03/2026;R-005;Inscrições (247 × 5 €);Zumba na Caneca;Inscrições e bilheteira;Inscrições;Entrada;Caixa;1 235,00 €;Caixa;1 235,00 €;Sim
+14/03/2026;R-006;Receita de bar;Zumba na Caneca;Bar e merchandising;Bar;Entrada;Caixa;1 482,50 €;Caixa;1 482,50 €;Sim
+14/03/2026;R-007;Donativos na caixa do evento;Zumba na Caneca;Donativos;;Entrada;Caixa;60,00 €;Caixa;60,00 €;Sim
+14/03/2026;P-006;Instrutora de zumba;Zumba na Caneca;Outros pagamentos;Outros;Saída;Caixa;200,00 €;Caixa;-200,00 €;Sim
+16/03/2026;P-007;Aluguer de som;Zumba na Caneca;Produção (som, luz, palco);Som e luz;Saída;Banco;180,00 €;Banco;-180,00 €;Sim
+16/03/2026;T-001;Depósito do numerário do evento (saída);Zumba na Caneca;Transferências internas;;Saída;Caixa;2 529,50 €;Caixa;-2 529,50 €;Não
+16/03/2026;T-001;Depósito do numerário do evento (entrada);Zumba na Caneca;Transferências internas;;Entrada;Banco;2 529,50 €;Banco;2 529,50 €;Não
+18/03/2026;P-008;Licença de ruído e SPA;Zumba na Caneca;Taxas e licenças;Licenças e SPA;Saída;Banco;65,00 €;Banco;-65,00 €;Sim
+20/03/2026;P-009;T-shirts do evento;20º CITADÃO;Merchandising e trajes;T-shirts;Saída;Banco;590,00 €;Banco;-590,00 €;Sim
+27/03/2026;P-010;Licenças e SPA;20º CITADÃO;Taxas e licenças;Licenças e SPA;Saída;Banco;310,00 €;Banco;-310,00 €;Sim
+28/03/2026;R-008;Inscrições das tunas;20º CITADÃO;Inscrições e bilheteira;Inscrições de tunas;Entrada;Banco;2 400,00 €;Banco;2 400,00 €;Sim
+01/04/2026;P-011;Seguro do evento;20º CITADÃO;Seguros e despesas bancárias;Seguro;Saída;Banco;185,00 €;Banco;-185,00 €;Sim
+02/04/2026;R-009;Patrocínios do evento;20º CITADÃO;Patrocínios;;Entrada;Banco;2 500,00 €;Banco;2 500,00 €;Sim
+06/04/2026;R-010;Quotas 2026 (38 membros);Funcionamento;Quotas;;Entrada;Banco;760,00 €;Banco;760,00 €;Sim
+08/04/2026;P-012;Deslocação a atuação;Funcionamento;Deslocações;;Saída;Banco;640,00 €;Banco;-640,00 €;Sim
+10/04/2026;R-011;Serenata para empresa;Funcionamento;Atuações e serenatas;;Entrada;Banco;900,00 €;Banco;900,00 €;Sim
+17/04/2026;P-013;Taxa de registo;Funcionamento;Taxas e licenças;;Saída;Banco;40,00 €;Banco;-40,00 €;Sim
+18/04/2026;R-012;Quotas 2026 em numerário (17 membros);Funcionamento;Quotas;;Entrada;Caixa;340,00 €;Caixa;340,00 €;Sim
+20/04/2026;R-013;Apoio da Junta de Freguesia;20º CITADÃO;Subsídios e apoios;Apoio Junta;Entrada;Banco;500,00 €;Banco;500,00 €;Sim
+22/04/2026;P-014;Som e luz;20º CITADÃO;Produção (som, luz, palco);Som e luz;Saída;Banco;3 900,00 €;Banco;-3 900,00 €;Sim
+24/04/2026;P-015;Palco e estruturas;20º CITADÃO;Produção (som, luz, palco);Palco e estruturas;Saída;Banco;1 150,00 €;Banco;-1 150,00 €;Sim
+28/04/2026;P-016;Compras para o bar;20º CITADÃO;Compras para o bar;;Saída;Banco;2 980,60 €;Banco;-2 980,60 €;Sim
+02/05/2026;R-014;Bilheteira (TPA);20º CITADÃO;Inscrições e bilheteira;Bilheteira;Entrada;TPA;3 870,00 €;Banco;3 870,00 €;Sim
+03/05/2026;R-015;Bar (TPA);20º CITADÃO;Bar e merchandising;Bar;Entrada;TPA;6 315,20 €;Banco;6 315,20 €;Sim
+03/05/2026;R-016;Merchandising;20º CITADÃO;Bar e merchandising;Merchandising;Entrada;Caixa;640,00 €;Caixa;640,00 €;Sim
+04/05/2026;P-017;Refeições das tunas;20º CITADÃO;Alimentação e alojamento;Refeições das tunas;Saída;Banco;3 280,00 €;Banco;-3 280,00 €;Sim
+04/05/2026;P-018;Júri;20º CITADÃO;Prémios e troféus;Júri;Saída;Caixa;420,00 €;Caixa;-420,00 €;Sim
+05/05/2026;P-019;Alojamento;20º CITADÃO;Alimentação e alojamento;Alojamento;Saída;Banco;1 640,00 €;Banco;-1 640,00 €;Sim
+06/05/2026;P-020;Prémios e troféus;20º CITADÃO;Prémios e troféus;;Saída;Banco;860,00 €;Banco;-860,00 €;Sim
+15/05/2026;P-021;Despesas bancárias de janeiro a maio;Funcionamento;Seguros e despesas bancárias;Despesas bancárias;Saída;Banco;46,60 €;Banco;-46,60 €;Sim
+23/05/2026;R-017;Atuação em jantar de curso;Funcionamento;Atuações e serenatas;;Entrada;Banco;1 000,00 €;Banco;1 000,00 €;Sim
+30/05/2026;P-022;Gasolina e portagens;Funcionamento;Deslocações;;Saída;Caixa;430,00 €;Caixa;-430,00 €;Sim
+05/06/2026;P-023;Deslocação a festival de tunas;Festivais;Deslocações;;Saída;Banco;1 210,00 €;Banco;-1 210,00 €;Sim
+12/06/2026;P-024;Reparação de instrumentos;Funcionamento;Instrumentos e manutenção;;Saída;Banco;60,00 €;Banco;-60,00 €;Sim
+15/06/2026;P-025;Diversos;20º CITADÃO;Outros pagamentos;Diversos;Saída;Caixa;96,40 €;Caixa;-96,40 €;Sim
+20/06/2026;R-018;Donativo de angariação online;Funcionamento;Donativos;;Entrada;Banco;310,10 €;Banco;310,10 €;Sim
+22/06/2026;P-026;Aluguer de som em festival;Festivais;Produção (som, luz, palco);Som e luz;Saída;Banco;200,00 €;Banco;-200,00 €;Sim
+04/07/2026;R-019;Venda de material antigo;Funcionamento;Outros recebimentos;;Entrada;Caixa;79,90 €;Caixa;79,90 €;Sim
+10/07/2026;P-027;Material de escritório e diversos;Funcionamento;Outros pagamentos;Diversos;Saída;Caixa;95,20 €;Caixa;-95,20 €;Sim
+18/07/2026;R-020;Atuação em festival (cachet);Festivais;Atuações e serenatas;;Entrada;Banco;250,00 €;Banco;250,00 €;Sim
+08/09/2026;R-021;Quotas recebidas (6 membros, regularização);Funcionamento;Quotas;;Entrada;Caixa;120,00 €;Caixa;120,00 €;Sim
+12/09/2026;R-022;Atuação: receção ao caloiro;Funcionamento;Atuações e serenatas;;Entrada;Caixa;350,00 €;Caixa;350,00 €;Sim
+15/09/2026;P-028;Reparação de guitarra;Funcionamento;Instrumentos e manutenção;;Saída;Caixa;85,00 €;Caixa;-85,00 €;Sim
+18/09/2026;R-023;Patrocinador do 20º CITADÃO (saldo);20º CITADÃO;Patrocínios;;Entrada;Banco;250,00 €;Banco;250,00 €;Sim
+22/09/2026;P-029;Renovação do seguro do equipamento;Funcionamento;Seguros e despesas bancárias;Seguro;Saída;Banco;198,50 €;Banco;-198,50 €;Sim
+26/09/2026;P-030;Reembolso a membro (cordas, julho);Funcionamento;Instrumentos e manutenção;;Saída;Caixa;64,30 €;Caixa;-64,30 €;Sim
+30/09/2026;P-031;Despesas bancárias de setembro;Funcionamento;Seguros e despesas bancárias;Despesas bancárias;Saída;Banco;6,20 €;Banco;-6,20 €;Sim
