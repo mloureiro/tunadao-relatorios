@@ -153,6 +153,16 @@ describe('buildEvento()', () => {
     expect(other.total.orcado.cents).toBe(777);
   });
 
+  it('marks only the Resultado card for emphasis', () => {
+    const { report } = build(emptyDataset({ movimentos }));
+
+    const cards = sectionOf(report, 'kpis').cards;
+
+    expect(
+      cards.filter((c) => c.emphasis === true).map((c) => c.label),
+    ).toEqual(['Resultado']);
+  });
+
   it('tags each budget table with its side and explains the deviation sign only for expenses', () => {
     const dataset = emptyDataset({
       movimentos,

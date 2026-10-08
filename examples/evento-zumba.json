@@ -5,7 +5,28 @@
     "navy": "#1D2F6F",
     "light": "#F3F5F9",
     "accentRed": "#B3262E",
-    "accentGold": "#C9A227"
+    "accentGold": "#C9A227",
+    "positive": "#0A7A3D",
+    "segments": [
+      "#2A78D6",
+      "#EB6834",
+      "#1BAF7A",
+      "#EDA100",
+      "#E87BA4",
+      "#008300",
+      "#4A3AA7",
+      "#E34948"
+    ],
+    "segmentInk": [
+      "#FFFFFF",
+      "#000000",
+      "#000000",
+      "#000000",
+      "#000000",
+      "#FFFFFF",
+      "#FFFFFF",
+      "#000000"
+    ]
   },
   "header": {
     "org": "TUNADÃO 1998",
@@ -30,7 +51,8 @@
         },
         {
           "label": "Resultado",
-          "value": "1.480 €"
+          "value": "1.480 €",
+          "emphasis": true
         },
         {
           "label": "Por receber",

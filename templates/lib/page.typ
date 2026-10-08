@@ -3,7 +3,7 @@
 #let navy = rgb(theme.navy)
 #let light = rgb(theme.light)
 #let red = rgb(theme.accentRed)
-#let green = rgb("#0A7A3D")
+#let green = rgb(theme.positive)
 #let muted = luma(90)
 #let rule-grey = luma(220)
 

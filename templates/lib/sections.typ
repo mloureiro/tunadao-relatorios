@@ -23,25 +23,31 @@
 #let kpi-inset = (x: 0.35cm, y: 0.3cm)
 
 #let kpi-body(card) = {
-  text(size: 8pt, fill: muted, upper(card.label))
-  v(0.08cm)
-  text(size: 17pt, weight: "bold", fill: navy, card.value)
+  let emphasis = card.at("emphasis", default: false)
+  let label-ink = if emphasis { white.transparentize(15%) } else { muted }
+  let value-ink = if emphasis { white } else { navy }
+  block(spacing: 0pt, text(size: 8pt, fill: label-ink, upper(card.label)))
+  v(0.18cm)
+  block(spacing: 0pt, text(size: 17pt, weight: "bold", fill: value-ink, card.value))
   let caption = card.at("caption", default: none)
   if caption != none {
-    linebreak()
-    text(size: 8pt, fill: muted, caption)
+    v(0.1cm)
+    block(spacing: 0pt, text(size: 8pt, fill: label-ink, caption))
   }
 }
 
-#let kpi-card(card, height) = block(
-  width: 100%,
-  height: height,
-  fill: light,
-  stroke: 0.5pt + rule-grey,
-  radius: 4pt,
-  inset: kpi-inset,
-  kpi-body(card),
-)
+#let kpi-card(card, height) = {
+  let emphasis = card.at("emphasis", default: false)
+  block(
+    width: 100%,
+    height: height,
+    fill: if emphasis { navy } else { light },
+    stroke: 0.5pt + if emphasis { navy } else { rule-grey },
+    radius: 4pt,
+    inset: kpi-inset,
+    kpi-body(card),
+  )
+}
 
 #let kpis(section) = {
   let count = section.cards.len()

@@ -5,7 +5,28 @@
     "navy": "#1D2F6F",
     "light": "#F3F5F9",
     "accentRed": "#B3262E",
-    "accentGold": "#C9A227"
+    "accentGold": "#C9A227",
+    "positive": "#0A7A3D",
+    "segments": [
+      "#2A78D6",
+      "#EB6834",
+      "#1BAF7A",
+      "#EDA100",
+      "#E87BA4",
+      "#008300",
+      "#4A3AA7",
+      "#E34948"
+    ],
+    "segmentInk": [
+      "#FFFFFF",
+      "#000000",
+      "#000000",
+      "#000000",
+      "#000000",
+      "#FFFFFF",
+      "#FFFFFF",
+      "#000000"
+    ]
   },
   "header": {
     "org": "TUNADÃO 1998",
@@ -241,40 +262,13 @@
           "shareText": "3%"
         },
         {
-          "label": "Taxas e licenças",
+          "label": "Restantes rubricas",
           "value": {
-            "cents": 41500,
-            "text": "415,00 €"
+            "cents": 109820,
+            "text": "1.098,20 €"
           },
-          "permille": 20,
-          "shareText": "2%"
-        },
-        {
-          "label": "Outros pagamentos",
-          "value": {
-            "cents": 39160,
-            "text": "391,60 €"
-          },
-          "permille": 19,
-          "shareText": "2%"
-        },
-        {
-          "label": "Seguros e despesas bancárias",
-          "value": {
-            "cents": 23160,
-            "text": "231,60 €"
-          },
-          "permille": 11,
-          "shareText": "1%"
-        },
-        {
-          "label": "Instrumentos e manutenção",
-          "value": {
-            "cents": 6000,
-            "text": "60,00 €"
-          },
-          "permille": 3,
-          "shareText": "0%"
+          "permille": 53,
+          "shareText": "5%"
         }
       ]
     },
