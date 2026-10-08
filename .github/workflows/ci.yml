@@ -54,14 +54,42 @@ jobs:
         run: |
           pdffonts build/hello.pdf
           ! pdffonts build/hello.pdf | tail -n +3 | grep -vE '\+(Lato|CarterOne)'
-      - name: Compile the event report for both examples
+      - name: Compile every report template against its examples
         run: |
-          for name in evento-citadao evento-zumba; do
-            cp "examples/${name}.json" build/typst-root/data/report.json
-            typst compile --root build/typst-root --font-path assets/fonts --ignore-system-fonts build/typst-root/templates/evento.typ "build/${name}.pdf" 2> "build/${name}.log"
+          for example in examples/*.json; do
+            name=$(basename "${example}" .json)
+            template=$(node -p "JSON.parse(require('fs').readFileSync('${example}', 'utf8')).tipo")
+            cp "${example}" build/typst-root/data/report.json
+            typst compile --root build/typst-root --font-path assets/fonts --ignore-system-fonts "build/typst-root/templates/${template}.typ" "build/${name}.pdf" 2> "build/${name}.log"
             cat "build/${name}.log"
             test ! -s "build/${name}.log"
             ! pdffonts "build/${name}.pdf" | tail -n +3 | grep -vE '\+(Lato|CarterOne)'
           done
           pdftotext build/evento-citadao.pdf - | tr '\302\240' ' ' | grep -F '20.225,20 €'
           pdftotext build/evento-zumba.pdf - | tr '\302\240' ' ' | grep -F '2.927,50 €'
+          pdftotext build/pegada-2026.pdf - | tr '\302\240' ' ' | grep -F '13.844,05 €'
+          pdftotext build/pegada-2026.pdf - | tr '\302\240' ' ' | grep -F '13.964,05 €'
+          pdftotext build/letivo-2025-26.pdf - | tr '\302\240' ' ' | grep -F '27.792,70 €'
+          pdftotext build/fiscal-2025.pdf - | tr '\302\240' ' ' | grep -F '6.231,55 €'
+
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: ./.github/actions/apt-resilience
+      - run: sudo timeout 180 apt-get update && sudo timeout 300 apt-get install -y poppler-utils
+      - run: npm ci
+      - run: npm run test:visual
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: visual-pages
+          path: |
+            tests/visual/actual
+            tests/visual/diff
+          if-no-files-found: ignore
