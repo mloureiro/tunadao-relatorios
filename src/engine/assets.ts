@@ -7,7 +7,13 @@ export interface AssetManifest {
 }
 
 export const defaultManifest: AssetManifest = {
-  templates: ['templates/hello.typ', 'templates/lib/page.typ'],
+  templates: [
+    'templates/hello.typ',
+    'templates/evento.typ',
+    'templates/lib/page.typ',
+    'templates/lib/sections.typ',
+    'templates/lib/charts.typ',
+  ],
   fonts: [
     'assets/fonts/Lato-Regular.ttf',
     'assets/fonts/Lato-Bold.ttf',
