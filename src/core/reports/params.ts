@@ -62,6 +62,34 @@ export interface FiscalParams {
   readonly anexarJson: boolean;
 }
 
+type ZodIssue = Parameters<NonNullable<z.core.$ZodErrorMap>>[0];
+
+function portugueseMessage(issue: ZodIssue): string | undefined {
+  switch (issue.code) {
+    case 'invalid_type':
+      if (issue.input === undefined) return 'Campo obrigatório.';
+      return issue.expected === 'int'
+        ? 'Tem de ser um número inteiro.'
+        : 'Valor com tipo inválido.';
+    case 'unrecognized_keys':
+      return `Parâmetro desconhecido: ${issue.keys.join(', ')}.`;
+    case 'too_small':
+      return issue.origin === 'string' || issue.origin === 'array'
+        ? 'Campo obrigatório.'
+        : `O valor tem de ser pelo menos ${String(issue.minimum)}.`;
+    case 'too_big':
+      return `O valor não pode ser superior a ${String(issue.maximum)}.`;
+    case 'invalid_value':
+      return `Valor inválido. Valores aceites: ${issue.values.map(String).join(', ')}.`;
+    case 'invalid_union':
+      return 'Valor inválido.';
+    default:
+      return 'Valor inválido.';
+  }
+}
+
+const pt = { error: portugueseMessage };
+
 function definedOnly<T extends object>(
   value: T,
 ): { [K in keyof T]?: Exclude<T[K], undefined> } {
@@ -77,20 +105,30 @@ function optional<T extends z.ZodType>(schema: T) {
   return z.preprocess(blankAsAbsent, schema.optional());
 }
 
-const money = z.union([z.number(), z.string()]).transform((value, ctx) => {
-  const parsed = parseMoney(value);
-  if ('issue' in parsed) {
-    ctx.issues.push({
-      code: 'custom',
-      message: `Valor monetário inválido: "${String(value)}".`,
-      input: value,
-    });
-    return z.NEVER;
-  }
-  return parsed.cents;
-});
+const money = z
+  .union([z.number(pt), z.string(pt)], pt)
+  .transform((value, ctx) => {
+    const parsed = parseMoney(value);
+    if ('issue' in parsed) {
+      ctx.issues.push({
+        code: 'custom',
+        message: `Valor monetário inválido: "${String(value)}".`,
+        input: value,
+      });
+      return z.NEVER;
+    }
+    if (parsed.subCent) {
+      ctx.issues.push({
+        code: 'custom',
+        message: `O valor "${String(value)}" tem mais de 2 casas decimais.`,
+        input: value,
+      });
+      return z.NEVER;
+    }
+    return parsed.cents;
+  });
 
-const date = z.string().transform((value, ctx): IsoDate => {
+const date = z.string(pt).transform((value, ctx): IsoDate => {
   const parsed = parseDateText(value);
   if (parsed === null) {
     ctx.issues.push({
@@ -103,32 +141,38 @@ const date = z.string().transform((value, ctx): IsoDate => {
   return parsed;
 });
 
-const text = z.string().trim().min(1, 'Campo obrigatório.');
+const text = z.string(pt).trim().min(1, 'Campo obrigatório.');
 
-const notes = optional(z.string()).transform((value) => {
+const notes = optional(z.string(pt)).transform((value) => {
   const trimmed = value?.trim() ?? '';
   return trimmed === '' ? undefined : trimmed;
 });
 
 const flag = (fallback: boolean) =>
   z
-    .union([
-      z.boolean(),
-      z.enum(['true', 'false']).transform((v) => v === 'true'),
-    ])
+    .union(
+      [
+        z.boolean(pt),
+        z.enum(['true', 'false'], pt).transform((v) => v === 'true'),
+      ],
+      pt,
+    )
     .default(fallback);
 
 const positiveMoney = money.refine((cents) => cents > 0, {
   message: 'O valor tem de ser superior a zero.',
 });
 
-const uncleared = z.strictObject({
-  descricao: text,
-  valor: positiveMoney,
-});
+const uncleared = z.strictObject(
+  {
+    descricao: text,
+    valor: positiveMoney,
+  },
+  pt,
+);
 
 const manualOpening = optional(
-  z.strictObject({ caixa: optional(money), banco: optional(money) }),
+  z.strictObject({ caixa: optional(money), banco: optional(money) }, pt),
 ).transform((value): ManualOpening | undefined => {
   if (value === undefined) return undefined;
   const opening = definedOnly({ Caixa: value.caixa, Banco: value.banco });
@@ -138,11 +182,12 @@ const manualOpening = optional(
 const indicators = z
   .array(
     z
-      .strictObject({ label: z.string(), value: z.string() })
+      .strictObject({ label: z.string(pt), value: z.string(pt) }, pt)
       .refine(
         ({ label, value }) => (label.trim() === '') === (value.trim() === ''),
         { message: 'Indique a designação e o valor do indicador.' },
       ),
+    pt,
   )
   .default([])
   .transform((rows): Indicator[] =>
@@ -159,7 +204,11 @@ const denominationByCents = new Map<number, DenominationCents>(
 );
 
 const cashCount = z
-  .record(z.string(), z.coerce.number().int().min(0))
+  .record(
+    z.string(pt),
+    z.coerce.number(pt).int(pt).min(0, 'A quantidade não pode ser negativa.'),
+    pt,
+  )
   .default({})
   .transform((entries, ctx) => {
     const counted: Partial<Record<DenominationCents, number>> = {};
@@ -189,17 +238,20 @@ const cashCount = z
 const ordered = (from: IsoDate, to: IsoDate) => compare(from, to) <= 0;
 
 export const eventoParamsSchema = z
-  .strictObject({
-    atividade: text,
-    eventoInicio: date,
-    eventoFim: date,
-    contarAte: optional(date),
-    refPendentes: date,
-    ambitoOrcamento: optional(text),
-    indicadores: indicators,
-    notas: notes,
-    anexarJson: flag(true),
-  })
+  .strictObject(
+    {
+      atividade: text,
+      eventoInicio: date,
+      eventoFim: date,
+      contarAte: optional(date),
+      refPendentes: date,
+      ambitoOrcamento: optional(text),
+      indicadores: indicators,
+      notas: notes,
+      anexarJson: flag(true),
+    },
+    pt,
+  )
   .refine(({ eventoInicio, eventoFim }) => ordered(eventoInicio, eventoFim), {
     message: 'O fim do evento não pode ser anterior ao início.',
     path: ['eventoFim'],
@@ -217,24 +269,27 @@ export const eventoParamsSchema = z
   }));
 
 export const pegadaParamsSchema = z
-  .strictObject({
-    dataUltimoRelatorio: date,
-    dataPassagem: date,
-    direcaoCessante: text,
-    direcaoEntrante: text,
-    saldoExtrato: money,
-    naoDebitados: z.array(uncleared).default([]),
-    naoCreditados: z.array(uncleared).default([]),
-    contagem: cashCount,
-    moedasPequenas: optional(
-      money.refine((cents) => cents >= 0, {
-        message: 'O valor não pode ser negativo.',
-      }),
-    ),
-    aberturaManual: manualOpening,
-    notas: notes,
-    anexarJson: flag(true),
-  })
+  .strictObject(
+    {
+      dataUltimoRelatorio: date,
+      dataPassagem: date,
+      direcaoCessante: text,
+      direcaoEntrante: text,
+      saldoExtrato: money,
+      naoDebitados: z.array(uncleared, pt).default([]),
+      naoCreditados: z.array(uncleared, pt).default([]),
+      contagem: cashCount,
+      moedasPequenas: optional(
+        money.refine((cents) => cents >= 0, {
+          message: 'O valor não pode ser negativo.',
+        }),
+      ),
+      aberturaManual: manualOpening,
+      notas: notes,
+      anexarJson: flag(true),
+    },
+    pt,
+  )
   .refine(
     ({ dataUltimoRelatorio, dataPassagem }) =>
       compare(dataUltimoRelatorio, dataPassagem) < 0,
@@ -267,15 +322,18 @@ export const pegadaParamsSchema = z
   }));
 
 export const letivoParamsSchema = z
-  .strictObject({
-    inicio: date,
-    fim: date,
-    ambitoOrcamento: optional(text),
-    aberturaManual: manualOpening,
-    notas: notes,
-    anexar: flag(true),
-    anexarJson: flag(true),
-  })
+  .strictObject(
+    {
+      inicio: date,
+      fim: date,
+      ambitoOrcamento: optional(text),
+      aberturaManual: manualOpening,
+      notas: notes,
+      anexar: flag(true),
+      anexarJson: flag(true),
+    },
+    pt,
+  )
   .refine(({ inicio, fim }) => ordered(inicio, fim), {
     message: 'O fim do período não pode ser anterior ao início.',
     path: ['fim'],
@@ -293,15 +351,22 @@ export const letivoParamsSchema = z
   }));
 
 export const fiscalParamsSchema = z
-  .strictObject({
-    ano: z.coerce.number().int().min(1900).max(9999),
-    ambitoOrcamento: optional(text),
-    parecerCF: notes,
-    notas: notes,
-    anexoMovimentos: flag(false),
-    aberturaManual: manualOpening,
-    anexarJson: flag(true),
-  })
+  .strictObject(
+    {
+      ano: z.coerce
+        .number(pt)
+        .int(pt)
+        .min(1900, 'O ano tem de ser 1900 ou posterior.')
+        .max(9999, 'O ano não pode ser superior a 9999.'),
+      ambitoOrcamento: optional(text),
+      parecerCF: notes,
+      notas: notes,
+      anexoMovimentos: flag(false),
+      aberturaManual: manualOpening,
+      anexarJson: flag(true),
+    },
+    pt,
+  )
   .transform((raw): FiscalParams => ({
     ano: raw.ano,
     ambitoOrcamento: raw.ambitoOrcamento ?? String(raw.ano),
