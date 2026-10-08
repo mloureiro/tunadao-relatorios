@@ -56,7 +56,7 @@
         {
           "label": "Saldo final",
           "value": "13.478 €",
-          "caption": "Caixa 258 € · Banco 13.220 €"
+          "caption": "Caixa 258 € · Banco 13.220 €"
         }
       ]
     },
@@ -1538,20 +1538,6 @@
         },
         {
           "label": "Saídas brutas",
-          "value": {
-            "cents": 2054620,
-            "text": "20.546,20 €"
-          }
-        },
-        {
-          "label": "Recebido (entradas brutas − reembolsos)",
-          "value": {
-            "cents": 2779270,
-            "text": "27.792,70 €"
-          }
-        },
-        {
-          "label": "Pago (saídas brutas − reembolsos)",
           "value": {
             "cents": 2054620,
             "text": "20.546,20 €"

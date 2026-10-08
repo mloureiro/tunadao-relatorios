@@ -353,6 +353,9 @@ export function movementRow(
 export function annexFooterLines(footer: AnnexFooter): FooterLine[] {
   const optional = (label: string, cents: Cents): FooterLine[] =>
     cents === 0 ? [] : [{ label, value: money(cents) }];
+  const hasRefunds =
+    footer.reembolsoEmDespesasCents !== 0 ||
+    footer.reembolsoEmReceitasCents !== 0;
   return [
     { label: 'Entradas brutas', value: money(footer.entradasBrutasCents) },
     { label: 'Saídas brutas', value: money(footer.saidasBrutasCents) },
@@ -364,14 +367,18 @@ export function annexFooterLines(footer: AnnexFooter): FooterLine[] {
       'Reembolsos abatidos às receitas (saídas)',
       footer.reembolsoEmReceitasCents,
     ),
-    {
-      label: 'Recebido (entradas brutas − reembolsos)',
-      value: money(footer.recebidoCents),
-    },
-    {
-      label: 'Pago (saídas brutas − reembolsos)',
-      value: money(footer.pagoCents),
-    },
+    ...(hasRefunds
+      ? [
+          {
+            label: 'Recebido (entradas brutas − reembolsos)',
+            value: money(footer.recebidoCents),
+          },
+          {
+            label: 'Pago (saídas brutas − reembolsos)',
+            value: money(footer.pagoCents),
+          },
+        ]
+      : []),
   ];
 }
 
@@ -486,7 +493,7 @@ export function periodKpis(figures: PeriodFigures): KpisSection {
       card(
         'Saldo final',
         figures.closing.totalCents,
-        `Caixa ${formatEuros(figures.closing.caixaCents)} · Banco ${formatEuros(figures.closing.bancoCents)}`,
+        `Caixa\u00A0${formatEuros(figures.closing.caixaCents)} · Banco\u00A0${formatEuros(figures.closing.bancoCents)}`,
       ),
     ],
   };
