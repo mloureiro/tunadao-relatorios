@@ -68,8 +68,9 @@ function portugueseMessage(issue: ZodIssue): string | undefined {
   switch (issue.code) {
     case 'invalid_type':
       if (issue.input === undefined) return 'Campo obrigatório.';
-      return issue.expected === 'int'
-        ? 'Tem de ser um número inteiro.'
+      if (issue.expected === 'int') return 'Tem de ser um número inteiro.';
+      return issue.expected === 'number'
+        ? 'Tem de ser um número.'
         : 'Valor com tipo inválido.';
     case 'unrecognized_keys':
       return `Parâmetro desconhecido: ${issue.keys.join(', ')}.`;

@@ -12,7 +12,7 @@ import type {
 export const CONFIG = loadConfig(config);
 
 export const CONTEXT: BuildContext = {
-  now: '2026-10-07T12:00:00Z',
+  now: '2026-10-07T12:00:00',
   sources: [{ name: 'tesouraria.xlsx', sha256: 'ab'.repeat(32) }],
   generatorVersion: '9.9.9',
 };

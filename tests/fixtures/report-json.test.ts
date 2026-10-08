@@ -316,7 +316,7 @@ describe('letivo without a previous year', () => {
       letivoParamsSchema.parse({ inicio: '2024-01-01', fim: '2024-08-31' }),
       {
         config: loadConfig(config),
-        now: '2026-10-07T12:00:00Z',
+        now: '2026-10-07T12:00:00',
         generatorVersion: '0.0.0',
       },
     );

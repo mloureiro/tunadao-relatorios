@@ -6,3 +6,4 @@ test-results/
 .DS_Store
 tests/visual/actual/
 tests/visual/diff/
+saida/
