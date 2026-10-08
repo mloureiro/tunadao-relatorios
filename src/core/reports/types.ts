@@ -41,6 +41,7 @@ export interface CompositionSegment {
   readonly value: Money;
   readonly permille: number;
   readonly shareText: string;
+  readonly folded?: true;
 }
 
 export interface CompositionSection {
@@ -262,6 +263,7 @@ export interface ReportJson {
     readonly light: string;
     readonly accentRed: string;
     readonly accentGold: string;
+    readonly neutral: string;
     readonly positive: string;
     readonly segments: readonly string[];
     readonly segmentInk: readonly string[];

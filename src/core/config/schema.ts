@@ -15,6 +15,7 @@ export const configSchema = z.strictObject({
     accentRed: colour,
     accentGold: colour,
     positive: colour,
+    neutral: colour,
     segments: z.array(colour).length(8),
     segmentInk: z.array(colour).length(8),
   }),

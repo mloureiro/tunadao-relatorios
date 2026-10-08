@@ -38,9 +38,22 @@ describe('compositionSection()', () => {
 
     expect(segments).toHaveLength(8);
     expect(folded?.label).toBe('Restantes rubricas');
+    expect(folded?.folded).toBe(true);
+    expect(segments.slice(0, -1).some((segment) => segment.folded)).toBe(false);
     expect(folded?.value.cents).toBe(600);
     expect(folded?.permille).toBe(109);
     expect(folded?.shareText).toBe('11%');
     expect(section?.total.cents).toBe(5500);
+  });
+
+  it('rounds the folded share once from the summed cents, not per folded segment', () => {
+    const section = build([
+      1000, 1000, 1000, 1000, 1000, 1000, 1000, 4, 4, 4, 4,
+    ]);
+
+    const folded = section?.segments.at(-1);
+
+    expect(folded?.value.cents).toBe(16);
+    expect(folded?.permille).toBe(2);
   });
 });

@@ -31,6 +31,7 @@ import {
 } from '../format.ts';
 import type { Issue } from '../issues.ts';
 import { sum } from '../money.ts';
+import { permille } from '../percent.ts';
 import type {
   BridgeRow,
   BridgeSection,
@@ -174,6 +175,13 @@ export function labelOf(row: {
 const MAX_COMPOSITION_SEGMENTS = 8;
 const FOLDED_SEGMENT_LABEL = 'Restantes rubricas';
 
+interface ComposedSegment {
+  readonly label: string;
+  readonly cents: Cents;
+  readonly permille: number;
+  readonly folded?: true;
+}
+
 export function compositionSection(
   title: string,
   level: AggregationLevel,
@@ -195,18 +203,17 @@ export function compositionSection(
       ? positive.segments.slice(0, MAX_COMPOSITION_SEGMENTS - 1)
       : positive.segments;
   const folded = positive.segments.slice(kept.length);
-  const segments =
+  const foldedCents = sum(folded.map((segment) => segment.cents));
+  const segments: ComposedSegment[] =
     folded.length === 0
       ? kept
       : [
           ...kept,
           {
             label: FOLDED_SEGMENT_LABEL,
-            cents: sum(folded.map((segment) => segment.cents)),
-            permille: folded.reduce(
-              (acc, segment) => acc + segment.permille,
-              0,
-            ),
+            cents: foldedCents,
+            permille: permille(foldedCents, positive.totalCents) ?? 0,
+            folded: true,
           },
         ];
   return {
@@ -218,6 +225,7 @@ export function compositionSection(
       value: money(segment.cents),
       permille: segment.permille,
       shareText: formatShare(segment.permille),
+      ...(segment.folded ? { folded: true as const } : {}),
     })),
   };
 }
