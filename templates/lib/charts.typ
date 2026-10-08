@@ -51,14 +51,40 @@
 
 #let position-fill(i, s) = if s.negative { red } else { slot-fill(i) }
 
+#let position-scale = 1000
+
+#let scaled-row(items) = {
+  let used = items.map(((_, s)) => s.permille).sum(default: 0)
+  grid(
+    columns: items.map(((_, s)) => s.permille * 1fr) + ((position-scale - used) * 1fr,),
+    ..items.map(((i, s)) => rect(
+      width: 100%,
+      height: 0.5cm,
+      radius: 2pt,
+      inset: 0pt,
+      stroke: 1pt + white,
+      fill: position-fill(i, s),
+    )),
+    [],
+  )
+}
+
+#let position-row(label, items) = grid(
+  columns: (1.5cm, 1fr),
+  align: horizon,
+  text(size: 8.5pt, weight: "bold", label),
+  scaled-row(items),
+)
+
 #let position-bar(segments) = {
   let drawn = segments.enumerate().filter(((_, s)) => s.permille > 0)
-  if drawn.len() > 0 {
-    grid(
-      columns: drawn.map(((_, s)) => s.permille * 1fr),
-      column-gutter: 2pt,
-      ..drawn.map(((i, s)) => rect(width: 100%, height: 0.8cm, radius: 2pt, inset: 0pt, fill: position-fill(i, s))),
-    )
+  let assets = drawn.filter(((_, s)) => not s.negative)
+  let debts = segments.enumerate().filter(((_, s)) => s.negative).filter(((_, s)) => s.permille > 0)
+  let has-debts = segments.any(s => s.negative)
+  position-row("Ativos", assets)
+  if has-debts {
+    v(0.2cm)
+    position-row("Dívidas", debts)
   }
 }
 
