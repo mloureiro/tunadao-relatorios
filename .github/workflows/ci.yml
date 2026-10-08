@@ -22,6 +22,11 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: Install poppler for the PDF text and pixel assertions
+        run: |
+          printf 'Acquire::Retries "3";\nAcquire::http::Timeout "20";\nAcquire::https::Timeout "20";\nAcquire::ForceIPv4 "true";\n' > /etc/apt/apt.conf.d/80-ci-resilience
+          timeout 180 apt-get update
+          timeout 300 apt-get install -y poppler-utils
       - run: npm ci
       - run: npm run format
       - run: npm run lint
