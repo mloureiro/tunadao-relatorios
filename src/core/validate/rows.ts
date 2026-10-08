@@ -1,10 +1,9 @@
 import { formatDate } from '../format.ts';
+import { TRANSFER_RUBRICA } from '../dataset/domain.ts';
 import type { Dataset, Movimento } from '../dataset/types.ts';
 import { issueMessages, makeIssue, type Issue } from '../issues.ts';
 import { sum } from '../money.ts';
 import { normalise } from '../text.ts';
-
-export const TRANSFER_RUBRICA = 'Transferências internas';
 
 const KEY_SEPARATOR = '\u0000';
 
