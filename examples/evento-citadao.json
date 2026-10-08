@@ -7,6 +7,7 @@
     "accentRed": "#B3262E",
     "accentGold": "#C9A227",
     "positive": "#0A7A3D",
+    "neutral": "#B9BEC9",
     "segments": [
       "#2A78D6",
       "#EB6834",
@@ -233,8 +234,9 @@
             "cents": 152640,
             "text": "1.526,40 €"
           },
-          "permille": 95,
-          "shareText": "10%"
+          "permille": 96,
+          "shareText": "10%",
+          "folded": true
         }
       ]
     },
