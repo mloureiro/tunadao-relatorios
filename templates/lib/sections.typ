@@ -1,6 +1,14 @@
 #import "/templates/lib/page.typ": green, light, muted, navy, red, report, rule-grey
 #import "/templates/lib/charts.typ": composition-bar, composition-legend
 
+#let short-table-rows = 15
+
+#let keep-whole(row-count, body) = block(
+  above: 0.75cm,
+  breakable: row-count > short-table-rows,
+  body,
+)
+
 #let head-cell(content) = table.cell(
   stroke: (bottom: 0.8pt + navy),
 )[#text(size: 8pt, weight: "bold", fill: muted, tracking: 0.3pt, upper(content))]
@@ -20,18 +28,18 @@
 
 #let total-cell(..args, body) = table.cell(fill: light, ..args)[#text(weight: "bold", body)]
 
-#let kpi-inset = (x: 0.35cm, y: 0.3cm)
+#let kpi-inset = (x: 0.35cm, y: 0.4cm)
 
 #let kpi-body(card) = {
   let emphasis = card.at("emphasis", default: false)
   let label-ink = if emphasis { white.transparentize(15%) } else { muted }
   let value-ink = if emphasis { white } else { navy }
   block(spacing: 0pt, text(size: 8pt, fill: label-ink, upper(card.label)))
-  v(0.18cm)
+  v(0.26cm)
   block(spacing: 0pt, text(size: 17pt, weight: "bold", fill: value-ink, card.value))
   let caption = card.at("caption", default: none)
   if caption != none {
-    v(0.1cm)
+    v(0.2cm)
     block(spacing: 0pt, text(size: 8pt, fill: label-ink, caption))
   }
 }
@@ -91,7 +99,7 @@
   )
 }
 
-#let budget(section) = {
+#let budget(section) = keep-whole(section.rows.len() + 1, {
   heading(level: 2, section.title)
   styled-table(
     (1fr, 2.5cm, 2.5cm, 2.5cm, 1.9cm),
@@ -105,7 +113,7 @@
     v(0.15cm)
     text(size: 8pt, style: "italic", fill: muted, note)
   }
-}
+})
 
 #let indicators(section) = {
   heading(level: 2, section.title)
@@ -119,7 +127,7 @@
   )
 }
 
-#let in-kind(section) = {
+#let in-kind(section) = keep-whole(section.rows.len() + 1, {
   heading(level: 2, section.title)
   let rows = section.rows
   let has(field) = rows.any(row => row.at(field, default: none) != none)
@@ -158,7 +166,7 @@
     )
   } else { () }
   styled-table(columns, align, headers, ..cells, ..footer)
-}
+})
 
 #let pending-side(side-title, rows, empty, total, total-label) = {
   heading(level: 3, side-title)
@@ -202,7 +210,7 @@
 
 #let pending(section) = {
   let keep-together = section.receber.len() + section.pagar.len() <= pending-keep-together-rows
-  block(breakable: not keep-together, {
+  block(above: 0.75cm, breakable: not keep-together, {
     heading(level: 2, section.title)
     text(size: 9pt, fill: muted, section.refLabel)
     pending-side(
@@ -224,10 +232,7 @@
 
 #let balance-ink(cents) = if cents < 0 { red } else { black }
 
-#let movements(section) = {
-  if section.columns != "cashbook" {
-    panic("movements: o formato '" + section.columns + "' não é suportado por este modelo")
-  }
+#let movements-table(section) = {
   heading(level: 2, section.title)
   let cells = section.rows.map(row => (
     row.data,
@@ -255,6 +260,13 @@
     ..cells,
     ..footer,
   )
+}
+
+#let movements(section) = {
+  if section.columns != "cashbook" {
+    panic("movements: o formato '" + section.columns + "' não é suportado por este modelo")
+  }
+  keep-whole(section.rows.len() + section.footer.len(), movements-table(section))
 }
 
 #let text-section(section) = {
