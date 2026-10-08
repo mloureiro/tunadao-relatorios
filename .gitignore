@@ -7,3 +7,4 @@ test-results/
 tests/visual/actual/
 tests/visual/diff/
 saida/
+!docs/img/
