@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { formatDateTime } from '@/core/format';
-import { lisbonDateTime } from './lisbon-time';
+import { formatDateTime } from '../core/format.ts';
+import { lisbonDateTime } from './lisbon-time.ts';
 
 describe('lisbonDateTime()', () => {
   it('is one hour ahead of UTC during summer time', () => {
