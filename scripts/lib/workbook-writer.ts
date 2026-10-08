@@ -11,12 +11,19 @@ export interface MovimentoSpec {
   readonly data: IsoDate;
   readonly doc: string | null;
   readonly descricao: string;
-  readonly atividade: string;
+  readonly atividade: string | null;
   readonly rubrica: string;
   readonly subRubrica: string | null;
   readonly tipo: Direcao;
-  readonly meio: string;
+  readonly meio: string | null;
   readonly valorCents: number;
+  readonly typedOver?: TypedOverDerived;
+}
+
+export interface TypedOverDerived {
+  readonly conta?: string;
+  readonly signedCents?: number;
+  readonly contaResultado?: string;
 }
 
 export interface PendenteSpec {
@@ -134,6 +141,14 @@ const SALDOS: readonly ColumnDef[] = [
   { header: 'Fonte', width: 12 },
 ];
 
+export const TABLE_HEADERS = {
+  movimentos: MOVIMENTOS.map((column) => column.header),
+  pendentes: PENDENTES.map((column) => column.header),
+  orcamento: ORCAMENTO.map((column) => column.header),
+  generos: GENEROS.map((column) => column.header),
+  saldos: SALDOS.map((column) => column.header),
+} as const;
+
 const LISTAS_COLUMNS = {
   rubrica: 'A',
   subRubrica: 'E',
@@ -244,19 +259,28 @@ function writeInstrucoes(
   }
 }
 
-function writeMovimentos(workbook: ExcelJS.Workbook, spec: WorkbookSpec): void {
+function writeMovimentos(
+  workbook: ExcelJS.Workbook,
+  spec: WorkbookSpec,
+  derivedRows: number,
+): void {
   const sheet = addTable(workbook, 'Movimentos', MOVIMENTOS);
   const contaDoMeio = new Map(spec.listas.meios.map((m) => [m.meio, m.conta]));
   const resultado = new Map(
     spec.listas.rubricas.map((r) => [r.rubrica, r.contaResultado]),
   );
 
-  for (let row = 2; row <= DERIVED_ROWS; row++) {
+  const lastRow = Math.max(derivedRows, spec.movimentos.length + 1);
+  for (let row = 2; row <= lastRow; row++) {
     const movimento = spec.movimentos[row - 2];
     const sign = movimento?.tipo === 'Saída' ? -1 : 1;
-    const conta = movimento && (contaDoMeio.get(movimento.meio) ?? '');
-    const contaResultado =
-      movimento && (resultado.get(movimento.rubrica) ? 'Sim' : 'Não');
+    const conta = (movimento?.meio && contaDoMeio.get(movimento.meio)) ?? '';
+    const rubricaResultado =
+      movimento && resultado.get(movimento.rubrica) !== undefined
+        ? resultado.get(movimento.rubrica)
+          ? 'Sim'
+          : 'Não'
+        : '';
 
     if (movimento) {
       put(sheet, row, [
@@ -272,17 +296,21 @@ function writeMovimentos(workbook: ExcelJS.Workbook, spec: WorkbookSpec): void {
       ]);
     }
     const r = String(row);
-    sheet.getCell(row, 10).value = {
+    const typed = movimento?.typedOver;
+    sheet.getCell(row, 10).value = typed?.conta ?? {
       formula: `IF(H${r}="","",IFERROR(VLOOKUP(H${r},Listas!$J$2:$K$${String(LAST_ROW)},2,FALSE),""))`,
-      result: conta ?? '',
+      result: conta,
     };
-    sheet.getCell(row, 11).value = {
-      formula: `IF(OR(I${r}="",G${r}=""),"",IF(G${r}="Saída",-I${r},I${r}))`,
-      result: movimento ? sign * euros(movimento.valorCents) : '',
-    };
-    sheet.getCell(row, 12).value = {
+    sheet.getCell(row, 11).value =
+      typed?.signedCents === undefined
+        ? {
+            formula: `IF(OR(I${r}="",G${r}=""),"",IF(G${r}="Saída",-I${r},I${r}))`,
+            result: movimento ? sign * euros(movimento.valorCents) : '',
+          }
+        : euros(typed.signedCents);
+    sheet.getCell(row, 12).value = typed?.contaResultado ?? {
       formula: `IF(E${r}="","",IFERROR(VLOOKUP(E${r},Listas!$A$2:$C$${String(LAST_ROW)},3,FALSE),""))`,
-      result: contaResultado ?? '',
+      result: rubricaResultado,
     };
   }
 
@@ -386,14 +414,17 @@ function writeListas(workbook: ExcelJS.Workbook, { listas }: WorkbookSpec) {
   });
 }
 
-export async function writeWorkbook(spec: WorkbookSpec): Promise<Uint8Array> {
+export async function writeWorkbook(
+  spec: WorkbookSpec,
+  derivedRows: number = DERIVED_ROWS,
+): Promise<Uint8Array> {
   const workbook = new ExcelJS.Workbook();
   workbook.creator = 'TUNADÃO 1998';
   workbook.created = FIXED_TIMESTAMP;
   workbook.modified = FIXED_TIMESTAMP;
 
   writeInstrucoes(workbook, spec.instrucoes);
-  writeMovimentos(workbook, spec);
+  writeMovimentos(workbook, spec, derivedRows);
   writePendentes(workbook, spec);
   writeOrcamento(workbook, spec);
   writeGeneros(workbook, spec);

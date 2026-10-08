@@ -1,0 +1,18 @@
+{
+  "atividade": "20º CITADÃO",
+  "eventoInicio": "2026-04-30",
+  "eventoFim": "2026-05-03",
+  "contarAte": "2026-06-15",
+  "refPendentes": "2026-06-15",
+  "indicadores": [
+    { "label": "Bilhetes vendidos", "value": "645" },
+    { "label": "Tunas participantes", "value": "8" },
+    {
+      "label": "Custo de acolhimento por tuna (refeições + alojamento)",
+      "value": "615,00 €"
+    },
+    { "label": "Margem do bar (receita − compras)", "value": "3.334,60 €" },
+    { "label": "Peso dos apoios públicos no recebido", "value": "22,2%" }
+  ],
+  "notas": "Bilheteira e bar acima do orçado; patrocínios abaixo por falta de um protocolo. Para o próximo CITADÃO: fechar patrocínios até fevereiro e orçar alimentação com o preço por refeição já negociado."
+}

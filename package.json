@@ -21,7 +21,8 @@
     "dev": "vite",
     "preview": "vite preview",
     "gerar": "tsx src/cli/gerar-relatorio.ts",
-    "build:template": "tsx scripts/build-template.ts"
+    "build:template": "tsx scripts/build-template.ts",
+    "build:fixtures": "tsx scripts/build-fixtures.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
