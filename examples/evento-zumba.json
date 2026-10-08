@@ -172,6 +172,25 @@
       ]
     },
     {
+      "kind": "pending",
+      "title": "Direitos e compromissos do evento",
+      "refLabel": "Situação a 18/03/2026",
+      "receber": [],
+      "pagar": [],
+      "emptyReceber": "Nada a receber",
+      "emptyPagar": "Nada a pagar",
+      "totals": {
+        "receber": {
+          "cents": 0,
+          "text": "0,00 €"
+        },
+        "pagar": {
+          "cents": 0,
+          "text": "0,00 €"
+        }
+      }
+    },
+    {
       "kind": "text",
       "title": "Notas / Comentários",
       "paragraphs": [
@@ -188,6 +207,7 @@
           "doc": "P-003",
           "descricao": "Cartazes e impressões",
           "atividade": "Zumba na Caneca",
+          "meio": "Caixa",
           "rubrica": "Cartazes e impressões",
           "valor": {
             "cents": -4800,
@@ -209,6 +229,7 @@
           "doc": "P-004",
           "descricao": "Canecas personalizadas (300 un.)",
           "atividade": "Zumba na Caneca",
+          "meio": "Banco",
           "rubrica": "Merchandising e trajes",
           "valor": {
             "cents": -34200,
@@ -230,6 +251,7 @@
           "doc": "R-004",
           "descricao": "Patrocínio ginásio local",
           "atividade": "Zumba na Caneca",
+          "meio": "Banco",
           "rubrica": "Patrocínio do evento",
           "valor": {
             "cents": 15000,
@@ -251,6 +273,7 @@
           "doc": "P-005",
           "descricao": "Bebidas e consumíveis",
           "atividade": "Zumba na Caneca",
+          "meio": "Banco",
           "rubrica": "Bebidas e consumíveis",
           "valor": {
             "cents": -61240,
@@ -272,6 +295,7 @@
           "doc": "R-005",
           "descricao": "Inscrições (247 × 5 €)",
           "atividade": "Zumba na Caneca",
+          "meio": "Caixa",
           "rubrica": "Inscrições",
           "valor": {
             "cents": 123500,
@@ -293,6 +317,7 @@
           "doc": "R-006",
           "descricao": "Receita de bar",
           "atividade": "Zumba na Caneca",
+          "meio": "Caixa",
           "rubrica": "Bar",
           "valor": {
             "cents": 148250,
@@ -314,6 +339,7 @@
           "doc": "R-007",
           "descricao": "Donativos na caixa do evento",
           "atividade": "Zumba na Caneca",
+          "meio": "Caixa",
           "rubrica": "Donativos",
           "valor": {
             "cents": 6000,
@@ -335,6 +361,7 @@
           "doc": "P-006",
           "descricao": "Instrutora de zumba",
           "atividade": "Zumba na Caneca",
+          "meio": "Caixa",
           "rubrica": "Outros",
           "valor": {
             "cents": -20000,
@@ -356,6 +383,7 @@
           "doc": "P-007",
           "descricao": "Aluguer de som",
           "atividade": "Zumba na Caneca",
+          "meio": "Banco",
           "rubrica": "Som e luz",
           "valor": {
             "cents": -18000,
@@ -377,6 +405,7 @@
           "doc": "P-008",
           "descricao": "Licença de ruído e SPA",
           "atividade": "Zumba na Caneca",
+          "meio": "Banco",
           "rubrica": "Licenças e SPA",
           "valor": {
             "cents": -6500,

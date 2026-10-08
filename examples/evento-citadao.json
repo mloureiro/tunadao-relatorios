@@ -684,7 +684,7 @@
     },
     {
       "kind": "pending",
-      "title": "Pendentes do evento",
+      "title": "Direitos e compromissos do evento",
       "refLabel": "Situação a 15/06/2026",
       "receber": [
         {
@@ -699,6 +699,7 @@
         }
       ],
       "pagar": [],
+      "emptyPagar": "Nada a pagar",
       "totals": {
         "receber": {
           "cents": 25000,
@@ -727,6 +728,7 @@
           "doc": "R-002",
           "descricao": "Apoio da Câmara Municipal",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Apoio CMV",
           "valor": {
             "cents": 250000,
@@ -748,6 +750,7 @@
           "doc": "P-002",
           "descricao": "Cartazes e programa",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Comunicação e gráfica",
           "valor": {
             "cents": -51500,
@@ -769,6 +772,7 @@
           "doc": "R-003",
           "descricao": "Apoio da universidade (via AE ESAV)",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Apoio UPV (via AE ESAV)",
           "valor": {
             "cents": 150000,
@@ -790,6 +794,7 @@
           "doc": "P-009",
           "descricao": "T-shirts do evento",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "T-shirts",
           "valor": {
             "cents": -59000,
@@ -811,6 +816,7 @@
           "doc": "P-010",
           "descricao": "Licenças e SPA",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Licenças e SPA",
           "valor": {
             "cents": -31000,
@@ -832,6 +838,7 @@
           "doc": "R-008",
           "descricao": "Inscrições das tunas",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Inscrições de tunas",
           "valor": {
             "cents": 240000,
@@ -853,6 +860,7 @@
           "doc": "P-011",
           "descricao": "Seguro do evento",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Seguro",
           "valor": {
             "cents": -18500,
@@ -874,6 +882,7 @@
           "doc": "R-009",
           "descricao": "Patrocínios do evento",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Patrocínios",
           "valor": {
             "cents": 250000,
@@ -895,6 +904,7 @@
           "doc": "R-013",
           "descricao": "Apoio da Junta de Freguesia",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Apoio Junta de Freguesia",
           "valor": {
             "cents": 50000,
@@ -916,6 +926,7 @@
           "doc": "P-014",
           "descricao": "Som e luz",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Som e luz",
           "valor": {
             "cents": -390000,
@@ -937,6 +948,7 @@
           "doc": "P-015",
           "descricao": "Palco e estruturas",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Palco e estruturas",
           "valor": {
             "cents": -115000,
@@ -958,6 +970,7 @@
           "doc": "P-016",
           "descricao": "Compras para o bar",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Compras para o bar",
           "valor": {
             "cents": -298060,
@@ -979,6 +992,7 @@
           "doc": "R-014",
           "descricao": "Bilheteira (TPA)",
           "atividade": "20º CITADÃO",
+          "meio": "TPA",
           "rubrica": "Bilheteira",
           "valor": {
             "cents": 387000,
@@ -1000,6 +1014,7 @@
           "doc": "R-015",
           "descricao": "Bar (TPA)",
           "atividade": "20º CITADÃO",
+          "meio": "TPA",
           "rubrica": "Bar",
           "valor": {
             "cents": 631520,
@@ -1021,6 +1036,7 @@
           "doc": "R-016",
           "descricao": "Merchandising",
           "atividade": "20º CITADÃO",
+          "meio": "Caixa",
           "rubrica": "Merchandising",
           "valor": {
             "cents": 64000,
@@ -1042,6 +1058,7 @@
           "doc": "P-017",
           "descricao": "Refeições das tunas",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Refeições das tunas",
           "valor": {
             "cents": -328000,
@@ -1063,6 +1080,7 @@
           "doc": "P-018",
           "descricao": "Júri",
           "atividade": "20º CITADÃO",
+          "meio": "Caixa",
           "rubrica": "Júri",
           "valor": {
             "cents": -42000,
@@ -1084,6 +1102,7 @@
           "doc": "P-019",
           "descricao": "Alojamento",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Alojamento",
           "valor": {
             "cents": -164000,
@@ -1105,6 +1124,7 @@
           "doc": "P-020",
           "descricao": "Prémios e troféus",
           "atividade": "20º CITADÃO",
+          "meio": "Banco",
           "rubrica": "Prémios e troféus",
           "valor": {
             "cents": -86000,
@@ -1126,6 +1146,7 @@
           "doc": "P-025",
           "descricao": "Diversos",
           "atividade": "20º CITADÃO",
+          "meio": "Caixa",
           "rubrica": "Diversos",
           "valor": {
             "cents": -9640,

@@ -20,7 +20,6 @@
     ]
   },
   "aggregation": {
-    "summary": "rubrica",
     "budgetPeriod": "rubrica",
     "budgetEvent": "subRubrica",
     "compositionEvent": "subRubrica",

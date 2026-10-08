@@ -107,8 +107,10 @@ export function buildEvento(
           },
         ]),
     ...present(inKindSection(event.inKindRows, event.inKindCents)),
-    ...present(
-      pendingSection('Pendentes do evento', params.refPendentes, event.pending),
+    pendingSection(
+      'Direitos e compromissos do evento',
+      params.refPendentes,
+      event.pending,
     ),
     ...present(textSection('Notas / Comentários', params.notas)),
     ...(event.cashBook.length === 0

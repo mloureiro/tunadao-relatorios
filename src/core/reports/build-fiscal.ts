@@ -80,10 +80,13 @@ export function buildFiscal(
     inside,
     [String(params.ano - 1), String(params.ano)],
     true,
+    config.aggregation.comparison,
   );
   const negativeNets = negativeNetIssues(inside, lists, [
     ...(budget.tables === null ? [] : [config.aggregation.budgetPeriod]),
-    ...(comparison.section.status === 'ok' ? (['rubrica'] as const) : []),
+    ...(comparison.section.status === 'ok'
+      ? [config.aggregation.comparison]
+      : []),
   ]);
 
   const sections: Section[] = [
@@ -95,12 +98,10 @@ export function buildFiscal(
     ),
     ...budgetSections(budget.tables),
     ...present(activitySection(byActivity(result, lists))),
-    ...present(
-      pendingSection(
-        'Pendentes a 31 de dezembro',
-        end,
-        pendingAt(dataset, end),
-      ),
+    pendingSection(
+      `Direitos e compromissos a 31/12/${year}`,
+      end,
+      pendingAt(dataset, end),
     ),
     comparison.section,
     ...present(inKindSection(kind.rows, kind.totalCents)),

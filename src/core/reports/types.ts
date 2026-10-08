@@ -13,6 +13,11 @@ export interface KpiCard {
   readonly caption?: string;
 }
 
+export interface SummarySection {
+  readonly kind: 'summary';
+  readonly text: string;
+}
+
 export interface KpisSection {
   readonly kind: 'kpis';
   readonly cards: readonly KpiCard[];
@@ -102,6 +107,8 @@ export interface PendingSection {
   readonly refLabel: string;
   readonly receber: readonly PendingRow[];
   readonly pagar: readonly PendingRow[];
+  readonly emptyReceber?: string;
+  readonly emptyPagar?: string;
   readonly totals: { readonly receber: Money; readonly pagar: Money };
 }
 
@@ -155,6 +162,7 @@ export interface MovementRow {
   readonly descricao: string;
   readonly atividade: string;
   readonly rubrica: string;
+  readonly meio: string;
   readonly valor: Money;
   readonly entrada?: Money;
   readonly saida?: Money;
@@ -221,6 +229,7 @@ export interface DeclarationSection {
 }
 
 export type Section =
+  | SummarySection
   | KpisSection
   | BridgeSection
   | CompositionSection

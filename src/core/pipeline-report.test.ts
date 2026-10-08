@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { emptyDataset, mov, saldo } from '../../tests/support/dataset.ts';
 import { CONFIG } from '../../tests/support/reports.ts';
-import { periodFigures } from './calc/index.ts';
+import { eventFigures, periodFigures } from './calc/index.ts';
 import { makeIssue } from './issues.ts';
 import { buildReport, type LoadResult } from './pipeline.ts';
 import {
@@ -15,7 +15,11 @@ import {
 
 vi.mock('./calc/index.ts', async (importOriginal) => {
   const actual = await importOriginal<typeof import('./calc/index.ts')>();
-  return { ...actual, periodFigures: vi.fn(actual.periodFigures) };
+  return {
+    ...actual,
+    periodFigures: vi.fn(actual.periodFigures),
+    eventFigures: vi.fn(actual.eventFigures),
+  };
 });
 
 const ctx = {
@@ -85,6 +89,38 @@ describe('buildReport()', () => {
     expect(result.status).toBe('blocked');
     expect('issues' in result && result.issues).toContain(conflict);
     expect(periodFigures).not.toHaveBeenCalled();
+  });
+
+  it('blocks an event whose activity is not in Listas, suggesting the closest one, before any calculator runs', () => {
+    vi.mocked(eventFigures).mockClear();
+    const withLists = loaded({
+      dataset: emptyDataset({
+        ...dataset,
+        lists: { ...dataset.lists, atividades: ['Festival Alfa'] },
+      }),
+    });
+
+    const result = buildReport(
+      'evento',
+      withLists,
+      eventoParamsSchema.parse({
+        atividade: 'Festival Alpha',
+        eventoInicio: '2025-05-01',
+        eventoFim: '2025-05-02',
+        refPendentes: '2025-05-03',
+      }),
+      ctx,
+    );
+
+    expect(result.status).toBe('blocked');
+    expect(result.status === 'blocked' && result.issues).toMatchObject([
+      {
+        code: 'unknown-atividade',
+        severity: 'error',
+        suggestion: 'Festival Alfa',
+      },
+    ]);
+    expect(eventFigures).not.toHaveBeenCalled();
   });
 
   it('builds the report when the load result has warnings only', () => {
@@ -188,6 +224,24 @@ describe.each(['evento', 'pegada', 'letivo', 'fiscal'] as const)(
       expect(Object.keys(report.header).toSorted()).toEqual(
         expect.not.arrayContaining(['code', 'codigo']),
       );
+    });
+
+    it('always carries the commitments block, saying so when a side is empty', () => {
+      const result = build();
+
+      if (result.status !== 'report') throw new Error(result.status);
+      const pending = result.report.sections.find((s) => s.kind === 'pending');
+      expect(pending?.kind === 'pending' && pending.title).toMatch(
+        /^Direitos e compromissos/,
+      );
+      expect(pending).toMatchObject({
+        emptyReceber: 'Nada a receber',
+        emptyPagar: 'Nada a pagar',
+        totals: {
+          receber: { cents: 0, text: '0,00\u00A0€' },
+          pagar: { cents: 0, text: '0,00\u00A0€' },
+        },
+      });
     });
 
     it('produces byte-identical JSON for the same inputs and clock', () => {

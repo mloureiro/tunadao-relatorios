@@ -139,6 +139,12 @@ describe('pegada report', () => {
   it('prints the handover balances and the net position to the cent', () => {
     const pegada = report('pegada-2026');
 
+    expect(sectionOf(pegada, 'summary').text).toBe(
+      eur(
+        'Valor entregue: 13.844,05 € (caixa 579,00 €, banco 13.265,05 €). Com os pendentes, a posição líquida é 13.964,05 €.',
+      ),
+    );
+
     expect(textsOf(sectionOf(pegada, 'bridge').rows)).toMatchObject({
       'Saldo inicial': eur('13.478,05 €'),
       '(+) Recebimentos': eur('720,00 €'),

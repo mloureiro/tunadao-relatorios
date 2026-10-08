@@ -55,6 +55,7 @@ describe('buildLetivo()', () => {
       'composition',
       'composition',
       'byActivity',
+      'pending',
       'yearComparison',
       'movements',
     ]);

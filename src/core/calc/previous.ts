@@ -2,7 +2,11 @@ import { addDays, addMonths, type IsoDate } from '../dates.ts';
 import type { Cents, Conta, Dataset } from '../dataset/types.ts';
 import { balanceAtEndOf } from '../ledger/balance.ts';
 import { issueMessages, makeIssue, type Issue } from '../issues.ts';
-import { aggregate, type AggregateRow } from './aggregate.ts';
+import {
+  aggregate,
+  type AggregateRow,
+  type AggregationLevel,
+} from './aggregate.ts';
 import { inPeriod, resultCents, resultMovements } from './period.ts';
 
 export interface NullableSplit {
@@ -49,6 +53,7 @@ export function previousPeriod(
   dataset: Dataset,
   start: IsoDate,
   end: IsoDate,
+  level: AggregationLevel = 'rubrica',
 ): PreviousPeriod {
   const previousStart = addMonths(start, -12);
   const previousEnd = addMonths(end, -12);
@@ -74,7 +79,7 @@ export function previousPeriod(
     opening: splitAt(dataset, addDays(previousStart, -1)),
     closing: splitAt(dataset, previousEnd),
     ...resultCents(movements, dataset),
-    rows: aggregate(movements, dataset.lists, 'rubrica').rows,
+    rows: aggregate(movements, dataset.lists, level).rows,
     issues: [],
   };
 }

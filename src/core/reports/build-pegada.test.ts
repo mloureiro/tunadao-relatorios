@@ -52,14 +52,24 @@ const build = (extra: Record<string, unknown> = {}) =>
 describe('buildPegada()', () => {
   it('orders the handover sections and omits the ones with nothing to show', () => {
     expect(kindsOf(build().report)).toEqual([
+      'summary',
       'kpis',
       'position',
       'bridge',
       'movements',
       'reconciliation',
       'cashCount',
+      'pending',
       'declaration',
     ]);
+  });
+
+  it('opens with the summary sentence in exact cents', () => {
+    expect(sectionOf(build().report, 'summary').text).toBe(
+      eur(
+        'Valor entregue: 1.150,00 € (caixa 120,00 €, banco 1.030,00 €). Com os pendentes, a posição líquida é 1.150,00 €.',
+      ),
+    );
   });
 
   it('carries the board names on the cessante and entrante signature lines only', () => {
