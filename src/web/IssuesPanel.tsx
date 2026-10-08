@@ -11,11 +11,17 @@ interface Props {
   issues: readonly Issue[];
   valid: boolean;
   blockedByMapping: boolean;
+  onContinue: () => void;
 }
 
 const SEVERITY_LABEL = { error: 'Erro', warning: 'Aviso' } as const;
 
-export function IssuesPanel({ issues, valid, blockedByMapping }: Props) {
+export function IssuesPanel({
+  issues,
+  valid,
+  blockedByMapping,
+  onContinue,
+}: Props) {
   const [filter, setFilter] = useState<SeverityFilter>('all');
   const counts = countIssues(issues);
   const visible = filterIssues(issues, filter);
@@ -102,7 +108,12 @@ export function IssuesPanel({ issues, valid, blockedByMapping }: Props) {
       )}
 
       <div class="actions">
-        <button type="button" class="button" disabled={!valid}>
+        <button
+          type="button"
+          class="button"
+          disabled={!valid}
+          onClick={onContinue}
+        >
           Continuar
         </button>
         {!valid && (
