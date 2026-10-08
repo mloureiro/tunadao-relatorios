@@ -176,6 +176,12 @@ function describeReceived(value: unknown, message: string): string {
   return ` (recebido: "${String(value)}")`;
 }
 
+function withReceived(message: string, received: string): string {
+  return received === ''
+    ? message
+    : `${message.replace(/\.$/, '')}${received}.`;
+}
+
 function paramMessages(
   issues: readonly z.core.$ZodIssue[],
   raw: unknown,
@@ -184,7 +190,7 @@ function paramMessages(
     const value = valueAt(raw, path);
     const text = isBlank(value)
       ? REQUIRED_MESSAGE
-      : `${message}${describeReceived(value, message)}`;
+      : withReceived(message, describeReceived(value, message));
     return path.length === 0
       ? `ERRO ${text}`
       : `ERRO parâmetro ${path.map(String).join('.')}: ${text}`;
