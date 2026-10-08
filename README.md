@@ -35,6 +35,42 @@ compila `templates/hello.typ` com o Typst CLI 0.14.2 e confirma que o PDF só em
   tipo de letra, e o job `typst-cli` falha se o PDF embutir qualquer tipo de letra que não seja Lato ou Carter One.
 - `assets/logo.svg` é um marcador provisório até haver o logótipo real.
 
+### Linha de comandos
+
+`npm run gerar` corre o mesmo pipeline de `src/core` e o mesmo wasm do Typst que a página (`typst-node.ts`), sem
+navegador. O JSON do relatório é o mesmo; o PDF não é idêntico byte a byte.
+
+```
+npm run gerar -- --tipo evento|pegada|letivo|fiscal --entrada <ficheiro> [--entrada <ficheiro> ...]
+  [--params <ficheiro.json>] [--param chave=valor ...] [--saida <ficheiro.pdf>] [--json <ficheiro.json>]
+  [--agora aaaa-mm-ddThh:mm] [--ajuda]
+```
+
+- `--entrada` aceita uma folha `.xlsx` ou um CSV por separador (repetir a opção).
+- `--params` lê um ficheiro JSON com os parâmetros; `--param chave=valor` acrescenta ou substitui um parâmetro.
+  Campos aninhados usam pontos (`--param aberturaManual.caixa=100`). Listas (indicadores, contagem de caixa) só
+  podem vir do ficheiro JSON.
+- `--saida` por omissão é `relatorio-<tipo>.pdf`. `--json` escreve também o JSON do relatório.
+- `--agora` é a data e hora de geração em hora de Lisboa; por omissão, a hora atual de Lisboa.
+- Os problemas dos dados saem em stderr, um por linha: `ERRO|AVISO <ficheiro> › <separador> linha N, coluna C:
+mensagem (sugestão: ...)`.
+
+| Código | Significado                                                         |
+| ------ | ------------------------------------------------------------------- |
+| 0      | PDF gerado (pode haver avisos)                                      |
+| 1      | erros nos dados de entrada; nenhum PDF escrito                      |
+| 2      | utilização incorreta: argumentos, ficheiros ou parâmetros inválidos |
+| 3      | erro interno ao gerar o relatório ou o PDF                          |
+
+Exemplos com os dados fictícios do repositório:
+
+```
+npm run gerar -- --tipo evento --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/evento-citadao.json
+npm run gerar -- --tipo pegada --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/pegada-2026.json
+npm run gerar -- --tipo letivo --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/letivo-2025-26.json
+npm run gerar -- --tipo fiscal --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/fiscal-2025.json --json fiscal.json
+```
+
 ### Tamanhos medidos
 
 | Ficheiro                                | Tamanho                 |
