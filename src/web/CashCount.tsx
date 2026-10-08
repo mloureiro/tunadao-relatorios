@@ -10,6 +10,7 @@ import {
 
 export function CashCount({ api }: { api: FormApi }) {
   const coins = api.form.fields.moedasPequenas ?? '';
+  const coinsCents = smallCoinsCents(coins);
   const coinsId = `${api.idPrefix}-moedasPequenas`;
   const coinsError = api.error('moedasPequenas');
   const { rows, totalCents } = cashCountTotals(api.form.contagem, coins);
@@ -111,9 +112,7 @@ export function CashCount({ api }: { api: FormApi }) {
                 )}
               </td>
               <td class="cell-number">
-                {smallCoinsCents(coins) === null
-                  ? '—'
-                  : formatMoney(smallCoinsCents(coins) ?? 0)}
+                {coinsCents === null ? '—' : formatMoney(coinsCents)}
               </td>
             </tr>
           </tbody>
