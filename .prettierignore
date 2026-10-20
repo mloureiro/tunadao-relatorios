@@ -11,3 +11,4 @@ tests/visual/baselines/
 wiki
 spec/
 .beads
+fixtures/v1/
