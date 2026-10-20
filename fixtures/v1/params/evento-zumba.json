@@ -1,0 +1,11 @@
+{
+  "atividade": "Zumba na Caneca",
+  "eventoInicio": "2026-03-14",
+  "eventoFim": "2026-03-14",
+  "refPendentes": "2026-03-18",
+  "indicadores": [
+    { "label": "Inscrições", "value": "247" },
+    { "label": "Por participante", "value": "5,99 €" }
+  ],
+  "notas": "O resultado do evento reverte para o 20º CITADÃO. O numerário do evento (2.777,50 € recebidos, 248,00 € pagos em mão) foi depositado no banco a 16/03/2026."
+}
