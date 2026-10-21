@@ -4,6 +4,7 @@ import { closestTab } from './input/columns.ts';
 import { readCsv } from './input/csv.ts';
 import type { RawTable } from './input/raw-table.ts';
 import { readXlsx } from './input/xlsx.ts';
+import type { SheetGrid } from './sheets/grid.ts';
 import { didYouMean, issueMessages, makeIssue, type Issue } from './issues.ts';
 import { closest } from './text.ts';
 import { normaliseTables } from './normalise/normalise-tables.ts';
@@ -39,20 +40,28 @@ function startsWith(bytes: Uint8Array, magic: readonly number[]): boolean {
   return magic.every((byte, position) => bytes[position] === byte);
 }
 
-function readTables(file: InputFile): {
-  tables: RawTable[];
-  issues: Issue[];
-} {
-  return startsWith(file.bytes, ZIP_MAGIC) || startsWith(file.bytes, OLE_MAGIC)
-    ? readXlsx(file.name, file.bytes)
-    : { tables: [readCsv(file.name, file.bytes)], issues: [] };
+interface FileRead {
+  readonly tables: RawTable[];
+  readonly issues: Issue[];
+  readonly reportSheets: SheetGrid[];
 }
 
-function readFile(file: InputFile): { tables: RawTable[]; issues: Issue[] } {
+function readTables(file: InputFile): FileRead {
+  return startsWith(file.bytes, ZIP_MAGIC) || startsWith(file.bytes, OLE_MAGIC)
+    ? readXlsx(file.name, file.bytes)
+    : {
+        tables: [readCsv(file.name, file.bytes)],
+        issues: [],
+        reportSheets: [],
+      };
+}
+
+function readFile(file: InputFile): FileRead {
   let tables: RawTable[];
   let sheetIssues: Issue[];
+  let reportSheets: SheetGrid[];
   try {
-    ({ tables, issues: sheetIssues } = readTables(file));
+    ({ tables, issues: sheetIssues, reportSheets } = readTables(file));
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     return {
@@ -64,11 +73,12 @@ function readFile(file: InputFile): { tables: RawTable[]; issues: Issue[] } {
           { file: file.name },
         ),
       ],
+      reportSheets: [],
     };
   }
 
   const recognised = tables.some((table) => table.tab !== null);
-  if (recognised) return { tables, issues: sheetIssues };
+  if (recognised) return { tables, issues: sheetIssues, reportSheets };
 
   const closest =
     tables.length === 0 ? null : closestTab(tables[0]?.header ?? []);
@@ -82,6 +92,7 @@ function readFile(file: InputFile): { tables: RawTable[]; issues: Issue[] } {
       ),
       ...sheetIssues,
     ],
+    reportSheets,
   };
 }
 
@@ -92,9 +103,15 @@ async function sha256Hex(bytes: Uint8Array): Promise<string> {
   ).join('');
 }
 
-export async function loadDataset(
+export interface LoadedFiles {
+  readonly result: LoadResult;
+  readonly tables: readonly RawTable[];
+  readonly reportSheets: readonly SheetGrid[];
+}
+
+export async function loadFiles(
   files: readonly InputFile[],
-): Promise<LoadResult> {
+): Promise<LoadedFiles> {
   const sources = await Promise.all(
     files.map(async ({ name, bytes }) => ({
       name,
@@ -110,14 +127,24 @@ export async function loadDataset(
   );
   const full: Dataset = { sources, ...dataset };
   return {
-    dataset: full,
-    issues: [
-      ...read.flatMap((result) => result.issues),
-      ...issues,
-      ...validateDataset(full, unresolved, { listasMissing }),
-    ],
-    unresolved,
+    result: {
+      dataset: full,
+      issues: [
+        ...read.flatMap((result) => result.issues),
+        ...issues,
+        ...validateDataset(full, unresolved, { listasMissing }),
+      ],
+      unresolved,
+    },
+    tables: read.flatMap(({ tables }) => tables),
+    reportSheets: read.flatMap(({ reportSheets }) => reportSheets),
   };
+}
+
+export async function loadDataset(
+  files: readonly InputFile[],
+): Promise<LoadResult> {
+  return (await loadFiles(files)).result;
 }
 
 export interface ReportContext {
