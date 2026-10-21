@@ -190,7 +190,7 @@ export function buildPegada(
         params.direcaoCessante,
         params.direcaoEntrante,
       ]),
-      trace: traceOf(ctx, params.anexarJson),
+      trace: traceOf(ctx),
     },
     issues: dedupeIssues(pegada.issues),
   };

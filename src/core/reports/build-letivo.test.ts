@@ -115,23 +115,6 @@ describe('buildLetivo()', () => {
     expect(issues.map((issue) => issue.code)).toContain('no-budget');
   });
 
-  it('states in the bridge that the opening balance was declared manually', () => {
-    const dataset = emptyDataset({ movimentos: simple.movimentos });
-
-    const { report, issues } = build(dataset, {
-      aberturaManual: { caixa: 100, banco: 500 },
-    });
-
-    const bridge = sectionOf(report, 'bridge');
-    expect(bridge.rows[0]).toEqual({
-      label: 'Saldo inicial (declarado manualmente)',
-      value: { cents: 60000, text: eur('600,00 €') },
-    });
-    expect(issues.map((issue) => issue.code)).toContain(
-      'manual-opening-balance',
-    );
-  });
-
   it('keeps the plain opening label when the ledger supplies the balance', () => {
     const bridge = sectionOf(build(simple).report, 'bridge');
 

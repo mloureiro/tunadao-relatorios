@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { DENOMINATIONS_CENTS, type DenominationCents } from '../calc/index.ts';
-import type { ManualOpening } from '../calc/index.ts';
 import type { Cents } from '../dataset/types.ts';
 import { compare, parseDateText, type IsoDate } from '../dates.ts';
 import { parseMoney } from '../money.ts';
@@ -30,7 +29,6 @@ export interface EventoParams {
   readonly indicadores: readonly Indicator[];
   readonly notas?: string;
   readonly assinaturas?: readonly SignatoryParam[];
-  readonly anexarJson: boolean;
 }
 
 export interface PegadaParams {
@@ -43,21 +41,17 @@ export interface PegadaParams {
   readonly naoCreditados: readonly UnclearedParam[];
   readonly contagem: Readonly<Partial<Record<DenominationCents, number>>>;
   readonly moedasPequenasCents?: Cents;
-  readonly aberturaManual?: ManualOpening;
   readonly notas?: string;
   readonly assinaturas?: readonly SignatoryParam[];
-  readonly anexarJson: boolean;
 }
 
 export interface LetivoParams {
   readonly inicio: IsoDate;
   readonly fim: IsoDate;
   readonly ambitoOrcamento?: string;
-  readonly aberturaManual?: ManualOpening;
   readonly notas?: string;
   readonly assinaturas?: readonly SignatoryParam[];
   readonly anexar: boolean;
-  readonly anexarJson: boolean;
 }
 
 export interface FiscalParams {
@@ -67,8 +61,6 @@ export interface FiscalParams {
   readonly notas?: string;
   readonly assinaturas?: readonly SignatoryParam[];
   readonly anexoMovimentos: boolean;
-  readonly aberturaManual?: ManualOpening;
-  readonly anexarJson: boolean;
 }
 
 type ZodIssue = Parameters<NonNullable<z.core.$ZodErrorMap>>[0];
@@ -188,14 +180,6 @@ const uncleared = z.strictObject(
   pt,
 );
 
-const manualOpening = optional(
-  z.strictObject({ caixa: optional(money), banco: optional(money) }, pt),
-).transform((value): ManualOpening | undefined => {
-  if (value === undefined) return undefined;
-  const opening = definedOnly({ Caixa: value.caixa, Banco: value.banco });
-  return Object.keys(opening).length === 0 ? undefined : opening;
-});
-
 const indicators = z
   .array(
     z
@@ -266,7 +250,6 @@ export const eventoParamsSchema = z
       indicadores: indicators,
       notas: notes,
       assinaturas: signatories,
-      anexarJson: flag(true),
     },
     pt,
   )
@@ -283,7 +266,6 @@ export const eventoParamsSchema = z
     ambitoOrcamento: raw.ambitoOrcamento ?? raw.atividade,
     indicadores: raw.indicadores,
     ...definedOnly({ notas: raw.notas, assinaturas: raw.assinaturas }),
-    anexarJson: raw.anexarJson,
   }));
 
 export const pegadaParamsSchema = z
@@ -302,10 +284,8 @@ export const pegadaParamsSchema = z
           message: 'O valor não pode ser negativo.',
         }),
       ),
-      aberturaManual: manualOpening,
       notas: notes,
       assinaturas: signatories,
-      anexarJson: flag(true),
     },
     pt,
   )
@@ -334,11 +314,9 @@ export const pegadaParamsSchema = z
     contagem: raw.contagem,
     ...definedOnly({
       moedasPequenasCents: raw.moedasPequenas,
-      aberturaManual: raw.aberturaManual,
       notas: raw.notas,
       assinaturas: raw.assinaturas,
     }),
-    anexarJson: raw.anexarJson,
   }));
 
 export const letivoParamsSchema = z
@@ -347,11 +325,9 @@ export const letivoParamsSchema = z
       inicio: date,
       fim: date,
       ambitoOrcamento: optional(text),
-      aberturaManual: manualOpening,
       notas: notes,
       assinaturas: signatories,
       anexar: flag(true),
-      anexarJson: flag(true),
     },
     pt,
   )
@@ -364,12 +340,10 @@ export const letivoParamsSchema = z
     fim: raw.fim,
     ...definedOnly({
       ambitoOrcamento: raw.ambitoOrcamento,
-      aberturaManual: raw.aberturaManual,
       notas: raw.notas,
       assinaturas: raw.assinaturas,
     }),
     anexar: raw.anexar,
-    anexarJson: raw.anexarJson,
   }));
 
 export const fiscalParamsSchema = z
@@ -385,8 +359,6 @@ export const fiscalParamsSchema = z
       notas: notes,
       assinaturas: signatories,
       anexoMovimentos: flag(false),
-      aberturaManual: manualOpening,
-      anexarJson: flag(true),
     },
     pt,
   )
@@ -397,10 +369,8 @@ export const fiscalParamsSchema = z
       parecerCF: raw.parecerCF,
       notas: raw.notas,
       assinaturas: raw.assinaturas,
-      aberturaManual: raw.aberturaManual,
     }),
     anexoMovimentos: raw.anexoMovimentos,
-    anexarJson: raw.anexarJson,
   }));
 
 export interface ParamsByTipo {

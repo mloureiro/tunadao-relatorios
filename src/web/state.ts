@@ -1,16 +1,9 @@
 import { useEffect, useState } from 'preact/hooks';
-import type { Dataset } from '@/core/dataset/types';
-import type { Issue } from '@/core/issues';
-import type { InputFile, LoadResult } from '@/core/pipeline';
 import type { WasmProgress } from '@/engine/typst-web';
 
 export type EngineStatus = 'idle' | 'loading' | 'ready' | 'busy' | 'error';
 
 export interface AppState {
-  readonly files: readonly InputFile[];
-  readonly dataset: Dataset | null;
-  readonly issues: readonly Issue[];
-  readonly loadResult: LoadResult | null;
   readonly engine: {
     readonly status: EngineStatus;
     readonly progress: WasmProgress | null;
@@ -18,15 +11,9 @@ export interface AppState {
   };
 }
 
-const initialState: AppState = {
-  files: [],
-  dataset: null,
-  issues: [],
-  loadResult: null,
+let state: AppState = {
   engine: { status: 'idle', progress: null, message: '' },
 };
-
-let state: AppState = initialState;
 const listeners = new Set<() => void>();
 
 export function getState(): AppState {
@@ -37,15 +24,6 @@ export function setState(patch: Partial<AppState>): void {
   state = { ...state, ...patch };
   listeners.forEach((listener) => {
     listener();
-  });
-}
-
-export function resetState(): void {
-  setState({
-    files: initialState.files,
-    dataset: null,
-    issues: initialState.issues,
-    loadResult: null,
   });
 }
 

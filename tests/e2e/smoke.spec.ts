@@ -10,7 +10,9 @@ test('page loads and only talks to its own origin', async ({
 
   await page.goto('./');
   await expect(
-    page.getByRole('heading', { name: 'Gerador de relatórios financeiros' }),
+    page.getByRole('heading', {
+      name: 'Relatórios financeiros do TUNADÃO 1998',
+    }),
   ).toBeVisible();
   await page.waitForLoadState('networkidle');
 
