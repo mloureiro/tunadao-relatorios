@@ -189,7 +189,18 @@ export function membershipIssues(
     if (u.unknownMeio) checkMeio(index, u.src, u.meio, issues);
   }
 
+  const { orcamentos } = lists;
   for (const linha of dataset.orcamento) {
+    if (orcamentos !== undefined && !orcamentos.includes(linha.ambito)) {
+      issues.push(
+        makeIssue(
+          'unknown-ambito',
+          issueMessages['unknown-ambito'](linha.ambito),
+          at(linha.src, 'Âmbito'),
+          didYouMean(closest(linha.ambito, orcamentos)),
+        ),
+      );
+    }
     checkRubrica(
       index,
       linha.src,

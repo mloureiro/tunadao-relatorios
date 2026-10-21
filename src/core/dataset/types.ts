@@ -41,6 +41,7 @@ export interface Lists {
   readonly subRubricas: readonly SubRubricaDef[];
   readonly atividades: readonly string[];
   readonly meios: readonly MeioDef[];
+  readonly orcamentos?: readonly string[];
 }
 
 export interface Movimento {

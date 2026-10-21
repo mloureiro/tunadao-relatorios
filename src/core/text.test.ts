@@ -20,6 +20,8 @@ describe('normaliseHeader()', () => {
     ['Valor (€)', 'valor'],
     ['Tipo (Entrada/Saída)', 'tipo'],
     ['Valor com sinal (€) (calculado)', 'valor com sinal'],
+    ['Efeito no saldo (€) (automático)', 'efeito no saldo'],
+    ['Conta (automático)', 'conta'],
     ['Orçado (€)', 'orcado'],
     ['Data de registo', 'data de registo'],
     ['N.º doc', 'n.º doc'],
