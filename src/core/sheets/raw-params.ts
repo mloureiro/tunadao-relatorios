@@ -3,7 +3,11 @@ import { issueMessages, type Issue } from '../issues.ts';
 import { paramsSchemas, type ParamsByTipo } from '../reports/index.ts';
 import type { ReportTipo } from '../reports/index.ts';
 import { issueAt } from './cells.ts';
-import { REPORT_SPECS, type ReportSpec } from './catalogue.ts';
+import {
+  REPORT_SPECS,
+  SUPPORTED_LAYOUT_VERSION,
+  type ReportSpec,
+} from './catalogue.ts';
 import type { DraftBlock, SheetDraft } from './types.ts';
 
 export interface CellRef {
@@ -123,7 +127,11 @@ function fieldLabelFor(spec: ReportSpec, key: string): string {
 
 export function validateDraft(draft: SheetDraft): DraftValidation {
   const { tipo } = draft;
-  if (tipo === null || draft.porPreencher) {
+  if (
+    tipo === null ||
+    draft.porPreencher ||
+    draft.version > SUPPORTED_LAYOUT_VERSION
+  ) {
     return { params: null, issues: [...draft.issues] };
   }
 
@@ -197,6 +205,13 @@ function zodIssueToIssue(
 
   if (target === null && missingLabels.has(label)) return null;
   if (target !== null && located.has(target.cell)) return null;
+
+  if (target === null && rootKey !== null) {
+    return issueAt('field-missing', issueMessages['field-missing'](label), {
+      sheet: draft.sheet,
+      field: label,
+    });
+  }
 
   const cell = target?.cell ?? draft.typeCell ?? undefined;
   const where = {

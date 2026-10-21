@@ -206,17 +206,31 @@ describe('validateDraft()', () => {
     ]);
   });
 
-  it('puts a derivable field whose label is absent on the type cell', () => {
+  it('names the label to add, on the sheet, for a derivable field whose row is absent', () => {
     const result = validateDraft(
       draftOf(without(pegada(), 'Data do último relatório')),
     );
 
+    expect(result.issues).toHaveLength(1);
+    expect(result.issues[0]).toMatchObject({
+      code: 'field-missing',
+      sheet: 'Pegada 2026',
+      field: 'Data do último relatório',
+    });
+    expect(result.issues[0]).not.toHaveProperty('cell');
+  });
+
+  it('reports only the version on a sheet from a newer layout', () => {
+    const result = validateDraft(
+      draftOf([
+        ['Relatório', 'Pegada de direção'],
+        ['Versão do modelo', 2],
+      ]),
+    );
+
+    expect(result.params).toBeNull();
     expect(result.issues).toMatchObject([
-      {
-        code: 'field-empty',
-        cell: 'B1',
-        field: 'Data do último relatório',
-      },
+      { code: 'report-version-newer', cell: 'B2' },
     ]);
   });
 

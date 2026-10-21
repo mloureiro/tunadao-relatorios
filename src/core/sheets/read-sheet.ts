@@ -125,11 +125,16 @@ class SheetReader {
     );
   }
 
-  private isBoundary(row: number, insideSignatures: boolean): boolean {
+  private isBoundary(
+    row: number,
+    seenRoles: ReadonlySet<string> | null,
+  ): boolean {
     const label = this.labelAt(row);
     if (label === null) return false;
     const key = labelKey(label);
-    if (insideSignatures && this.roleKeys.has(key)) return false;
+    if (seenRoles !== null && this.roleKeys.has(key) && !seenRoles.has(key)) {
+      return false;
+    }
     return this.isKnown(key);
   }
 
@@ -283,10 +288,13 @@ class SheetReader {
     }
 
     const body: number[] = [];
+    const seenRoles = new Set<string>();
     while (
       row < this.grid.rowCount &&
-      !this.isBoundary(row, insideSignatures)
+      !this.isBoundary(row, insideSignatures ? seenRoles : null)
     ) {
+      const label = this.labelAt(row);
+      if (label !== null) seenRoles.add(labelKey(label));
       body.push(row);
       row += 1;
     }
@@ -495,6 +503,7 @@ class SheetReader {
     body: readonly number[],
   ): DraftSignature[] {
     const lines: DraftSignature[] = [];
+    const firstCell = new Map<string, string>();
     for (const row of body) {
       const cargoWhere = this.where(row, 0, spec.title);
       const nameWhere = this.where(row, 1, spec.title);
@@ -512,6 +521,19 @@ class SheetReader {
         );
         continue;
       }
+      const cargoKey = labelKey(cargoText);
+      const first = firstCell.get(cargoKey);
+      if (first !== undefined) {
+        this.issues.push(
+          issueAt(
+            'field-duplicate',
+            issueMessages['field-duplicate'](cargoText, first),
+            cargoWhere,
+          ),
+        );
+        continue;
+      }
+      firstCell.set(cargoKey, cargoWhere.cell);
       const role =
         this.roles.find(
           (candidate) => labelKey(candidate) === labelKey(cargoText),
