@@ -3,9 +3,10 @@ import type { Config } from '../config/schema.ts';
 import type { Dataset } from '../dataset/types.ts';
 import { formatDate } from '../format.ts';
 import {
-  annexFooterLines,
+  annexRefundLines,
   budgetSections,
   card,
+  cashbookTotals,
   compositionSection,
   countLabel,
   dedupeIssues,
@@ -93,7 +94,7 @@ export function buildEvento(
         'despesa',
       ),
     ),
-    ...budgetSections(budget.tables),
+    ...budgetSections(budget.tables, config.aggregation.budgetEvent),
     ...(params.indicadores.length === 0
       ? []
       : [
@@ -107,18 +108,14 @@ export function buildEvento(
           },
         ]),
     ...present(inKindSection(event.inKindRows, event.inKindCents)),
-    pendingSection(
-      'Direitos e compromissos do evento',
-      params.refPendentes,
-      event.pending,
-    ),
+    pendingSection(params.refPendentes, event.pending),
     ...present(textSection('Notas / Comentários', params.notas)),
     ...(event.cashBook.length === 0
       ? []
       : [
           {
             kind: 'movements' as const,
-            title: 'Livro de caixa do evento',
+            title: 'Movimentos do evento',
             columns: 'cashbook' as const,
             rows: event.cashBook.map(({ movimento, acumuladoCents }) =>
               movementRow(
@@ -128,29 +125,34 @@ export function buildEvento(
                 acumuladoCents,
               ),
             ),
-            footer: annexFooterLines(event.footer),
+            totals: cashbookTotals(event.footer),
+            footer: annexRefundLines(event.footer),
           },
         ]),
   ];
 
+  const counted =
+    params.contarAte === undefined
+      ? ''
+      : ` (contados até ${formatDate(params.contarAte)})`;
   const lead =
     event.span === null
       ? params.atividade
-      : `${params.atividade} · Movimentos de ${formatDate(event.span.start)} a ${formatDate(event.span.end)}`;
+      : `${params.atividade} · Valores dos movimentos de ${periodLabel(event.span.start, event.span.end)}${counted}`;
 
   return {
     report: {
-      schemaVersion: 1,
+      schemaVersion: 2,
       tipo: 'evento',
       theme: themeOf(config),
       header: headerOf(
         config,
         'Relatório de evento',
-        periodLabel(params.eventoInicio, params.eventoFim),
+        `Evento de ${periodLabel(params.eventoInicio, params.eventoFim)}`,
         lead,
       ),
       sections,
-      signatures: signaturesOf(config.signatures.evento),
+      signatures: signaturesOf(config.signatures.evento, params.assinaturas),
       trace: traceOf(ctx, params.anexarJson),
     },
     issues: dedupeIssues([...event.issues, ...budget.issues, ...negativeNets]),

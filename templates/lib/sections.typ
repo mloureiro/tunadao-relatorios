@@ -29,6 +29,7 @@
 #let whole-rows = 6
 #let head-rows = 3
 #let tail-rows = 2
+#let last-tail-rows = 3
 
 #let glue-cell(spanned) = table.cell(rowspan: spanned, breakable: false, stroke: none, inset: 0pt, fill: none)[]
 #let plain-glue = table.cell(stroke: none, inset: 0pt)[]
@@ -57,21 +58,17 @@
   )
 }
 
-#let note-row(span, note) = (
-  table.cell(colspan: span, stroke: none, inset: (x: 4pt, top: 6pt, bottom: 0pt), text(size: 8pt, style: "italic", fill: muted, note)),
-)
-
-#let split-table(columns, align, headers, rows, footer, last: false, note: none) = {
-  let tail = footer + if note == none { () } else { (note-row(columns.len(), note),) }
+#let split-table(columns, align, headers, rows, footer, last: false) = {
+  let tail = footer
   let count = rows.len()
   if count <= whole-rows {
     block(spacing: 0pt, breakable: false, sticky: last, row-table(columns, align, headers, rows + tail))
   } else if last {
-    let main = rows.slice(0, count - tail-rows)
+    let main = rows.slice(0, count - last-tail-rows)
     block(spacing: 0pt, row-table(columns, align, headers, main, groups: ((0, head-rows),)))
     block(spacing: 0pt, sticky: true, breakable: false, context {
       let starts-page = here().position().y < page-top + 2pt
-      row-table(columns, align, headers, rows.slice(count - tail-rows) + tail, header: starts-page)
+      row-table(columns, align, headers, rows.slice(count - last-tail-rows) + tail, header: starts-page)
     })
   } else {
     let groups = ((0, head-rows), (count - tail-rows, tail-rows + tail.len()))
@@ -143,11 +140,15 @@
 
 #let budget-row(side, row, total: false) = {
   let wrap = if total { body => total-cell(body) } else { body => body }
+  let word = row.at("desvioLabel", default: none)
   (
     wrap(row.label),
     wrap(row.orcado.text),
     wrap(row.realizado.text),
-    wrap(text(fill: desvio-ink(side, row.desvio.cents), row.desvio.text)),
+    wrap({
+      if word != none { text(size: 7.5pt, weight: "regular", fill: muted, word + "  ") }
+      text(fill: desvio-ink(side, row.desvio.cents), row.desvio.text)
+    }),
     wrap(row.execucao),
   )
 }
@@ -155,12 +156,11 @@
 #let budget(section) = {
   heading(level: 2, section.title)
   split-table(
-    (1fr, 2.5cm, 2.5cm, 2.5cm, 1.9cm),
+    (1fr, 2.3cm, 2.3cm, 4.1cm, 1.8cm),
     (left, right, right, right, right),
-    ("Rubrica", "Orçado", "Realizado", "Desvio", "Execução"),
+    (section.labelHeader, "Orçado", "Realizado", "Desvio", "Execução"),
     section.rows.map(row => budget-row(section.side, row)),
     (budget-row(section.side, section.total, total: true),),
-    note: section.at("note", default: none),
   )
 }
 
@@ -217,11 +217,11 @@
   styled-table(columns, align, headers, ..cells, ..footer)
 })
 
-#let pending-side(side-title, rows, empty, total, total-label) = {
+#let pending-side(side-title, rows, empty, total, total-label, last: false) = {
   heading(level: 3, side-title)
   if rows.len() == 0 {
     set text(size: 8.5pt)
-    table(
+    block(spacing: 0pt, breakable: false, sticky: last, table(
       columns: (1fr, 2.4cm),
       align: (left, right),
       fill: light,
@@ -229,7 +229,7 @@
       inset: (x: 4pt, y: 5pt),
       text(fill: muted, empty),
       text(weight: "bold", total.text),
-    )
+    ))
   } else {
     split-table(
       (3.6cm, 1fr, 1.9cm, 2.4cm),
@@ -249,11 +249,12 @@
         row.valor.text,
       )),
       ((total-cell(colspan: 3, total-label), total-cell(total.text)),),
+      last: last,
     )
   }
 }
 
-#let pending(section) = {
+#let pending(section, last: false) = {
   heading(level: 2, section.title)
   block(sticky: true, below: 0.2cm, text(size: 9pt, fill: muted, section.refLabel))
   pending-side(
@@ -262,6 +263,7 @@
     section.at("emptyReceber", default: "Nada a receber"),
     section.totals.receber,
     "Total a receber",
+    last: last,
   )
   pending-side(
     "A pagar",
@@ -269,6 +271,7 @@
     section.at("emptyPagar", default: "Nada a pagar"),
     section.totals.pagar,
     "Total a pagar",
+    last: last,
   )
 }
 
@@ -277,9 +280,9 @@
 #let refund-mark(row) = if row.refund { text(style: "italic", fill: navy)[ · reembolso] }
 
 #let cashbook-layout = (
-  columns: (1.9cm, 1.35cm, 1fr, 1.3cm, 2.1cm, 2.1cm, 2.3cm),
+  columns: (1.9cm, 1.35cm, 1fr, 1.3cm, 2.1cm, 2.1cm, 2.5cm),
   align: (left, left, left, left, right, right, right),
-  headers: ("Data", "Doc.", "Descrição", "Meio", "Entrada", "Saída", "Acumulado"),
+  headers: ("Data", "Doc.", "Descrição", "Meio", "Entrada", "Saída", "Resultado acumulado"),
   cells: row => (
     row.data,
     row.doc,
@@ -289,30 +292,41 @@
     row.at("saida", default: (text: "")).text,
     {
       let balance = row.at("acumulado", default: none)
-      if balance != none { text(fill: balance-ink(balance.cents), balance.text) }
+      if balance != none { balance.text }
     },
   ),
   footer-span: 6,
 )
 
+#let secondary-cell(content) = text(size: 8pt, fill: muted, content)
+
 #let signed-layout = (
-  columns: (1.9cm, 1.35cm, 1fr, 1.5cm, 2.6cm),
-  align: (left, left, left, left, right),
-  headers: ("Data", "Doc.", "Descrição", "Meio", "Valor"),
+  columns: (1.9cm, 1.3cm, 1fr, 2.7cm, 2.9cm, 1.2cm, 2.2cm),
+  align: (left, left, left, left, left, left, right),
+  headers: ("Data", "Doc.", "Descrição", "Atividade", "Rubrica", "Meio", "Valor"),
   cells: row => (
     row.data,
     row.doc,
     [#row.descricao#refund-mark(row)],
+    secondary-cell(row.atividade),
+    secondary-cell(row.rubrica),
     row.meio,
     text(fill: balance-ink(row.valor.cents), row.valor.text),
   ),
-  footer-span: 4,
+  footer-span: 6,
 )
 
 #let footer-rows(layout, lines) = lines.map(line => (
   total-cell(colspan: layout.footer-span, line.label),
   total-cell(align: right, line.value.text),
 ))
+
+#let gross-totals-row(totals) = (
+  total-cell(colspan: 4, "Total bruto"),
+  total-cell(align: right, totals.entrada.text),
+  total-cell(align: right, totals.saida.text),
+  total-cell(""),
+)
 
 #let movements(section, last: false) = {
   let layout = if section.columns == "cashbook" { cashbook-layout } else if section.columns == "signed" {
@@ -321,7 +335,9 @@
     panic("movements: o formato '" + section.columns + "' não é suportado por este modelo")
   }
   let outside = section.at("outside", default: none)
-  let footer = footer-rows(layout, section.footer)
+  let totals = section.at("totals", default: none)
+  let footer = if totals == none { () } else { (gross-totals-row(totals),) }
+  footer += footer-rows(layout, section.footer)
   heading(level: 2, section.title)
   let rows = section.rows.map(layout.cells)
   if outside == none {
@@ -333,12 +349,25 @@
   }
 }
 
-#let text-section(section, last: false) = {
-  let body = {
+#let short-text-lines = 9
+#let chars-per-line = 95
+
+#let text-section(section, closing: false) = {
+  let paragraphs = section.paragraphs
+  let lines = paragraphs.map(paragraph => calc.ceil(paragraph.len() / chars-per-line)).sum(default: 0) + paragraphs.len() - 1
+  if closing and lines <= short-text-lines {
+    block(above: 0.75cm, sticky: true, breakable: false, {
+      heading(level: 2, section.title)
+      for paragraph in paragraphs { par(paragraph) }
+    })
+  } else if closing {
     heading(level: 2, section.title)
-    for paragraph in section.paragraphs { par(paragraph) }
+    for paragraph in paragraphs.slice(0, -1) { par(paragraph) }
+    block(sticky: true, breakable: false, paragraphs.last())
+  } else {
+    heading(level: 2, section.title)
+    for paragraph in paragraphs { par(paragraph) }
   }
-  if last { block(sticky: true, breakable: false, body) } else { body }
 }
 
 #let summary(section) = block(
@@ -489,10 +518,15 @@
 }
 
 #let render-sections(report) = {
-  let count = report.sections.len()
-  for (index, section) in report.sections.enumerate() {
+  let body = report.sections.filter(section => section.kind != "declaration")
+  let count = body.len()
+  let trailing = 0
+  while trailing < count and body.at(count - 1 - trailing).kind == "text" { trailing += 1 }
+  let last-table = if trailing <= 1 { count - trailing - 1 } else { -1 }
+  for (index, section) in body.enumerate() {
     let kind = section.kind
-    let last = index == count - 1
+    let last = index == last-table
+    let closing = index == count - 1
     if kind == "summary" { summary(section) }
     else if kind == "kpis" { kpis(section) }
     else if kind == "bridge" { bridge(section) }
@@ -502,12 +536,12 @@
     else if kind == "byActivity" { by-activity(section) }
     else if kind == "indicators" { indicators(section) }
     else if kind == "inKind" { in-kind(section) }
-    else if kind == "pending" { pending(section) }
+    else if kind == "pending" { pending(section, last: last) }
     else if kind == "reconciliation" { reconciliation(section) }
     else if kind == "cashCount" { cash-count(section) }
     else if kind == "movements" { movements(section, last: last) }
     else if kind == "yearComparison" { year-comparison(section) }
-    else if kind == "text" or kind == "declaration" { text-section(section, last: last) }
+    else if kind == "text" { text-section(section, closing: closing) }
     else { panic("secção desconhecida: " + kind) }
   }
 }

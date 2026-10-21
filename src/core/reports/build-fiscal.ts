@@ -96,13 +96,9 @@ export function buildFiscal(
       hasManualOpening(figures.issues),
       checkedRows(dataset, end),
     ),
-    ...budgetSections(budget.tables),
+    ...budgetSections(budget.tables, config.aggregation.budgetPeriod),
     ...present(activitySection(byActivity(result, lists))),
-    pendingSection(
-      `Direitos e compromissos a 31/12/${year}`,
-      end,
-      pendingAt(dataset, end),
-    ),
+    pendingSection(end, pendingAt(dataset, end)),
     comparison.section,
     ...present(inKindSection(kind.rows, kind.totalCents)),
     ...present(textSection('Parecer do Conselho Fiscal', params.parecerCF)),
@@ -122,7 +118,7 @@ export function buildFiscal(
 
   return {
     report: {
-      schemaVersion: 1,
+      schemaVersion: 2,
       tipo: 'fiscal',
       theme: themeOf(config),
       header: headerOf(
@@ -132,7 +128,7 @@ export function buildFiscal(
         `Exercício de ${String(params.ano)}`,
       ),
       sections,
-      signatures: signaturesOf(config.signatures.fiscal),
+      signatures: signaturesOf(config.signatures.fiscal, params.assinaturas),
       trace: traceOf(ctx, params.anexarJson),
     },
     issues: dedupeIssues([

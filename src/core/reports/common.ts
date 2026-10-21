@@ -32,6 +32,8 @@ import {
 import type { Issue } from '../issues.ts';
 import { sum } from '../money.ts';
 import { permille } from '../percent.ts';
+import { normalise } from '../text.ts';
+import type { SignatoryParam } from './params.ts';
 import type {
   BridgeRow,
   BridgeSection,
@@ -120,11 +122,19 @@ export function traceOf(
 
 export function signaturesOf(
   titles: readonly string[],
-  names: readonly (string | undefined)[] = [],
+  signatories: readonly SignatoryParam[] = [],
+  details: readonly (string | undefined)[] = [],
 ): Signature[] {
   return titles.map((title, index) => {
-    const name = names[index];
-    return name === undefined ? { title } : { title, name };
+    const name = signatories.find(
+      ({ cargo }) => normalise(cargo) === normalise(title),
+    )?.nome;
+    const detail = details[index];
+    return {
+      title,
+      ...(name === undefined ? {} : { name }),
+      ...(detail === undefined ? {} : { detail }),
+    };
   });
 }
 
@@ -244,6 +254,12 @@ function budgetRow(
     orcado: money(figures.orcadoCents),
     realizado: money(figures.realizadoCents),
     desvio: signedMoney(figures.desvioCents),
+    ...(figures.desvioCents === 0
+      ? {}
+      : {
+          desvioLabel:
+            figures.desvioCents > 0 ? 'Acima do orçado' : 'Abaixo do orçado',
+        }),
     execucao:
       figures.execucaoPermille === null
         ? ''
@@ -251,10 +267,10 @@ function budgetRow(
   };
 }
 
-const DESPESA_DESVIO_NOTE =
-  'Nas despesas, desvio positivo significa que se gastou mais do que o orçado.';
-
-export function budgetSections(tables: BudgetTables | null): BudgetSection[] {
+export function budgetSections(
+  tables: BudgetTables | null,
+  level: AggregationLevel,
+): BudgetSection[] {
   if (tables === null) return [];
   const sides = [
     ['Receitas: orçado e realizado', 'receita', tables.receitas],
@@ -266,9 +282,9 @@ export function budgetSections(tables: BudgetTables | null): BudgetSection[] {
       kind: 'budget',
       title,
       side,
+      labelHeader: level === 'subRubrica' ? 'Sub-rubrica' : 'Rubrica',
       rows: table.rows.map((row) => budgetRow(row.label, row)),
       total: budgetRow('Total', table.total),
-      ...(side === 'despesa' ? { note: DESPESA_DESVIO_NOTE } : {}),
     }));
 }
 
@@ -283,14 +299,15 @@ function pendingRows(items: PendingResult['receber']): PendingRow[] {
   }));
 }
 
+export const PENDING_TITLE = 'Pendentes (a receber e a pagar)';
+
 export function pendingSection(
-  title: string,
   ref: IsoDate,
   pending: PendingResult,
 ): PendingSection {
   return {
     kind: 'pending',
-    title,
+    title: PENDING_TITLE,
     refLabel: `Situação a ${formatDate(ref)}`,
     receber: pendingRows(pending.receber),
     pagar: pendingRows(pending.pagar),
@@ -350,15 +367,13 @@ export function movementRow(
   };
 }
 
-export function annexFooterLines(footer: AnnexFooter): FooterLine[] {
+export function annexRefundLines(footer: AnnexFooter): FooterLine[] {
   const optional = (label: string, cents: Cents): FooterLine[] =>
     cents === 0 ? [] : [{ label, value: money(cents) }];
   const hasRefunds =
     footer.reembolsoEmDespesasCents !== 0 ||
     footer.reembolsoEmReceitasCents !== 0;
   return [
-    { label: 'Entradas brutas', value: money(footer.entradasBrutasCents) },
-    { label: 'Saídas brutas', value: money(footer.saidasBrutasCents) },
     ...optional(
       'Reembolsos abatidos às despesas (entradas)',
       footer.reembolsoEmDespesasCents,
@@ -380,6 +395,23 @@ export function annexFooterLines(footer: AnnexFooter): FooterLine[] {
         ]
       : []),
   ];
+}
+
+export function annexFooterLines(footer: AnnexFooter): FooterLine[] {
+  return [
+    { label: 'Entradas brutas', value: money(footer.entradasBrutasCents) },
+    { label: 'Saídas brutas', value: money(footer.saidasBrutasCents) },
+    ...annexRefundLines(footer),
+  ];
+}
+
+export function cashbookTotals(
+  footer: AnnexFooter,
+): NonNullable<MovementsSection['totals']> {
+  return {
+    entrada: money(footer.entradasBrutasCents),
+    saida: money(footer.saidasBrutasCents),
+  };
 }
 
 export function signedMovementsSection(
@@ -414,7 +446,10 @@ export function signedMovementsSection(
         ? []
         : [
             {
-              label: 'Movimentos fora do resultado',
+              label:
+                outsideCents === 0
+                  ? 'Transferências e saldos (anulam-se)'
+                  : 'Movimentos fora do resultado',
               value: money(outsideCents),
             },
           ]),

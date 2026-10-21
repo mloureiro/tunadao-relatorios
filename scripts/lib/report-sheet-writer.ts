@@ -142,7 +142,14 @@ function fillBlock(
       break;
     }
     case 'signatures':
-      throw new Error('Signature names are not filled by the fixtures');
+      for (const [cargo, name] of Object.entries(
+        value as Readonly<Record<string, string>>,
+      )) {
+        const row = inputs.find((slot) => slot.cells[0]?.text === cargo);
+        if (row === undefined) throw new Error(`No cargo ${cargo}`);
+        filled.set(`B${String(row.row)}`, name);
+      }
+      break;
   }
 }
 

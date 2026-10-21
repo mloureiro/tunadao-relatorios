@@ -198,30 +198,60 @@ describe('evento template', () => {
       expect(warnings).toEqual([]);
       expect(text.match(/ACUMULADO/g)?.length).toBeGreaterThanOrEqual(3);
       expect(text).toContain('Movimento de teste 80');
-      expect(text).toContain('Saídas brutas');
+      expect(text).toContain('Total bruto');
     },
   );
 
   it.skipIf(!hasPoppler)(
-    'explains the deviation sign under the expenses table only',
+    'prints the deviation direction in words next to each deviation figure',
     async () => {
       const report = example('evento-citadao');
-      const note = report.sections.find(
-        (s): s is BudgetSection => s.kind === 'budget' && s.side === 'despesa',
-      )?.note;
-      if (note === undefined) throw new Error('example has no expenses note');
-      const withoutNote = structuredClone(report) as unknown as {
-        sections: { note?: string }[];
+      const bare = structuredClone(report) as unknown as {
+        sections: { kind: string; rows: object[]; total: object }[];
       };
-      for (const section of withoutNote.sections) delete section.note;
+      for (const section of bare.sections) {
+        if (section.kind !== 'budget') continue;
+        for (const row of [...section.rows, section.total])
+          delete (row as { desvioLabel?: string }).desvioLabel;
+      }
 
       const [shown, hidden] = await Promise.all([
         renderer.render('evento', report),
-        renderer.render('evento', withoutNote),
+        renderer.render('evento', bare),
       ]);
 
-      expect(pdfText(shown.pdf).replace(/\s+/g, ' ')).toContain(note);
-      expect(pdfText(hidden.pdf).replace(/\s+/g, ' ')).not.toContain(note);
+      expect(pdfText(shown.pdf)).toContain('Acima do orçado');
+      expect(pdfText(shown.pdf)).toContain('Abaixo do orçado');
+      expect(pdfText(hidden.pdf)).not.toContain('Acima do orçado');
+    },
+  );
+
+  it.skipIf(!hasPoppler)(
+    'heads the budget label column with the header the report carries',
+    async () => {
+      const { pdf } = await renderer.render(
+        'evento',
+        example('evento-citadao'),
+      );
+
+      expect(pdfText(pdf)).toContain('SUB-RUBRICA');
+    },
+  );
+
+  it.skipIf(!hasPoppler)(
+    'prints the running result in ink and the gross totals under Entrada and Saída',
+    async () => {
+      const report = example('evento-citadao');
+      const book = report.sections.find((s) => s.kind === 'movements');
+      if (book === undefined) throw new Error('no cash book');
+
+      const { pdf } = await renderer.render(
+        'evento',
+        onlySections(report, [book]),
+      );
+
+      expect(hasPixel(pdfPixels(pdf), report.theme.accentRed)).toBe(false);
+      expect(pdfText(pdf)).toMatch(/Total bruto\s+20\.225,20 €\s+15\.927,00 €/);
     },
   );
 
@@ -353,19 +383,23 @@ describe('period report templates', () => {
         'POSIÇÃO FINANCEIRA NA PASSAGEM',
         'RECONCILIAÇÃO BANCÁRIA',
         'CONTAGEM DE CAIXA',
-        'DIREITOS E COMPROMISSOS',
+        'PENDENTES (A RECEBER E A PAGAR)',
       ])
         expect(text).toContain(heading);
       expect(text.indexOf('CONTAGEM DE CAIXA')).toBeLessThan(
         text.indexOf('DECLARAÇÃO'),
       );
       expect(last).toContain('DECLARAÇÃO');
-      for (const title of [
+      expect(last).toContain('Total a pagar');
+      for (const line of [
         'Direção cessante',
+        'Marta Figueiredo',
+        'Direção 2025/26',
         'Direção entrante',
         'Conselho Fiscal',
       ])
-        expect(last).toContain(title);
+        expect(last).toContain(line);
+      expect(last.match(/Data: ____\/____\/______/g)).toHaveLength(3);
     },
   );
 
@@ -458,7 +492,7 @@ describe('period report templates', () => {
       );
 
       const page = pdfPages(pdf).find((p) =>
-        p.includes('COMPARAÇÃO COM O PERÍODO HOMÓLOGO'),
+        p.includes('COMPARAÇÃO COM O MESMO PERÍODO DO ANO ANTERIOR'),
       );
 
       expect(page).toBeDefined();
@@ -474,7 +508,7 @@ describe('period report templates', () => {
       const report = example('letivo-2025-26');
       const comparison: YearComparisonSection = {
         kind: 'yearComparison',
-        title: 'Comparação com o período homólogo',
+        title: 'Comparação com o mesmo período do ano anterior',
         status: 'sem-dados',
         labels: ['2024', '2025'],
         message:
@@ -543,7 +577,7 @@ describe('end of the report', () => {
   });
 
   it.skipIf(!hasPoppler)(
-    'never leaves the signatures and trace alone on the last page of a cash book',
+    'keeps the last three cash book rows and the totals with the signatures and trace',
     async () => {
       const lonely: number[] = [];
       for (let rows = 30; rows <= 72; rows += 1) {
@@ -553,14 +587,52 @@ describe('end of the report', () => {
         );
         const last = pdfPages(pdf).at(-1) ?? '';
         if (
-          !last.includes('Gerado em') ||
-          !last.includes(`Movimento de teste ${String(rows)}`) ||
-          !last.includes('Saídas brutas')
+          !last.includes('Gerado a ') ||
+          !last.includes(`Movimento de teste ${String(rows - 2)}`) ||
+          !last.includes('Total bruto')
         )
           lonely.push(rows);
       }
 
       expect(lonely).toEqual([]);
+    },
+    120_000,
+  );
+
+  it.skipIf(!hasPoppler)(
+    'keeps the pegada declaration with the last note and, for short notes, with the pending figures',
+    async () => {
+      const lonely: number[] = [];
+      const detached: number[] = [];
+      const report = example('pegada-2026');
+      for (let count = 1; count <= 31; count += 3) {
+        const sections = report.sections.map((section) =>
+          section.kind === 'text'
+            ? {
+                ...section,
+                paragraphs: Array.from(
+                  { length: count },
+                  (_, i) => `Nota ${String(i + 1)}`,
+                ),
+              }
+            : section,
+        );
+        const { pdf } = await renderer.render(
+          'pegada',
+          onlySections(report, sections),
+        );
+        const last = pdfPages(pdf).at(-1) ?? '';
+        if (
+          !last.includes('DECLARAÇÃO') ||
+          !last.includes(`Nota ${String(count)}`) ||
+          !last.includes('Gerado a ')
+        )
+          lonely.push(count);
+        if (count <= 4 && !last.includes('Total a pagar')) detached.push(count);
+      }
+
+      expect(lonely).toEqual([]);
+      expect(detached).toEqual([]);
     },
     120_000,
   );
@@ -583,7 +655,7 @@ describe('end of the report', () => {
           onlySections(report, filler === 0 ? sections.slice(1) : sections),
         );
         const last = pdfPages(pdf).at(-1) ?? '';
-        if (!last.includes('DECLARAÇÃO FINAL') || !last.includes('Gerado em'))
+        if (!last.includes('DECLARAÇÃO FINAL') || !last.includes('Gerado a '))
           lonely.push(filler);
       }
 

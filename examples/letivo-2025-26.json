@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "tipo": "letivo",
   "theme": {
     "navy": "#1D2F6F",
@@ -356,7 +356,7 @@
     },
     {
       "kind": "pending",
-      "title": "Direitos e compromissos a 31/08/2026",
+      "title": "Pendentes (a receber e a pagar)",
       "refLabel": "Situação a 31/08/2026",
       "receber": [
         {
@@ -454,7 +454,7 @@
     },
     {
       "kind": "yearComparison",
-      "title": "Comparação com o período homólogo",
+      "title": "Comparação com o mesmo período do ano anterior",
       "status": "ok",
       "labels": [
         "01/01/2025 a 31/08/2025",
@@ -1544,7 +1544,7 @@
           }
         },
         {
-          "label": "Movimentos fora do resultado",
+          "label": "Transferências e saldos (anulam-se)",
           "value": {
             "cents": 0,
             "text": "0,00 €"
@@ -1574,7 +1574,7 @@
     "sources": [
       {
         "name": "tesouraria.xlsx",
-        "sha256Short": "38fdd5c6ec21"
+        "sha256Short": "b13cfae46798"
       }
     ],
     "generatorVersion": "1.0.0",

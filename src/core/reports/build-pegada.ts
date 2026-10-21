@@ -162,11 +162,7 @@ export function buildPegada(
       book: money(pegada.cashCount.bookCaixaCents),
       difference: money(pegada.cashCount.differenceCents),
     },
-    pendingSection(
-      'Direitos e compromissos à data da entrega',
-      params.dataPassagem,
-      pegada.pending,
-    ),
+    pendingSection(params.dataPassagem, pegada.pending),
     ...present(textSection('Notas / Comentários', params.notas)),
     {
       kind: 'declaration',
@@ -177,7 +173,7 @@ export function buildPegada(
 
   return {
     report: {
-      schemaVersion: 1,
+      schemaVersion: 2,
       tipo: 'pegada',
       theme: themeOf(config),
       header: headerOf(
@@ -190,7 +186,7 @@ export function buildPegada(
         `Passagem de ${params.direcaoCessante} para ${params.direcaoEntrante} em ${formatDate(params.dataPassagem)}`,
       ),
       sections,
-      signatures: signaturesOf(config.signatures.pegada, [
+      signatures: signaturesOf(config.signatures.pegada, params.assinaturas, [
         params.direcaoCessante,
         params.direcaoEntrante,
       ]),

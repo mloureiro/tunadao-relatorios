@@ -11,7 +11,6 @@ import {
 import type { Config } from '../config/schema.ts';
 import type { Dataset } from '../dataset/types.ts';
 import { addMonths } from '../dates.ts';
-import { formatDate } from '../format.ts';
 import {
   activitySection,
   bridgeSection,
@@ -99,13 +98,9 @@ export function buildLetivo(
         'despesa',
       ),
     ),
-    ...budgetSections(budget?.tables ?? null),
+    ...budgetSections(budget?.tables ?? null, config.aggregation.budgetPeriod),
     ...present(activitySection(byActivity(result, lists))),
-    pendingSection(
-      `Direitos e compromissos a ${formatDate(fim)}`,
-      fim,
-      pendingAt(dataset, fim),
-    ),
+    pendingSection(fim, pendingAt(dataset, fim)),
     ...present(inKindSection(kind.rows, kind.totalCents)),
     ...present(textSection('Notas / Comentários', params.notas)),
     comparison.section,
@@ -124,7 +119,7 @@ export function buildLetivo(
 
   return {
     report: {
-      schemaVersion: 1,
+      schemaVersion: 2,
       tipo: 'letivo',
       theme: themeOf(config),
       header: headerOf(
@@ -133,7 +128,7 @@ export function buildLetivo(
         periodLabel(inicio, fim),
       ),
       sections,
-      signatures: signaturesOf(config.signatures.letivo),
+      signatures: signaturesOf(config.signatures.letivo, params.assinaturas),
       trace: traceOf(ctx, params.anexarJson),
     },
     issues: dedupeIssues([

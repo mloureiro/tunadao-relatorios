@@ -60,34 +60,46 @@
 #let lead() = {
   let text-lead = report.header.at("lead", default: none)
   if text-lead != none {
-    block(below: 0.4cm, text(size: 15pt, weight: "bold", fill: navy, text-lead))
+    let parts = text-lead.split(" · ")
+    block(below: 0.4cm, {
+      text(size: 15pt, weight: "bold", fill: navy, parts.first())
+      if parts.len() > 1 {
+        linebreak()
+        v(0.1cm)
+        text(size: 10pt, fill: muted, parts.slice(1).join(" · "))
+      }
+    })
   }
 }
 
 #let signature-lines() = {
-  if report.signatures.len() > 0 {
+  let signatures = report.signatures
+  if signatures.len() > 0 {
+    let has(field) = signatures.any(sig => sig.at(field, default: none) != none)
+    let centred(field, ..style) = signatures.map(sig => align(center, text(size: 9pt, ..style, sig.at(field, default: ""))))
     grid(
-      columns: (1fr,) * report.signatures.len(),
+      columns: (1fr,) * signatures.len(),
       column-gutter: 0.8cm,
-      ..report.signatures.map(sig => {
+      row-gutter: 0.2cm,
+      ..signatures.map(sig => {
         v(1.3cm)
         line(length: 100%, stroke: 0.6pt + luma(120))
-        v(0.1cm)
-        align(center, text(size: 9pt, weight: "bold", sig.title))
-        let name = sig.at("name", default: none)
-        if name != none { align(center, text(size: 9pt, fill: muted, name)) }
       }),
+      ..centred("title", weight: "bold"),
+      ..if has("name") { centred("name") } else { () },
+      ..if has("detail") { centred("detail", size: 8.5pt, fill: muted) } else { () },
+      ..signatures.map(sig => align(center, pad(top: 0.2cm, text(size: 8.5pt, fill: muted, "Data: ____/____/______")))),
     )
   }
 }
 
 #let trace-line() = {
   let trace = report.trace
-  let sources = trace.sources.map(s => s.name + " (" + s.sha256Short + ")").join(", ")
+  let sources = trace.sources.map(s => s.name + " (impressão digital " + s.sha256Short + ")").join(", ")
   line(length: 100%, stroke: 0.4pt + rule-grey)
   v(0.1cm)
   text(size: 8pt, fill: muted)[
-    Gerado em #trace.generatedAtLabel · Ficheiros de origem: #sources · Gerador #trace.generatorVersion
+    Gerado a #trace.generatedAtLabel a partir de #sources · versão #trace.generatorVersion
   ]
 }
 
@@ -104,7 +116,12 @@
 }
 
 #let finish() = {
+  let declaration = report.sections.find(section => section.kind == "declaration")
   block(breakable: false, above: 1.2cm, {
+    if declaration != none {
+      heading(level: 2, declaration.title)
+      for paragraph in declaration.paragraphs { par(paragraph) }
+    }
     signature-lines()
     v(0.9cm)
     trace-line()

@@ -15,6 +15,11 @@ export interface UnclearedParam {
   readonly valorCents: Cents;
 }
 
+export interface SignatoryParam {
+  readonly cargo: string;
+  readonly nome: string;
+}
+
 export interface EventoParams {
   readonly atividade: string;
   readonly eventoInicio: IsoDate;
@@ -24,6 +29,7 @@ export interface EventoParams {
   readonly ambitoOrcamento: string;
   readonly indicadores: readonly Indicator[];
   readonly notas?: string;
+  readonly assinaturas?: readonly SignatoryParam[];
   readonly anexarJson: boolean;
 }
 
@@ -39,6 +45,7 @@ export interface PegadaParams {
   readonly moedasPequenasCents?: Cents;
   readonly aberturaManual?: ManualOpening;
   readonly notas?: string;
+  readonly assinaturas?: readonly SignatoryParam[];
   readonly anexarJson: boolean;
 }
 
@@ -48,6 +55,7 @@ export interface LetivoParams {
   readonly ambitoOrcamento?: string;
   readonly aberturaManual?: ManualOpening;
   readonly notas?: string;
+  readonly assinaturas?: readonly SignatoryParam[];
   readonly anexar: boolean;
   readonly anexarJson: boolean;
 }
@@ -57,6 +65,7 @@ export interface FiscalParams {
   readonly ambitoOrcamento: string;
   readonly parecerCF?: string;
   readonly notas?: string;
+  readonly assinaturas?: readonly SignatoryParam[];
   readonly anexoMovimentos: boolean;
   readonly aberturaManual?: ManualOpening;
   readonly anexarJson: boolean;
@@ -148,6 +157,13 @@ const notes = optional(z.string(pt)).transform((value) => {
   const trimmed = value?.trim() ?? '';
   return trimmed === '' ? undefined : trimmed;
 });
+
+const signatories = z
+  .array(z.strictObject({ cargo: text, nome: text }, pt), pt)
+  .default([])
+  .transform((rows): SignatoryParam[] | undefined =>
+    rows.length === 0 ? undefined : rows,
+  );
 
 const flag = (fallback: boolean) =>
   z
@@ -249,6 +265,7 @@ export const eventoParamsSchema = z
       ambitoOrcamento: optional(text),
       indicadores: indicators,
       notas: notes,
+      assinaturas: signatories,
       anexarJson: flag(true),
     },
     pt,
@@ -265,7 +282,7 @@ export const eventoParamsSchema = z
     refPendentes: raw.refPendentes,
     ambitoOrcamento: raw.ambitoOrcamento ?? raw.atividade,
     indicadores: raw.indicadores,
-    ...definedOnly({ notas: raw.notas }),
+    ...definedOnly({ notas: raw.notas, assinaturas: raw.assinaturas }),
     anexarJson: raw.anexarJson,
   }));
 
@@ -287,6 +304,7 @@ export const pegadaParamsSchema = z
       ),
       aberturaManual: manualOpening,
       notas: notes,
+      assinaturas: signatories,
       anexarJson: flag(true),
     },
     pt,
@@ -318,6 +336,7 @@ export const pegadaParamsSchema = z
       moedasPequenasCents: raw.moedasPequenas,
       aberturaManual: raw.aberturaManual,
       notas: raw.notas,
+      assinaturas: raw.assinaturas,
     }),
     anexarJson: raw.anexarJson,
   }));
@@ -330,6 +349,7 @@ export const letivoParamsSchema = z
       ambitoOrcamento: optional(text),
       aberturaManual: manualOpening,
       notas: notes,
+      assinaturas: signatories,
       anexar: flag(true),
       anexarJson: flag(true),
     },
@@ -346,6 +366,7 @@ export const letivoParamsSchema = z
       ambitoOrcamento: raw.ambitoOrcamento,
       aberturaManual: raw.aberturaManual,
       notas: raw.notas,
+      assinaturas: raw.assinaturas,
     }),
     anexar: raw.anexar,
     anexarJson: raw.anexarJson,
@@ -362,6 +383,7 @@ export const fiscalParamsSchema = z
       ambitoOrcamento: optional(text),
       parecerCF: notes,
       notas: notes,
+      assinaturas: signatories,
       anexoMovimentos: flag(false),
       aberturaManual: manualOpening,
       anexarJson: flag(true),
@@ -374,6 +396,7 @@ export const fiscalParamsSchema = z
     ...definedOnly({
       parecerCF: raw.parecerCF,
       notas: raw.notas,
+      assinaturas: raw.assinaturas,
       aberturaManual: raw.aberturaManual,
     }),
     anexoMovimentos: raw.anexoMovimentos,

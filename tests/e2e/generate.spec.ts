@@ -65,6 +65,16 @@ function withoutGenerationTime(report: Json): Json {
   return { ...report, trace };
 }
 
+function withoutSignatoryNames(report: Json): Json {
+  return {
+    ...report,
+    signatures: (report.signatures as Json[]).map(({ title, detail }) => ({
+      title,
+      ...(detail === undefined ? {} : { detail }),
+    })),
+  };
+}
+
 function expectLisbonWallClock(report: Json): void {
   const trace = report.trace as Json;
   expect(trace.generatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/);
@@ -172,7 +182,9 @@ test('the handover report is generated from the form, matches the CLI example an
   const report = await downloadJson(page, 'relatorio-pegada-2026-09-30.json');
   expectLisbonWallClock(report);
   expect(withoutGenerationTime(report)).toEqual(
-    withoutGenerationTime(await readJson('examples/pegada-2026.json')),
+    withoutGenerationTime(
+      withoutSignatoryNames(await readJson('examples/pegada-2026.json')),
+    ),
   );
   expect(foreign).toEqual([]);
 });

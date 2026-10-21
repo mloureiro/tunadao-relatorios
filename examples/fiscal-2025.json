@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "tipo": "fiscal",
   "theme": {
     "navy": "#1D2F6F",
@@ -121,6 +121,7 @@
       "kind": "budget",
       "title": "Receitas: orçado e realizado",
       "side": "receita",
+      "labelHeader": "Rubrica",
       "rows": [
         {
           "label": "Quotas",
@@ -136,6 +137,7 @@
             "cents": 6000,
             "text": "+60,00 €"
           },
+          "desvioLabel": "Acima do orçado",
           "execucao": "105,0%"
         },
         {
@@ -152,6 +154,7 @@
             "cents": 5000,
             "text": "+50,00 €"
           },
+          "desvioLabel": "Acima do orçado",
           "execucao": "106,3%"
         },
         {
@@ -184,6 +187,7 @@
             "cents": -18000,
             "text": "−180,00 €"
           },
+          "desvioLabel": "Abaixo do orçado",
           "execucao": "95,0%"
         },
         {
@@ -200,6 +204,7 @@
             "cents": 18000,
             "text": "+180,00 €"
           },
+          "desvioLabel": "Acima do orçado",
           "execucao": "103,0%"
         },
         {
@@ -216,6 +221,7 @@
             "cents": 44000,
             "text": "+440,00 €"
           },
+          "desvioLabel": "Acima do orçado",
           "execucao": "108,0%"
         },
         {
@@ -232,6 +238,7 @@
             "cents": -30000,
             "text": "−300,00 €"
           },
+          "desvioLabel": "Abaixo do orçado",
           "execucao": "88,0%"
         },
         {
@@ -248,6 +255,7 @@
             "cents": -470,
             "text": "−4,70 €"
           },
+          "desvioLabel": "Abaixo do orçado",
           "execucao": "95,3%"
         }
       ],
@@ -265,6 +273,7 @@
           "cents": 24530,
           "text": "+245,30 €"
         },
+        "desvioLabel": "Acima do orçado",
         "execucao": "101,0%"
       }
     },
@@ -272,6 +281,7 @@
       "kind": "budget",
       "title": "Despesas: orçado e realizado",
       "side": "despesa",
+      "labelHeader": "Rubrica",
       "rows": [
         {
           "label": "Produção (som, luz, palco)",
@@ -287,6 +297,7 @@
             "cents": 15000,
             "text": "+150,00 €"
           },
+          "desvioLabel": "Acima do orçado",
           "execucao": "102,4%"
         },
         {
@@ -303,6 +314,7 @@
             "cents": 27000,
             "text": "+270,00 €"
           },
+          "desvioLabel": "Acima do orçado",
           "execucao": "105,9%"
         },
         {
@@ -319,6 +331,7 @@
             "cents": 21560,
             "text": "+215,60 €"
           },
+          "desvioLabel": "Acima do orçado",
           "execucao": "107,2%"
         },
         {
@@ -335,6 +348,7 @@
             "cents": -6000,
             "text": "−60,00 €"
           },
+          "desvioLabel": "Abaixo do orçado",
           "execucao": "98,0%"
         },
         {
@@ -351,6 +365,7 @@
             "cents": -2000,
             "text": "−20,00 €"
           },
+          "desvioLabel": "Abaixo do orçado",
           "execucao": "97,5%"
         },
         {
@@ -367,6 +382,7 @@
             "cents": 22000,
             "text": "+220,00 €"
           },
+          "desvioLabel": "Acima do orçado",
           "execucao": "124,4%"
         },
         {
@@ -383,6 +399,7 @@
             "cents": 15000,
             "text": "+150,00 €"
           },
+          "desvioLabel": "Acima do orçado",
           "execucao": "111,5%"
         },
         {
@@ -399,6 +416,7 @@
             "cents": 1000,
             "text": "+10,00 €"
           },
+          "desvioLabel": "Acima do orçado",
           "execucao": "101,7%"
         },
         {
@@ -415,6 +433,7 @@
             "cents": -760,
             "text": "−7,60 €"
           },
+          "desvioLabel": "Abaixo do orçado",
           "execucao": "98,2%"
         },
         {
@@ -431,6 +450,7 @@
             "cents": -500,
             "text": "−5,00 €"
           },
+          "desvioLabel": "Abaixo do orçado",
           "execucao": "98,8%"
         },
         {
@@ -447,6 +467,7 @@
             "cents": 1890,
             "text": "+18,90 €"
           },
+          "desvioLabel": "Acima do orçado",
           "execucao": "112,6%"
         }
       ],
@@ -464,9 +485,9 @@
           "cents": 94190,
           "text": "+941,90 €"
         },
+        "desvioLabel": "Acima do orçado",
         "execucao": "104,4%"
-      },
-      "note": "Nas despesas, desvio positivo significa que se gastou mais do que o orçado."
+      }
     },
     {
       "kind": "byActivity",
@@ -550,7 +571,7 @@
     },
     {
       "kind": "pending",
-      "title": "Direitos e compromissos a 31/12/2025",
+      "title": "Pendentes (a receber e a pagar)",
       "refLabel": "Situação a 31/12/2025",
       "receber": [
         {
@@ -589,7 +610,7 @@
     },
     {
       "kind": "yearComparison",
-      "title": "Comparação com o período homólogo",
+      "title": "Comparação com o mesmo período do ano anterior",
       "status": "ok",
       "labels": [
         "2024",
@@ -952,7 +973,7 @@
     "sources": [
       {
         "name": "tesouraria.xlsx",
-        "sha256Short": "38fdd5c6ec21"
+        "sha256Short": "b13cfae46798"
       }
     ],
     "generatorVersion": "1.0.0",

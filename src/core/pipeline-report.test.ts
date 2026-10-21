@@ -205,7 +205,7 @@ describe.each(['evento', 'pegada', 'letivo', 'fiscal'] as const)(
       if (result.status !== 'report') throw new Error(result.status);
       const { report } = result;
       expect(report).toMatchObject({
-        schemaVersion: 1,
+        schemaVersion: 2,
         tipo,
         theme: CONFIG.theme,
         trace: {
@@ -231,8 +231,8 @@ describe.each(['evento', 'pegada', 'letivo', 'fiscal'] as const)(
 
       if (result.status !== 'report') throw new Error(result.status);
       const pending = result.report.sections.find((s) => s.kind === 'pending');
-      expect(pending?.kind === 'pending' && pending.title).toMatch(
-        /^Direitos e compromissos/,
+      expect(pending?.kind === 'pending' && pending.title).toBe(
+        'Pendentes (a receber e a pagar)',
       );
       expect(pending).toMatchObject({
         emptyReceber: 'Nada a receber',
