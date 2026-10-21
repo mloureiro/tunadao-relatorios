@@ -10,7 +10,8 @@ import { prefillStarter } from '../../src/core/starter/prefill.ts';
 const SHEET = 'xl/worksheets/sheet1.xml';
 
 function valueAt(bytes: Uint8Array, address: string): unknown {
-  const sheet = XLSX.read(bytes, { type: 'array' }).Sheets.Pegada;
+  const workbook = XLSX.read(bytes, { type: 'array' });
+  const sheet = workbook.Sheets[workbook.SheetNames[0] ?? ''];
   return (sheet?.[address] as XLSX.CellObject | undefined)?.v;
 }
 const PATCHED = ['B4', 'B6'] as const;
@@ -92,6 +93,14 @@ describe('prefillStarter()', () => {
     });
 
     expect(valueAt(filled, 'B6')).toBe('A & B <"direção">');
+  });
+
+  it('drops characters XML 1.0 cannot carry and keeps tabs, new lines and accents', () => {
+    const filled = prefillStarter(starter, 'pegada', {
+      direcaoCessante: 'Ana\u0001 \u000bSilva\u0000\tJosé\nCosta\uFFFE\uD800',
+    });
+
+    expect(valueAt(filled, 'B6')).toBe('Ana Silva\tJosé\nCosta');
   });
 
   it('refuses a field the starter does not have', () => {

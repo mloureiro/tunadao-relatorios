@@ -19,8 +19,12 @@ const XML_ESCAPES: Readonly<Record<string, string>> = {
   '"': '&quot;',
 };
 
+const XML_INVALID = /[^\t\n\r\u0020-\uD7FF\uE000-\uFFFD\u{10000}-\u{10FFFF}]/gu;
+
 function escapeXml(text: string): string {
-  return text.replace(/[&<>"]/g, (char) => XML_ESCAPES[char] ?? char);
+  return text
+    .replace(XML_INVALID, '')
+    .replace(/[&<>"]/g, (char) => XML_ESCAPES[char] ?? char);
 }
 
 function serialOf(iso: IsoDate): number {
