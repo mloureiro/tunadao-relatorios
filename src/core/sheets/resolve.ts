@@ -8,6 +8,7 @@ import type { SheetDraft } from './types.ts';
 export interface DerivedValue {
   readonly value: IsoDate;
   readonly origin: string;
+  readonly fromSheet?: string;
 }
 
 export interface Resolution {
@@ -97,8 +98,17 @@ class Resolver {
     private readonly dataset: Dataset,
   ) {}
 
-  private derive(key: string, value: IsoDate, origin: string): void {
-    this.derived.set(key, { value, origin });
+  private derive(
+    key: string,
+    value: IsoDate,
+    origin: string,
+    fromSheet?: string,
+  ): void {
+    this.derived.set(key, {
+      value,
+      origin,
+      ...(fromSheet === undefined ? {} : { fromSheet }),
+    });
   }
 
   private refuse(key: string, reason: string): void {
@@ -135,6 +145,7 @@ class Resolver {
       key,
       addDays(previous.end, shift),
       wording.origin(previous.sheet),
+      previous.sheet,
     );
   }
 

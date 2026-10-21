@@ -116,6 +116,7 @@ export function ReportEntry({
   }
 
   async function download() {
+    if (generating) return;
     const url = await ensurePdf();
     if (url === null) return;
     saveFile(url, pdfName);
@@ -123,6 +124,7 @@ export function ReportEntry({
   }
 
   async function togglePreview() {
+    if (generating) return;
     if (previewing) {
       onPreview(false);
       return;
@@ -190,36 +192,40 @@ export function ReportEntry({
 
         {note !== null && <p class="entry-note">{note}</p>}
 
-        <div class="entry-actions">
-          <button
-            type="button"
-            class="button"
-            disabled={!ready || generating}
-            aria-busy={generating}
-            onClick={() => void download()}
-          >
-            {generating ? 'A gerar…' : 'Descarregar PDF'}
-          </button>
-          <button
-            type="button"
-            class="button button-secondary"
-            ref={previewButton}
-            disabled={!ready || generating}
-            aria-expanded={previewing}
-            onClick={() => void togglePreview()}
-          >
-            {previewing ? 'Fechar pré-visualização' : 'Pré-visualizar'}
-          </button>
-          {jsonUrl !== null && (
-            <a
-              class="link"
-              href={jsonUrl}
-              download={`${instance.fileStem}.json`}
+        {instance.status !== 'por-preencher' && (
+          <div class="entry-actions">
+            <button
+              type="button"
+              class="button"
+              disabled={!ready}
+              aria-disabled={generating}
+              aria-busy={generating}
+              onClick={() => void download()}
             >
-              dados (.json)
-            </a>
-          )}
-        </div>
+              {generating ? 'A gerar…' : 'Descarregar PDF'}
+            </button>
+            <button
+              type="button"
+              class="button button-secondary"
+              ref={previewButton}
+              disabled={!ready}
+              aria-disabled={generating}
+              aria-expanded={previewing}
+              onClick={() => void togglePreview()}
+            >
+              {previewing ? 'Fechar pré-visualização' : 'Pré-visualizar'}
+            </button>
+            {jsonUrl !== null && (
+              <a
+                class="link"
+                href={jsonUrl}
+                download={`${instance.fileStem}.json`}
+              >
+                dados (.json)
+              </a>
+            )}
+          </div>
+        )}
 
         {generating && engine.status === 'loading' && (
           <p class="hint">{engineProgressLabel(engine.progress)}</p>

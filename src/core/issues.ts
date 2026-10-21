@@ -68,6 +68,7 @@ export const ISSUE_SEVERITY = {
   'period-outside-data': 'warning',
   'date-in-future': 'warning',
   'duplicate-report': 'warning',
+  'derived-from-erroneous-sheet': 'warning',
   'build-failed': 'error',
 } as const satisfies Record<string, Severity>;
 
@@ -254,6 +255,8 @@ export const issueMessages = {
     `A data ${formatDateLong(date)} ainda não chegou. Confirme que escreveu o ano certo.`,
   'duplicate-report': (otherSheet: string, key: string) =>
     `A folha "${otherSheet}" é um relatório do mesmo tipo e com a mesma identificação (${key}). Deixe apenas uma das duas.`,
+  'derived-from-erroneous-sheet': (sheet: string) =>
+    `Esta data foi calculada a partir da folha "${sheet}", que tem erros. Confirme-a nessa folha.`,
   'build-failed': (reason: string) =>
     `Não foi possível gerar o relatório (detalhe técnico: ${reason}).`,
 } as const satisfies Record<IssueCode, (...args: never[]) => string>;

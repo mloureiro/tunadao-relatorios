@@ -17,10 +17,13 @@ test('a sheet with errors cannot be generated until the corrected file replaces 
   ).toBeDisabled();
 
   const valid = entry(page, 'Válida');
-  await valid.getByRole('button', { name: 'Descarregar PDF' }).click();
+  const download = valid.getByRole('button', { name: 'Descarregar PDF' });
+  await download.focus();
+  await page.keyboard.press('Enter');
   await expect(valid.getByText(/^PDF gerado:/)).toBeVisible({
     timeout: 90_000,
   });
+  await expect(download).toBeFocused();
 
   await fileInput(page).setInputFiles(VALID);
 
