@@ -551,6 +551,42 @@ describe('signature block', () => {
     });
   });
 
+  it('ends at a field row whose cargo name already appeared in the block', () => {
+    const draft = signatures(
+      ['Direção cessante', 'Ana'],
+      ['Direção entrante', 'Rui'],
+      ['Direção cessante', 'Direção 2025/26'],
+      ['Direção entrante', 'Direção 2026/27'],
+    );
+
+    expect(blockOf(draft, 'assinaturas')).toMatchObject({
+      lines: [{ name: 'Ana' }, { name: 'Rui' }],
+    });
+    expect(draft.fields.map((f) => [f.key, f.value])).toEqual([
+      ['direcaoCessante', 'Direção 2025/26'],
+      ['direcaoEntrante', 'Direção 2026/27'],
+    ]);
+    expect(
+      draft.issues
+        .flatMap(({ field }) => field ?? [])
+        .filter((f) => f.startsWith('Direção')),
+    ).toEqual([]);
+  });
+
+  it('flags a cargo repeated inside the block and ignores the second line', () => {
+    const draft = signatures(
+      ['Conselho Fiscal', 'Ana'],
+      ['Conselho Fiscal', 'Rui'],
+    );
+
+    expect(blockOf(draft, 'assinaturas')).toMatchObject({
+      lines: [{ name: 'Ana' }],
+    });
+    expect(withoutMissing(draft)).toMatchObject([
+      { code: 'field-duplicate', cell: 'A5' },
+    ]);
+  });
+
   it('is not ended by a cargo that shares its name with a field label', () => {
     const draft = signatures(
       ['Direção cessante', 'Ana'],
