@@ -40,14 +40,46 @@ describe('exampleRowIssues()', () => {
     },
   );
 
-  it('leaves Listas, Saldos and the plain "(exemplo)" wording alone', () => {
+  it('leaves Listas and Saldos alone', () => {
     expect(
       exampleRowIssues([
         table('Listas', [['Atividade'], ['Festa (exemplo fictício)']]),
         table('Saldos', [['Fonte'], ['exemplo fictício']]),
-        table('Géneros', [['Tipo'], ['Cartazes oferecidos (exemplo)']]),
       ]),
     ).toEqual([]);
+  });
+
+  it('flags the v1 example rows that carry no marker, matching description and amount exactly', () => {
+    const issues = exampleRowIssues([
+      table('Movimentos', [
+        MOVIMENTOS_HEADER,
+        [45930, 'Depósito de numerário (saída da caixa)', 100],
+        [45931, 'Depósito de numerário (saída da caixa)', 100.5],
+        [45932, 'Depósito de numerário', 100],
+      ]),
+      table('Pendentes', [
+        ['Entidade', 'Valor (€)'],
+        ['Gráfica Exemplo', '180,00 €'],
+        ['Gráfica Exemplo', 181],
+      ]),
+      table('Orçamento', [
+        ['Âmbito', 'Rubrica', 'Orçado (€)'],
+        ['2026', 'Comunicação e gráfica', 200],
+        ['2027', 'Comunicação e gráfica', 200],
+      ]),
+      table('Géneros', [
+        ['Atividade', 'Tipo'],
+        ['Festivais', 'Cartazes oferecidos (exemplo)'],
+        ['Festivais', 'Cartazes'],
+      ]),
+    ]);
+
+    expect(issues.map(({ tab, row }) => [tab, row])).toEqual([
+      ['Movimentos', 2],
+      ['Pendentes', 2],
+      ['Orçamento', 2],
+      ['Géneros', 2],
+    ]);
   });
 });
 
