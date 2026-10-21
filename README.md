@@ -1,70 +1,139 @@
 # Gerador de relatórios financeiros — TUNADÃO 1998
 
-Página estática e CLI que leem a folha de Tesouraria (`.xlsx` ou CSV) e geram os relatórios financeiros da tuna em
-PDF. Tudo acontece no navegador, neste computador: os dados nunca são enviados para lado nenhum. Depois da primeira
+Página estática e CLI que leem a folha de Tesouraria (`.xlsx`) e geram os relatórios financeiros da tuna em PDF.
+Tudo acontece no navegador, neste computador: os dados nunca são enviados para lado nenhum. Depois da primeira
 visita a página funciona também sem ligação à internet.
 
 Há quatro relatórios: **Relatório de evento**, **Pegada de direção**, **Fim de ano letivo** e **Fim de ano fiscal**.
+Cada relatório é uma folha da própria Tesouraria: tudo o que o relatório precisa escreve-se no ficheiro, nunca na
+página.
 
 ## Como usar a página
 
-> A página já não tem formulários: carregue o `.xlsx` e cada folha de relatório do ficheiro aparece com o seu estado, os erros e os botões «Descarregar PDF», «Pré-visualizar» e «dados (.json)». Para corrigir algo, edite o ficheiro e carregue a versão corrigida. Os passos 5 a 9 abaixo e as imagens descrevem o fluxo antigo e serão reescritos.
+O percurso cabe num só ecrã e a página não tem formulários.
 
 ![Início](docs/img/01-inicio.png)
 
-1. **Descarregue o modelo.** Na página inicial, o botão «Descarregar modelo (.xlsx)» dá-lhe a folha de Tesouraria
-   vazia, com listas suspensas e uma aba **Instruções** que traz um exemplo de três movimentos.
-2. **Preencha cada aba** no Excel ou no LibreOffice:
-   - **Movimentos**: cada recebimento e cada pagamento, com a data em que o dinheiro entrou ou saiu. O valor é sempre
-     positivo; o sentido está na coluna Tipo (Entrada ou Saída). Escolha rubrica, sub-rubrica, atividade e meio nas
-     listas suspensas. As colunas cinzentas, marcadas "(automático)", são calculadas: não as edite.
-   - **Pendentes**: valores a receber e dívidas a pagar ainda não liquidados.
-   - **Orçamento**: o orçado por rubrica, para uma atividade ou para um período (por exemplo «20º CITADÃO» ou «2026»).
-   - **Géneros**: apoios em espécie. Ficam listados à parte e nunca entram no saldo.
-   - **Saldos**: pontos de controlo do dinheiro de cada conta (Caixa ou Banco) no fim de um dia, com a fonte
-     (Extrato, Contagem ou Declarado). A primeira linha de cada conta é o saldo de abertura: não o registe como
-     movimento. A página confere cada ponto com o anterior e diz-lhe a diferença, se a houver.
-   - **Listas**: as rubricas, sub-rubricas, atividades e meios que aparecem nas listas suspensas.
-3. **Casos especiais nos Movimentos.**
-   - _Reembolso_: se recebeu de volta dinheiro de uma despesa (por exemplo, uma caução), registe uma **Entrada com a
-     rubrica dessa despesa**. O valor abate à despesa e não conta como receita.
-   - _Transferência entre contas_ (por exemplo, depositar numerário no banco): duas linhas com a rubrica
-     «Transferências internas», uma Saída na conta de origem e uma Entrada na de destino, com o mesmo valor e a
-     mesma data. Não contam como receita nem despesa.
-   - _Sub-rubrica_: é opcional. Vazia, o movimento fica na própria rubrica. A lista mostra todas as sub-rubricas;
-     escolha uma que pertença à rubrica indicada.
-4. **Uma atividade por edição de cada evento que se repete.** O relatório de evento soma todos os movimentos da
-   atividade, por isso edições com o mesmo nome seriam juntas. Use, por exemplo, «Zumba na Caneca 2025» e «Zumba na
-   Caneca 2026», nunca apenas «Zumba na Caneca». Acrescente cada nova atividade no fim da coluna Atividades da aba
-   Listas.
-5. **Carregue o ficheiro.** Largue o `.xlsx` (ou vários `.csv`, um por aba) na zona indicada. A página lê o ficheiro
-   neste computador e mostra a validação.
+1. **Abra a página** e largue o ficheiro da Tesouraria (`.xlsx`) na zona indicada, ou use «Escolher ficheiro». Se
+   ainda não tem o ficheiro, «Descarregar modelo da tesouraria (.xlsx)» dá-lhe um modelo vazio.
+2. **Veja o que o ficheiro tem.** A página lê o ficheiro neste computador e mostra um resumo dos dados (período dos
+   movimentos, número de movimentos e atividades, caixa e banco no último dia) e uma entrada por folha de relatório,
+   da mais recente para a mais antiga.
 
-   ![Validação](docs/img/02-validacao.png)
+   ![Relatórios do ficheiro](docs/img/02-relatorios.png)
 
-6. **Corrija os erros.** Cada problema indica o ficheiro, a aba, a linha e a coluna, com uma sugestão. Os erros
-   impedem a geração; os avisos não, mas ficam listados. Corrija a folha, volte a carregá-la e carregue em
-   «Continuar» quando aparecer «Dados válidos». Um CSV que a página não reconhece abre um ecrã onde indica a que
-   coluna corresponde cada campo; a escolha fica guardada neste navegador para a próxima vez.
-7. **Escolha o relatório.**
+   Cada entrada diz o estado da folha (**Pronto**, **Pronto, com avisos**, **Com erros**, **Por preencher** ou
+   **Bloqueado pelos dados**), escreve por extenso todas as datas do relatório (e de onde veio cada data que ficou em
+   branco) e mostra os valores principais. Confira as datas e os valores antes de descarregar.
 
-   ![Escolher o relatório](docs/img/03-escolher-relatorio.png)
+3. **Corrija o que for preciso, no ficheiro.** Cada erro diz a folha e a célula (`Folha "Pegada 2026", célula B8`);
+   nos separadores de dados diz a linha e a coluna. Os erros impedem a geração, os avisos não. Edite o ficheiro na
+   folha de cálculo, grave-o e carregue a versão corrigida: o botão «Carregar versão corrigida», ou largar o ficheiro
+   em qualquer ponto da página, substitui tudo o que estava listado.
 
-8. **Preencha os parâmetros.** Os campos mudam com o relatório (atividade e datas do evento, data da passagem e
-   contagem de caixa, período, ano fiscal, notas, parecer do Conselho Fiscal). Os problemas dos dados aparecem em
-   direto.
+   ![Erros numa folha de relatório](docs/img/04-erros-na-folha.png)
 
-   ![Parâmetros](docs/img/04-parametros.png)
+   Se os erros estiverem nos separadores de dados (Movimentos, Saldos, …), nenhum relatório fica pronto até serem
+   corrigidos.
 
-9. **Gere e descarregue.** «Gerar PDF» compõe o relatório e mostra a pré-visualização. «Descarregar PDF» guarda o
-   ficheiro; «Descarregar dados (.json)» guarda os números do relatório. «Alterar parâmetros» volta ao formulário.
+   ![Erros nos dados](docs/img/05-erros-nos-dados.png)
 
-   ![Relatório de exemplo](docs/img/05-relatorio-exemplo.png)
+4. **Descarregue.** «Descarregar PDF» gera e guarda o PDF dessa folha; «Pré-visualizar» mostra-o por baixo da entrada
+   sem sair da página; «dados (.json)» guarda os números do relatório. Os ficheiros chamam-se, por exemplo,
+   `2026-09-30 Pegada de direção.pdf` ou `2026-06-15 Relatório de evento - 20º CITADÃO.pdf` (a data é a do fim do
+   relatório).
+5. **Ou descarregue tudo de uma vez.** «Descarregar todos (.zip)» gera os PDFs de todas as folhas prontas, um a um
+   («A gerar 2 de 5…»), e guarda-os num só ficheiro `Relatórios.zip`. Os PDFs que já tinha gerado nessa visita
+   não se geram outra vez. A linha por baixo do botão diz quantos relatórios entraram e nomeia as folhas que ficaram
+   de fora e porquê.
+6. **Prepare as folhas seguintes.** Quando o ficheiro já tem uma pegada ou um período fechado, a página oferece em
+   «Próximas folhas» a pegada seguinte (com a data do último relatório e a direção cessante já escritas) e o fim de
+   ano letivo seguinte (com o início do período). Descarregue-as, acrescente-as à Tesouraria e preencha o resto.
 
-Na primeira utilização a página descarrega o motor de PDF (cerca de 10 MB). Se carregar em «Gerar PDF» antes de ele
-estar pronto, aparece «A preparar o motor de PDF… N %». Depois disso fica guardado no navegador e a página abre e
-gera relatórios mesmo sem internet. Quando há uma versão nova, aparece «Nova versão disponível» com o botão
-«Recarregar».
+   ![Descarregar todos e próximas folhas](docs/img/03-descarregar-todos.png)
+
+Na primeira utilização a página descarrega o motor de PDF (cerca de 10 MB). Se pedir um PDF antes de ele estar pronto,
+aparece «A preparar o motor de PDF… N %». Depois disso fica guardado no navegador e a página abre e gera relatórios
+mesmo sem internet. Quando há uma versão nova, aparece «Nova versão disponível» com o botão «Recarregar».
+
+Só são aceites ficheiros `.xlsx`. No LibreOffice use «Guardar como» `.xlsx`; no Google Sheets use «Ficheiro, Transferir,
+Microsoft Excel (.xlsx)».
+
+## Como está organizada a Tesouraria
+
+O ficheiro tem **separadores de dados** (a contabilidade do dia a dia) e **uma folha por relatório**.
+
+| Separador           | Para quê                                                                                                                                                                                                                                                |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Instruções          | Guia curto dentro do próprio ficheiro, com um exemplo. A página ignora-o.                                                                                                                                                                               |
+| Listas              | As rubricas, sub-rubricas, atividades, meios e orçamentos que aparecem nas listas suspensas. Não há nada para mudar no código.                                                                                                                          |
+| Saldos              | Pontos de controlo do dinheiro de cada conta (Caixa ou Banco) no fim de um dia, com a fonte (Extrato, Contagem ou Declarado). A primeira linha de cada conta é o saldo de abertura: escreva-a com a fonte **Declarado** e não a registe como movimento. |
+| Movimentos          | Cada recebimento e cada pagamento, com a data em que o dinheiro entrou ou saiu. O valor é sempre positivo; o sentido está na coluna Tipo (Entrada ou Saída). As colunas cinzentas, marcadas «(automático)», são calculadas: não as edite.               |
+| Pendentes           | Valores a receber e dívidas a pagar ainda não liquidados.                                                                                                                                                                                               |
+| Orçamento           | O orçado por rubrica, para uma atividade ou para um período (por exemplo «20º CITADÃO» ou «2026»). O nome do orçamento tem de existir em Listas.                                                                                                        |
+| Géneros             | Apoios em espécie. Ficam listados à parte e nunca entram no saldo.                                                                                                                                                                                      |
+| Folhas de relatório | Uma por relatório que quer gerar: «Modelo Pegada», «Modelo Evento», «Modelo Letivo» e «Modelo Fiscal» vêm no modelo; o nome pode ser qualquer um.                                                                                                       |
+
+Casos especiais nos Movimentos:
+
+- _Reembolso_: se recebeu de volta dinheiro de uma despesa (por exemplo, uma caução), registe uma **Entrada com a
+  rubrica dessa despesa**. O valor abate à despesa e não conta como receita.
+- _Transferência entre contas_ (por exemplo, depositar numerário no banco): duas linhas com a rubrica
+  «Transferências internas», uma Saída na conta de origem e uma Entrada na de destino, com o mesmo valor e a mesma
+  data. Não contam como receita nem despesa.
+- _Sub-rubrica_: é opcional. Vazia, o movimento fica na própria rubrica. Escolha uma que pertença à rubrica indicada.
+- **Uma atividade por edição de cada evento que se repete.** O relatório de evento soma todos os movimentos da
+  atividade, por isso edições com o mesmo nome seriam somadas. Use «Zumba na Caneca 2025» e «Zumba na Caneca 2026»,
+  nunca apenas «Zumba na Caneca», e acrescente cada nova atividade em Listas.
+
+### Uma folha por relatório
+
+Uma folha de relatório é um pequeno formulário escrito na própria folha de cálculo: os nomes dos campos na coluna A,
+os valores na coluna B e, por baixo, quadros com título (pagamentos ainda não debitados, contagem de caixa, notas,
+assinaturas). A coluna C traz uma dica a cinzento que a página não lê.
+
+![Folha de relatório da pegada](docs/img/07-folha-pegada.png)
+
+- **O tipo vem de uma célula, não do nome da folha.** A célula «Relatório» (linha 1) diz de que relatório se trata, e a
+  folha pode chamar-se como quiser («Pegada 2026», «CITADÃO 2026», …). A célula «Versão do modelo» (linha 2) diz com
+  que versão do modelo a folha foi criada; se a apagar, a página assume a versão 1.
+- **A página lê o que está escrito nas células**, pelo nome do campo, por isso pode inserir ou mexer linhas dentro da
+  folha. As listas suspensas, as cores e as fórmulas são só conforto: uma fórmula nunca conta como valor, e uma célula
+  que só tem fórmula, sem valor guardado, é um erro («abra e grave o ficheiro na folha de cálculo antes de carregar»).
+- **Datas deixadas em branco que o ficheiro já conhece.** Na pegada, «Data do último relatório» fica igual ao fim do
+  relatório anterior do ficheiro; no fim de ano letivo, «Início do período» fica igual ao dia seguinte ao fim do
+  relatório anterior; no relatório de evento, «Pendentes à data de» fica igual a «Contar movimentos até» (ou ao
+  último movimento do ficheiro). A página escreve sempre a data por extenso e a origem, para a confirmar.
+- **Textos compridos**: um parágrafo por linha. Para mudar de linha dentro da mesma célula use Alt+Enter no Excel e
+  Ctrl+Enter no LibreOffice e no Google Sheets.
+- **O saldo do extrato bancário da pegada** escreve-se na própria folha («Saldo do extrato bancário na data da
+  passagem»). Uma linha de Saldos com a fonte «Extrato» já não o preenche.
+
+### Como acrescentar uma folha de relatório
+
+1. Descarregue a folha em branco na página inicial (Pegada de direção, Relatório de evento, Fim de ano letivo ou Fim de
+   ano fiscal), ou use as «Próximas folhas» pré-preenchidas.
+2. Insira-a na Tesouraria:
+   - **Excel**: botão direito num separador, «Mover ou Copiar…», escolha a Tesouraria como destino e marque «Criar uma
+     cópia».
+   - **LibreOffice**: «Folha, Inserir folha a partir de ficheiro…».
+   - **Google Sheets**: «Ficheiro, Importar», separador «Carregar», e em «Local de importação» escolha «Inserir novas
+     folhas». **Antes de preencher, escolha «Ficheiro, Definições, Região: Portugal»** (basta uma vez), para as datas
+     serem lidas como dia/mês/ano.
+3. Preencha a folha, grave a Tesouraria como `.xlsx` e carregue-a na página.
+
+Para uma segunda pegada ou outro evento, copie a folha («Duplicar» em qualquer das aplicações) e altere os valores.
+
+### Se já tem uma Tesouraria da versão anterior
+
+Os separadores de dados continuam a ser lidos como estavam. Faltam-lhe só as folhas de relatório: a página mostra-o com
+as quatro folhas em branco para descarregar. Mudanças a ter em conta:
+
+- Os valores que antes se escreviam na página (datas, nomes, notas, parecer, contagem de caixa, saldo do extrato
+  bancário) escrevem-se agora na folha do relatório.
+- **O saldo de abertura já não se escreve na página.** Declare-o em Saldos, numa linha com a fonte «Declarado».
+- **Os ficheiros CSV já não são aceites**: guarde o conjunto como um só `.xlsx`.
+- Linhas de exemplo do modelo antigo marcadas como «(exemplo fictício)» são agora erros: apague-as.
 
 ## Como gerar pela linha de comandos
 
@@ -87,7 +156,7 @@ npm run gerar -- --entrada <ficheiro.xlsx> --folha "<nome da folha>"
 - `--saida` por omissão é `<data> <relatório>.pdf` na pasta atual (por exemplo `2026-09-30 Pegada de direção.pdf`).
   `--json` escreve também o JSON do relatório. Ambos substituem um ficheiro existente.
 - `--agora` é a data e hora de geração em hora de Lisboa; por omissão, a hora atual de Lisboa.
-- Os problemas dos separadores de dados saem em stderr, um por linha: `ERRO|AVISO Separador Movimentos, linha N, coluna C — mensagem (sugestão: ...)`.
+- Os problemas dos separadores de dados saem um por linha: `ERRO|AVISO Separador Movimentos, linha N, coluna C — mensagem (sugestão: ...)`. Com `--listar` saem em stdout, antes das folhas, e `npm run -s gerar -- --entrada tesouraria.xlsx --listar > lista.txt` guarda tudo (`-s` esconde o cabeçalho do npm); ao gerar uma folha saem em stderr.
 - `--tipo`, `--param` e `--params` já não existem; usá-los é um erro de utilização que indica a alternativa.
 
 | Código | Significado                                                           |
@@ -138,7 +207,7 @@ impede a página e o CLI de arrancar, com uma mensagem a dizer qual o campo erra
 ### Stack
 
 - TypeScript (modo estrito), Preact 11, Vite 8, Node 24 (`.nvmrc`).
-- Folhas lidas com SheetJS CE 0.20.3 (`vendor/xlsx-0.20.3.tgz`, que não vem do registo npm) e Papa Parse para CSV.
+- Folhas lidas com SheetJS CE 0.20.3 (`vendor/xlsx-0.20.3.tgz`, que não vem do registo npm). O zip e as folhas pré-preenchidas usam `fflate` (só a API síncrona, compatível com a CSP).
 - Zod 4 valida os dados, os parâmetros e `config/config.json`.
 - PDFs compostos por Typst 0.14.2 em WebAssembly (`@myriaddreamin/typst.ts` e `@myriaddreamin/typst-ts-web-compiler`,
   ambos fixados em `0.7.0`).
@@ -172,7 +241,7 @@ build:fixtures` escreve `fixtures/generated` (um `.xlsx` com as cinco folhas de 
 - `fixtures/v1/` guarda, congelados, os ficheiros da versão anterior (parâmetros, exemplos, modelo e tesouraria) que
   servem de referência aos testes; `examples/*.json` são os relatórios de exemplo gerados a partir das folhas do
   ficheiro `fixtures/generated/tesouraria.xlsx`.
-- `tests/e2e` cobre os percursos principais, a política de segurança (nenhum pedido a outras origens, `eval` e
+- `tests/e2e` cobre os percursos principais (carregar, descarregar cada PDF e os dados, o zip com os cinco PDFs, as próximas folhas, a correção de erros, a paridade entre a página e o CLI), a política de segurança (nenhum pedido a outras origens, `eval` e
   `new Function` bloqueados no worker) e o funcionamento offline.
 - `tests/visual` rasteriza os PDFs de exemplo e compara-os com as imagens de referência.
 
@@ -187,8 +256,8 @@ a página mostra «Nova versão disponível» e, ao carregar em «Recarregar», 
 Sem esse clique, o worker novo assume quando o separador for fechado e reaberto.
 
 O motor de PDF começa a carregar quando o navegador está livre. Na primeira visita (ainda sem service worker a controlar a
-página) espera que o worker esteja ativo, para que o wasm seja descarregado uma só vez, pela pré-colocação em cache; se o
-registo falhar, carrega na mesma.
+página) qualquer pedido de PDF, mesmo feito logo a seguir a carregar o ficheiro, espera que o worker esteja ativo, para
+que o wasm seja descarregado uma só vez, pela pré-colocação em cache; se o registo falhar, carrega na mesma.
 
 O Playwright WebKit não consegue simular «offline» numa página servida por um service worker, por isso o percurso
 offline corre em chromium e firefox e o webkit só verifica a cache. O Safari deve ser confirmado à mão no
