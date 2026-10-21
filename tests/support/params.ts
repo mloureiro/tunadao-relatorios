@@ -11,7 +11,7 @@ import type { Cents } from '../../src/core/dataset/types.ts';
 import { parseMoney } from '../../src/core/money.ts';
 
 const PARAMS = fileURLToPath(
-  new URL('../../fixtures/params/', import.meta.url),
+  new URL('../../fixtures/v1/params/', import.meta.url),
 );
 
 export async function readParams(name: string): Promise<unknown> {

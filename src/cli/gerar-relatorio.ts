@@ -46,7 +46,7 @@ Opções:
   --param chave=valor    Um parâmetro; repetível e prevalece sobre --params.
                          Use pontos para campos aninhados (aberturaManual.caixa=100).
                          Listas (indicadores, naoDebitados, naoCreditados, contagem) só
-                         podem vir de --params; veja fixtures/params/*.json para os
+                         podem vir de --params; veja fixtures/v1/params/*.json para os
                          parâmetros de cada tipo.
   --saida <ficheiro>     PDF a escrever (por omissão relatorio-<tipo>.pdf). Substitui um ficheiro existente.
   --json <ficheiro>      Escreve também o JSON do relatório. Substitui um ficheiro existente.

@@ -93,7 +93,7 @@ test('the event report is generated from the form, matches the CLI example and c
   baseURL,
 }) => {
   const foreign = trackForeignRequests(context, baseURL);
-  const params = await readJson('fixtures/params/evento-citadao.json');
+  const params = await readJson('fixtures/v1/params/evento-citadao.json');
   await openReports(page, 'Relatório de evento');
 
   await form(page)
@@ -141,7 +141,7 @@ test('the handover report is generated from the form, matches the CLI example an
   baseURL,
 }) => {
   const foreign = trackForeignRequests(context, baseURL);
-  const params = await readJson('fixtures/params/pegada-2026.json');
+  const params = await readJson('fixtures/v1/params/pegada-2026.json');
   const counts = params.contagem as Record<string, number>;
   await openReports(page, 'Pegada de direção');
 
@@ -178,7 +178,7 @@ test('the handover report is generated from the form, matches the CLI example an
 });
 
 test('the school-year report is generated from the form', async ({ page }) => {
-  const params = await readJson('fixtures/params/letivo-2025-26.json');
+  const params = await readJson('fixtures/v1/params/letivo-2025-26.json');
   await openReports(page, 'Fim de ano letivo');
 
   await form(page).getByLabel('Início do período').fill('01/01/2026');
@@ -195,7 +195,7 @@ test('the school-year report is generated from the form', async ({ page }) => {
 test('the fiscal-year report is generated from the form with the council opinion', async ({
   page,
 }) => {
-  const params = await readJson('fixtures/params/fiscal-2025.json');
+  const params = await readJson('fixtures/v1/params/fiscal-2025.json');
   await openReports(page, 'Fim de ano fiscal');
 
   await form(page).getByLabel('Ano fiscal').fill('2025');
