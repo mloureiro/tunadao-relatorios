@@ -30,7 +30,11 @@ export interface XlsxRead {
 }
 
 export function readXlsx(name: string, bytes: Uint8Array): XlsxRead {
-  const workbook = XLSX.read(bytes, { type: 'array', cellDates: false });
+  const workbook = XLSX.read(bytes, {
+    type: 'array',
+    cellDates: false,
+    sheetStubs: true,
+  });
   const date1904 = workbook.Workbook?.WBProps?.date1904 === true;
   const tables: RawTable[] = [];
   const issues: Issue[] = [];

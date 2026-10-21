@@ -56,6 +56,15 @@ function invalid(where: Where, detail: string): Issue {
 export function contentOf(cell: GridCell | undefined, where: Where): Content {
   if (cell === undefined) return { content: null, issues: [] };
 
+  if (cell.f !== undefined && (cell.v === undefined || cell.v === '')) {
+    return {
+      content: null,
+      issues: [
+        issueAt('formula-no-value', issueMessages['formula-no-value'](), where),
+      ],
+    };
+  }
+
   if (cell.t === 'e') {
     return {
       content: null,
@@ -70,18 +79,6 @@ export function contentOf(cell: GridCell | undefined, where: Where): Content {
 
   const formulaIssues: Issue[] = [];
   if (cell.f !== undefined) {
-    if (cell.v === undefined) {
-      return {
-        content: null,
-        issues: [
-          issueAt(
-            'formula-no-value',
-            issueMessages['formula-no-value'](),
-            where,
-          ),
-        ],
-      };
-    }
     formulaIssues.push(
       issueAt('formula-input', issueMessages['formula-input'](), where),
     );

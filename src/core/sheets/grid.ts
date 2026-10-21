@@ -24,7 +24,7 @@ function toGridCell(cell: XLSX.CellObject | undefined): GridCell | undefined {
   if (cell === undefined) return undefined;
   const type: GridCellType =
     cell.t === 'n' || cell.t === 'b' || cell.t === 'e' ? cell.t : 's';
-  const value = cell.t === 'd' ? undefined : cell.v;
+  const value = cell.t === 'd' || cell.t === 'z' ? undefined : cell.v;
   return {
     t: type,
     ...(typeof value === 'string' ||
