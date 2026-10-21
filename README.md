@@ -11,12 +11,11 @@ Há quatro relatórios: **Relatório de evento**, **Pegada de direção**, **Fim
 ![Início](docs/img/01-inicio.png)
 
 1. **Descarregue o modelo.** Na página inicial, o botão «Descarregar modelo (.xlsx)» dá-lhe a folha de Tesouraria
-   vazia, com listas suspensas e uma aba **Instruções**. As linhas de exemplo são fictícias: apague-as antes de
-   começar.
+   vazia, com listas suspensas e uma aba **Instruções** que traz um exemplo de três movimentos.
 2. **Preencha cada aba** no Excel ou no LibreOffice:
    - **Movimentos**: cada recebimento e cada pagamento, com a data em que o dinheiro entrou ou saiu. O valor é sempre
      positivo; o sentido está na coluna Tipo (Entrada ou Saída). Escolha rubrica, sub-rubrica, atividade e meio nas
-     listas suspensas. As colunas Conta, Valor com sinal e Conta para o resultado são calculadas: não as edite.
+     listas suspensas. As colunas cinzentas, marcadas "(automático)", são calculadas: não as edite.
    - **Pendentes**: valores a receber e dívidas a pagar ainda não liquidados.
    - **Orçamento**: o orçado por rubrica, para uma atividade ou para um período (por exemplo «20º CITADÃO» ou «2026»).
    - **Géneros**: apoios em espécie. Ficam listados à parte e nunca entram no saldo.
@@ -81,7 +80,7 @@ npm run gerar -- --tipo evento|pegada|letivo|fiscal --entrada <ficheiro> [--entr
   Campos aninhados usam pontos (`--param aberturaManual.caixa=100`). Listas (indicadores, contagem de caixa) só
   podem vir do ficheiro JSON.
 - `--saida` por omissão é `relatorio-<tipo>.pdf`. `--json` escreve também o JSON do relatório. Ambos substituem um
-  ficheiro existente. `fixtures/params/*.json` mostra os parâmetros de cada tipo.
+  ficheiro existente. `fixtures/v1/params/*.json` mostra os parâmetros de cada tipo.
 - `--agora` é a data e hora de geração em hora de Lisboa; por omissão, a hora atual de Lisboa.
 - Os problemas dos dados saem em stderr, um por linha: `ERRO|AVISO <ficheiro> › <separador> linha N, coluna C:
 mensagem (sugestão: ...)`.
@@ -97,10 +96,10 @@ Exemplos com os dados fictícios do repositório (a pasta `saida/` é ignorada p
 
 ```
 mkdir -p saida
-npm run gerar -- --tipo evento --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/evento-citadao.json --saida saida/evento.pdf
-npm run gerar -- --tipo pegada --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/pegada-2026.json --saida saida/pegada.pdf
-npm run gerar -- --tipo letivo --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/letivo-2025-26.json --saida saida/letivo.pdf
-npm run gerar -- --tipo fiscal --entrada fixtures/generated/tesouraria.xlsx --params fixtures/params/fiscal-2025.json --saida saida/fiscal.pdf --json saida/fiscal.json
+npm run gerar -- --tipo evento --entrada fixtures/generated/tesouraria.xlsx --params fixtures/v1/params/evento-citadao.json --saida saida/evento.pdf
+npm run gerar -- --tipo pegada --entrada fixtures/generated/tesouraria.xlsx --params fixtures/v1/params/pegada-2026.json --saida saida/pegada.pdf
+npm run gerar -- --tipo letivo --entrada fixtures/generated/tesouraria.xlsx --params fixtures/v1/params/letivo-2025-26.json --saida saida/letivo.pdf
+npm run gerar -- --tipo fiscal --entrada fixtures/generated/tesouraria.xlsx --params fixtures/v1/params/fiscal-2025.json --saida saida/fiscal.pdf --json saida/fiscal.json
 ```
 
 ## Como mudar o logo, as rubricas, as cores e as assinaturas
@@ -144,25 +143,28 @@ modelo Typst → PDF. O Typst só desenha números já calculados; todas as cont
 
 ### Scripts
 
-| Script                                                                              | O que faz                                                                                          |
-| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `npm run dev` / `npm run preview`                                                   | servidor de desenvolvimento / pré-visualização do build                                            |
-| `npm run build`                                                                     | build de produção (respeita `BASE_PATH`) e geração do service worker                               |
-| `npm run format` / `format:fix`                                                     | verifica / aplica o Prettier                                                                       |
-| `npm run lint` e `npm run typecheck`                                                | ESLint e `tsc --noEmit`                                                                            |
-| `npm test`                                                                          | testes unitários e de fixtures (Vitest)                                                            |
-| `npm run test:e2e`                                                                  | Playwright em chromium, firefox e webkit sobre o build, mais o servidor de desenvolvimento         |
-| `npm run test:e2e:deployed`                                                         | fumo, motor e offline contra o endereço em `BASE_URL`                                              |
-| `npm run test:visual`                                                               | gera os PDFs de exemplo e compara-os com `tests/visual/baselines` (precisa de `pdftoppm`)          |
-| `npm run gerar`                                                                     | CLI                                                                                                |
-| `npm run build:template`, `build:fixtures`, `build:example-json`, `render:examples` | regeneram os ficheiros gerados que estão no repositório; os testes verificam que estão atualizados |
+| Script                                                                                                | O que faz                                                                                          |
+| ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `npm run dev` / `npm run preview`                                                                     | servidor de desenvolvimento / pré-visualização do build                                            |
+| `npm run build`                                                                                       | build de produção (respeita `BASE_PATH`) e geração do service worker                               |
+| `npm run format` / `format:fix`                                                                       | verifica / aplica o Prettier                                                                       |
+| `npm run lint` e `npm run typecheck`                                                                  | ESLint e `tsc --noEmit`                                                                            |
+| `npm test`                                                                                            | testes unitários e de fixtures (Vitest)                                                            |
+| `npm run test:e2e`                                                                                    | Playwright em chromium, firefox e webkit sobre o build, mais o servidor de desenvolvimento         |
+| `npm run test:e2e:deployed`                                                                           | fumo, motor e offline contra o endereço em `BASE_URL`                                              |
+| `npm run test:visual`                                                                                 | gera os PDFs de exemplo e compara-os com `tests/visual/baselines` (precisa de `pdftoppm`)          |
+| `npm run gerar`                                                                                       | CLI                                                                                                |
+| `npm run build:template`, `build:starters`, `build:fixtures`, `build:example-json`, `render:examples` | regeneram os ficheiros gerados que estão no repositório; os testes verificam que estão atualizados |
 
 ### Fixtures e testes
 
 - `fixtures/src` descreve um conjunto fictício e encadeado de janeiro de 2024 a setembro de 2026. `npm run
-build:fixtures` escreve `fixtures/generated` (um `.xlsx`, o mesmo em CSV e conjuntos inválidos, um por classe de
-  erro). Os testes em `tests/fixtures` afirmam os valores de controlo ao cêntimo.
-- `fixtures/params/*.json` são os parâmetros de cada relatório de exemplo; `examples/*.json` os relatórios resultantes.
+build:fixtures` escreve `fixtures/generated` (um `.xlsx` com as cinco folhas de relatório de exemplo e conjuntos
+  inválidos, um por classe de erro). `npm run build:starters` escreve as folhas de relatório em branco de
+  `public/folhas`. Os testes em `tests/fixtures` afirmam os valores de controlo ao cêntimo.
+- `fixtures/v1/` guarda, congelados, os ficheiros da versão anterior (parâmetros, exemplos, modelo e tesouraria) que
+  servem de referência aos testes; `examples/*.json` são os relatórios de exemplo gerados a partir das folhas do
+  ficheiro `fixtures/generated/tesouraria.xlsx`.
 - `tests/e2e` cobre os percursos principais, a política de segurança (nenhum pedido a outras origens, `eval` e
   `new Function` bloqueados no worker) e o funcionamento offline.
 - `tests/visual` rasteriza os PDFs de exemplo e compara-os com as imagens de referência.
