@@ -99,6 +99,14 @@ describe('issueMessages', () => {
   });
 });
 
+describe('formula-no-value message', () => {
+  it('tells the user to replace the formula by its value or to save the file in the spreadsheet app', () => {
+    expect(issueMessages['formula-no-value']()).toBe(
+      'Esta célula tem uma fórmula sem valor calculado. Remova a fórmula e escreva o valor, ou abra e grave o ficheiro na aplicação de folhas de cálculo.',
+    );
+  });
+});
+
 describe('file-level messages', () => {
   it('carries the reason for an unreadable file', () => {
     expect(issueMessages['unreadable-file']('a.xlsx', 'cifrado')).toBe(

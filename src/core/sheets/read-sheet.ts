@@ -1,5 +1,6 @@
 import { DENOMINATIONS_CENTS } from '../calc/index.ts';
 import type { Config } from '../config/schema.ts';
+import { formatMoney } from '../format.ts';
 import { didYouMean, issueMessages, type Issue } from '../issues.ts';
 import { parseMoney } from '../money.ts';
 import type { ReportTipo } from '../reports/index.ts';
@@ -65,6 +66,14 @@ const versionKeys = new Set(
 const TYPE_LABELS = REPORT_TIPOS.map((tipo) => REPORT_SPECS[tipo].label);
 
 const DENOMINATIONS: readonly number[] = DENOMINATIONS_CENTS;
+
+function denominationText(content: RawValue): string {
+  if (typeof content === 'boolean' || content === null) return String(content);
+  const parsed = parseMoney(content);
+  return 'issue' in parsed || parsed.subCent
+    ? String(content)
+    : formatMoney(parsed.cents);
+}
 
 function titleKeys(block: BlockSpec): string[] {
   return [block.title, ...block.aliases].map(labelKey);
@@ -415,7 +424,7 @@ class SheetReader {
           issueAt(
             'field-invalid',
             issueMessages['field-invalid'](
-              `Denominação desconhecida: "${String(denomination.content)}".`,
+              `Denominação desconhecida: "${denominationText(denomination.content)}".`,
             ),
             denominationWhere,
           ),
@@ -428,7 +437,7 @@ class SheetReader {
           issueAt(
             'field-invalid',
             issueMessages['field-invalid'](
-              `Denominação repetida: "${String(denomination.content)}".`,
+              `Denominação repetida: "${denominationText(denomination.content)}".`,
             ),
             denominationWhere,
           ),

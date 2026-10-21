@@ -196,7 +196,7 @@ export const issueMessages = {
   'formula-input': () =>
     'Esta célula tem uma fórmula; foi usado o último valor calculado. Escreva o valor diretamente.',
   'formula-no-value': () =>
-    'Esta célula tem uma fórmula sem valor calculado. Abra e grave o ficheiro na folha de cálculo antes de carregar.',
+    'Esta célula tem uma fórmula sem valor calculado. Remova a fórmula e escreva o valor, ou abra e grave o ficheiro na aplicação de folhas de cálculo.',
   'signature-role-unknown': (cargo: string) =>
     `O cargo "${cargo}" não existe neste tipo de relatório e foi ignorado.`,
   'text-too-long': (length: number, max: number) =>

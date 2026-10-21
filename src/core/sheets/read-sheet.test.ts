@@ -5,6 +5,7 @@ import {
   layoutRows,
   type TestCell,
 } from '../../../tests/support/report-sheet.ts';
+import { formatMoney } from '../format.ts';
 import type { Issue } from '../issues.ts';
 import { REPORT_TIPOS } from './catalogue.ts';
 import { readReportSheet } from './read-sheet.ts';
@@ -427,7 +428,9 @@ describe('cash count block', () => {
     expect(withoutMissing(draft)).toMatchObject([
       { code: 'field-invalid', cell: 'A4', field: 'Contagem de caixa' },
     ]);
-    expect(withoutMissing(draft)[0]?.message).toContain('"3"');
+    expect(withoutMissing(draft)[0]?.message).toContain(
+      `"${formatMoney(300)}"`,
+    );
   });
 
   it('rejects a repeated denomination', () => {
@@ -437,6 +440,14 @@ describe('cash count block', () => {
       { code: 'field-invalid', cell: 'A5' },
     ]);
     expect(withoutMissing(draft)[0]?.message).toContain('repetida');
+  });
+
+  it('prints a repeated cent denomination in euros with a decimal comma', () => {
+    const draft = count([0.5, 1], ['0,50', 2]);
+
+    expect(withoutMissing(draft)[0]?.message).toBe(
+      `Denominação repetida: "${formatMoney(50)}".`,
+    );
   });
 
   it.each([[-1], [1.5], ['muitas']])(
