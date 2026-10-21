@@ -295,7 +295,12 @@
       if balance != none { balance.text }
     },
   ),
-  footer-span: 6,
+  footer-row: line => (
+    total-cell(colspan: 4, line.label),
+    total-cell(align: right, if line.at("column", default: none) == "entrada" { line.value.text }),
+    total-cell(align: right, if line.at("column", default: none) == "saida" { line.value.text }),
+    total-cell(""),
+  ),
 )
 
 #let secondary-cell(content) = text(size: 8pt, fill: muted, content)
@@ -313,13 +318,13 @@
     row.meio,
     text(fill: balance-ink(row.valor.cents), row.valor.text),
   ),
-  footer-span: 6,
+  footer-row: line => (
+    total-cell(colspan: 6, line.label),
+    total-cell(align: right, line.value.text),
+  ),
 )
 
-#let footer-rows(layout, lines) = lines.map(line => (
-  total-cell(colspan: layout.footer-span, line.label),
-  total-cell(align: right, line.value.text),
-))
+#let footer-rows(layout, lines) = lines.map(layout.footer-row)
 
 #let gross-totals-row(totals) = (
   total-cell(colspan: 4, "Total bruto"),
@@ -351,6 +356,19 @@
 
 #let short-text-lines = 9
 #let chars-per-line = 95
+#let tail-chars = 160
+
+#let split-tail(body) = {
+  let words = body.split(" ")
+  let count = words.len()
+  let taken = 0
+  let size = 0
+  while taken < count - 1 and size < tail-chars {
+    taken += 1
+    size += words.at(count - taken).len() + 1
+  }
+  (words.slice(0, count - taken).join(" "), words.slice(count - taken).join(" "))
+}
 
 #let text-section(section, closing: false) = {
   let paragraphs = section.paragraphs
@@ -363,7 +381,14 @@
   } else if closing {
     heading(level: 2, section.title)
     for paragraph in paragraphs.slice(0, -1) { par(paragraph) }
-    block(sticky: true, breakable: false, paragraphs.last())
+    let final = paragraphs.last()
+    if final.len() <= tail-chars * 2 {
+      block(sticky: true, breakable: false, final)
+    } else {
+      let (head, tail) = split-tail(final)
+      block(spacing: 0.6em, head)
+      block(above: 0.6em, sticky: true, breakable: false, tail)
+    }
   } else {
     heading(level: 2, section.title)
     for paragraph in paragraphs { par(paragraph) }

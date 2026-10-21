@@ -6,6 +6,15 @@ import type { ReportJson } from '../../src/core/reports/index.ts';
 type Figure = string | number;
 
 const PERMILLE_KEY = /permille$/i;
+const TEXT_FIGURE_KEYS = new Set([
+  'execucao',
+  'shareText',
+  'previous',
+  'current',
+  'variation',
+  'previousText',
+  'currentText',
+]);
 
 function collect(value: unknown, into: Figure[]): void {
   if (Array.isArray(value)) {
@@ -13,6 +22,8 @@ function collect(value: unknown, into: Figure[]): void {
   } else if (typeof value === 'object' && value !== null) {
     for (const [key, child] of Object.entries(value)) {
       if (key === 'cents' || PERMILLE_KEY.test(key)) into.push(child as number);
+      else if (TEXT_FIGURE_KEYS.has(key) && typeof child === 'string')
+        into.push(child);
       else collect(child, into);
     }
   }
@@ -25,6 +36,9 @@ function fingerprint(report: ReportJson): Figure[][] {
     }
     const figures: Figure[] = [];
     collect(section, figures);
+    if (section.kind === 'indicators') {
+      figures.push(...section.rows.map((row) => row.value));
+    }
     return [section.kind, ...figures];
   });
 }

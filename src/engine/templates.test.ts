@@ -53,6 +53,52 @@ function pdfPages(pdf: Uint8Array): string[] {
     .filter((page) => page.trim() !== '');
 }
 
+interface PdfWord {
+  readonly text: string;
+  readonly xMin: number;
+  readonly yMin: number;
+  readonly xMax: number;
+  readonly yMax: number;
+}
+
+interface PdfPage {
+  readonly width: number;
+  readonly height: number;
+  readonly words: readonly PdfWord[];
+}
+
+function pdfWords(pdf: Uint8Array): PdfPage[] {
+  const dir = mkdtempSync(join(tmpdir(), 'templates-'));
+  try {
+    const file = join(dir, 'out.pdf');
+    writeFileSync(file, pdf);
+    const html = spawnSync('pdftotext', ['-bbox', file, '-'], {
+      encoding: 'utf8',
+    }).stdout;
+    return [
+      ...html.matchAll(
+        /<page width="([\d.]+)" height="([\d.]+)">([\s\S]*?)<\/page>/g,
+      ),
+    ].map(([, width, height, body]) => ({
+      width: Number(width),
+      height: Number(height),
+      words: [
+        ...(body ?? '').matchAll(
+          /<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">([^<]*)<\/word>/g,
+        ),
+      ].map(([, xMin, yMin, xMax, yMax, text]) => ({
+        text: text ?? '',
+        xMin: Number(xMin),
+        yMin: Number(yMin),
+        xMax: Number(xMax),
+        yMax: Number(yMax),
+      })),
+    }));
+  } finally {
+    rmSync(dir, { recursive: true });
+  }
+}
+
 function pdfPixels(pdf: Uint8Array): PNG {
   const dir = mkdtempSync(join(tmpdir(), 'templates-'));
   try {
@@ -635,6 +681,106 @@ describe('end of the report', () => {
       expect(detached).toEqual([]);
     },
     120_000,
+  );
+
+  it.skipIf(!hasPoppler)(
+    'prints every word of a single long note inside the page body and keeps the end of the note with the declaration',
+    async () => {
+      const BODY_TOP = 95;
+      const BODY_BOTTOM = 842 - 62;
+      const problems: string[] = [];
+      const base = example('pegada-2026');
+      for (const chars of [
+        500, 1500, 3000, 3500, 4500, 5000, 6000, 8000, 12000,
+      ]) {
+        const count = Math.ceil(chars / 5);
+        const note = Array.from(
+          { length: count },
+          (_, i) => `w${String(i + 1)}`,
+        ).join(' ');
+        const sections = base.sections.map((section) =>
+          section.kind === 'text'
+            ? { ...section, paragraphs: [note] }
+            : section,
+        );
+        const { pdf } = await renderer.render(
+          'pegada',
+          onlySections(base, sections),
+        );
+        const pages = pdfWords(pdf);
+        const noteWords = pages.map((page) =>
+          page.words.filter((word) => /^w\d+$/.test(word.text)),
+        );
+        const found = noteWords.flat().length;
+        const outside = noteWords
+          .flat()
+          .some(
+            (word) =>
+              word.yMin < BODY_TOP ||
+              word.yMax > BODY_BOTTOM ||
+              word.xMax > 595 - 56,
+          );
+        const lastPage = pages.at(-1);
+        const lastNote = noteWords.at(-1) ?? [];
+        const heading = pages.findIndex((page) =>
+          page.words.some((word) => word.text === 'COMENTÁRIOS'),
+        );
+        if (found !== count)
+          problems.push(
+            `${String(chars)}: ${String(count - found)} words missing`,
+          );
+        if (outside) problems.push(`${String(chars)}: text outside the body`);
+        if (
+          lastPage === undefined ||
+          !lastPage.words.some((word) => word.text === 'DECLARAÇÃO') ||
+          lastNote.length === 0
+        )
+          problems.push(
+            `${String(chars)}: declaration without the end of the note`,
+          );
+        if (heading >= 0 && (noteWords[heading]?.length ?? 0) === 0)
+          problems.push(`${String(chars)}: heading without text`);
+      }
+
+      expect(problems).toEqual([]);
+    },
+    180_000,
+  );
+
+  it.skipIf(!hasPoppler)(
+    'prints each cash book refund line under the column it belongs to',
+    async () => {
+      const report = example('evento-citadao');
+      const book = report.sections.find((s) => s.kind === 'movements');
+      if (book === undefined) throw new Error('no cash book');
+      const line = (
+        label: string,
+        text: string,
+        column: 'entrada' | 'saida',
+      ) => ({
+        label,
+        value: { cents: 1, text },
+        column,
+      });
+      const withRefunds = {
+        ...book,
+        footer: [
+          line('Reembolsos teste (entradas)', '11,11 €', 'entrada'),
+          line('Reembolsos teste (saídas)', '22,22 €', 'saida'),
+        ],
+      };
+
+      const { pdf } = await renderer.render(
+        'evento',
+        onlySections(report, [withRefunds]),
+      );
+      const words = pdfWords(pdf).flatMap((page) => page.words);
+      const right = (text: string) =>
+        words.find((word) => word.text === text)?.xMax ?? -1;
+
+      expect(right('11,11')).toBeCloseTo(right('20.225,20'), 0);
+      expect(right('22,22')).toBeCloseTo(right('15.927,00'), 0);
+    },
   );
 
   it.skipIf(!hasPoppler)(

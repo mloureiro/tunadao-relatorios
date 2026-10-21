@@ -368,8 +368,12 @@ export function movementRow(
 }
 
 export function annexRefundLines(footer: AnnexFooter): FooterLine[] {
-  const optional = (label: string, cents: Cents): FooterLine[] =>
-    cents === 0 ? [] : [{ label, value: money(cents) }];
+  const optional = (
+    label: string,
+    cents: Cents,
+    column: 'entrada' | 'saida',
+  ): FooterLine[] =>
+    cents === 0 ? [] : [{ label, value: money(cents), column }];
   const hasRefunds =
     footer.reembolsoEmDespesasCents !== 0 ||
     footer.reembolsoEmReceitasCents !== 0;
@@ -377,20 +381,24 @@ export function annexRefundLines(footer: AnnexFooter): FooterLine[] {
     ...optional(
       'Reembolsos abatidos às despesas (entradas)',
       footer.reembolsoEmDespesasCents,
+      'entrada',
     ),
     ...optional(
       'Reembolsos abatidos às receitas (saídas)',
       footer.reembolsoEmReceitasCents,
+      'saida',
     ),
     ...(hasRefunds
       ? [
           {
             label: 'Recebido (entradas brutas − reembolsos)',
             value: money(footer.recebidoCents),
+            column: 'entrada' as const,
           },
           {
             label: 'Pago (saídas brutas − reembolsos)',
             value: money(footer.pagoCents),
+            column: 'saida' as const,
           },
         ]
       : []),
