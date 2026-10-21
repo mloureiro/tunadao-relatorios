@@ -1,20 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { isLisbonWallClock, parseCliArgs } from './args.ts';
 
-const BASE = ['--tipo', 'fiscal', '--entrada', 'dados.xlsx'];
+const BASE = ['--entrada', 'dados.xlsx', '--folha', 'Pegada 2026'];
 
 describe('parseCliArgs()', () => {
-  it('collects repeatable options and defaults the output name from the type', () => {
+  it('reads a sheet run with every option', () => {
     const parsed = parseCliArgs([
       ...BASE,
-      '--entrada',
-      'extra.csv',
-      '--param',
-      'ano=2025',
-      '--param',
-      'notas=a=b',
-      '--params',
-      'p.json',
+      '--saida',
+      'r.pdf',
       '--json',
       'r.json',
       '--agora',
@@ -24,16 +18,26 @@ describe('parseCliArgs()', () => {
     expect(parsed).toEqual({
       kind: 'run',
       options: {
-        tipo: 'fiscal',
-        entradas: ['dados.xlsx', 'extra.csv'],
-        paramsFile: 'p.json',
-        params: new Map([
-          ['ano', '2025'],
-          ['notas', 'a=b'],
-        ]),
-        saida: 'relatorio-fiscal.pdf',
+        entrada: 'dados.xlsx',
+        folha: 'Pegada 2026',
+        listar: false,
+        saida: 'r.pdf',
         json: 'r.json',
         agora: '2026-10-07T12:00',
+      },
+    });
+  });
+
+  it('reads a listing run with no sheet', () => {
+    expect(parseCliArgs(['--entrada', 'Dados.XLSX', '--listar'])).toEqual({
+      kind: 'run',
+      options: {
+        entrada: 'Dados.XLSX',
+        folha: null,
+        listar: true,
+        saida: null,
+        json: null,
+        agora: null,
       },
     });
   });
@@ -43,10 +47,26 @@ describe('parseCliArgs()', () => {
   });
 
   it.each([
-    ['a missing type', ['--entrada', 'dados.xlsx'], '--tipo'],
-    ['an unknown type', ['--tipo', 'anual', '--entrada', 'x'], 'anual'],
-    ['no input file', ['--tipo', 'evento'], '--entrada'],
-    ['a param without "="', [...BASE, '--param', 'ano'], 'chave=valor'],
+    ['no input file', ['--listar'], '--entrada'],
+    ['two input files', [...BASE, '--entrada', 'outro.xlsx'], 'único ficheiro'],
+    ['a csv input', ['--entrada', 'movimentos.csv', '--listar'], '.xlsx'],
+    ['neither --folha nor --listar', ['--entrada', 'd.xlsx'], '--listar'],
+    ['--folha with --listar', [...BASE, '--listar'], 'em conjunto'],
+    [
+      'the removed --tipo',
+      [...BASE, '--tipo', 'fiscal'],
+      '--tipo já não existe',
+    ],
+    [
+      'the removed --params',
+      [...BASE, '--params', 'p.json'],
+      '--params já não existe',
+    ],
+    [
+      'the removed --param',
+      [...BASE, '--param', 'ano=2025'],
+      '--param já não existe',
+    ],
     ['an unknown option', [...BASE, '--rapido'], 'rapido'],
     ['an impossible date', [...BASE, '--agora', '2026-02-30T10:00'], '--agora'],
     [

@@ -1,28 +1,14 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { basename } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import type { z } from 'zod';
 import { loadConfig } from '../core/config/schema.ts';
 import type { Issue } from '../core/issues.ts';
 import { lisbonDateTime } from '../host/lisbon-time.ts';
-import {
-  buildReport,
-  loadDataset,
-  type BuildReportResult,
-  type InputFile,
-  type LoadResult,
-} from '../core/pipeline.ts';
-import {
-  paramsSchemas,
-  type ParamsByTipo,
-  type ReportTipo,
-} from '../core/reports/index.ts';
-import {
-  isBlank,
-  REQUIRED_MESSAGE,
-  valueAt,
-} from '../core/reports/field-errors.ts';
+import type { ReportInstance, ReportStatus } from '../core/sheets/instance.ts';
+import { REPORT_SPECS } from '../core/sheets/index.ts';
+import { closest } from '../core/text.ts';
 import { GENERATOR_VERSION } from '../core/version.ts';
+import { loadWorkbook } from '../core/workbook.ts';
 import { createNodeRenderer } from '../engine/typst-node.ts';
 import type { Renderer } from '../engine/renderer.ts';
 import { parseCliArgs, type CliOptions } from './args.ts';
@@ -35,29 +21,27 @@ export const EXIT = {
   internal: 3,
 } as const;
 
-export const USAGE = `Uso: npm run gerar -- --tipo <tipo> --entrada <ficheiro> [opções]
+export const USAGE = `Uso:
+  npm run gerar -- --entrada <ficheiro.xlsx> --listar
+  npm run gerar -- --entrada <ficheiro.xlsx> --folha "<nome da folha>" [opções]
 
-Tipos de relatório (--tipo):
-  evento | pegada | letivo | fiscal
+Cada relatório é uma folha do ficheiro; o tipo e os parâmetros vêm dessa folha.
 
 Opções:
-  --entrada <ficheiro>   Folha de Tesouraria (.xlsx) ou um CSV por separador. Repetível.
-  --params <ficheiro>    Ficheiro JSON com os parâmetros do relatório.
-  --param chave=valor    Um parâmetro; repetível e prevalece sobre --params.
-                         Use pontos para campos aninhados (aberturaManual.caixa=100).
-                         Listas (indicadores, naoDebitados, naoCreditados, contagem) só
-                         podem vir de --params; veja fixtures/v1/params/*.json para os
-                         parâmetros de cada tipo.
-  --saida <ficheiro>     PDF a escrever (por omissão relatorio-<tipo>.pdf). Substitui um ficheiro existente.
+  --entrada <ficheiro>   Folha de Tesouraria (.xlsx). Um único ficheiro.
+  --listar               Lista as folhas de relatório, o estado e os problemas de cada uma.
+  --folha <nome>         Gera o relatório da folha com este nome (use --listar para ver os nomes).
+  --saida <ficheiro>     PDF a escrever (por omissão "<data> <relatório>.pdf" na pasta atual).
+                         Substitui um ficheiro existente.
   --json <ficheiro>      Escreve também o JSON do relatório. Substitui um ficheiro existente.
   --agora <aaaa-mm-ddThh:mm>
                          Data e hora de geração, em hora de Lisboa (por omissão, agora).
   --ajuda                Mostra esta ajuda.
 
 Códigos de saída:
-  0  PDF gerado (pode haver avisos)
-  1  erros nos dados de entrada; nenhum PDF escrito
-  2  utilização incorreta (argumentos, ficheiros ou parâmetros inválidos)
+  0  PDF gerado (pode haver avisos), ou lista impressa
+  1  erros nos dados ou na folha; nenhum PDF escrito
+  2  utilização incorreta (argumentos, ficheiro ou nome de folha inválidos)
   3  erro interno ao gerar o relatório ou o PDF`;
 
 export interface CliIo {
@@ -88,156 +72,82 @@ function reason(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-const UNSAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
-
-function setPath(
-  target: Record<string, unknown>,
-  key: string,
-  value: string,
-): void {
-  const steps = key.split('.');
-  if (steps.some((step) => UNSAFE_KEYS.has(step))) {
-    throw new UsageError(`O parâmetro "${key}" não é permitido.`);
-  }
-  const last = steps.pop() ?? key;
-  let cursor = target;
-  for (const step of steps) {
-    const next = cursor[step];
-    if (typeof next === 'object' && next !== null && !Array.isArray(next)) {
-      cursor = next as Record<string, unknown>;
-    } else {
-      const created: Record<string, unknown> = {};
-      cursor[step] = created;
-      cursor = created;
-    }
-  }
-  cursor[last] = value;
-}
-
-async function readParams(
-  options: CliOptions,
-  io: CliIo,
-): Promise<Record<string, unknown>> {
-  let raw: Record<string, unknown> = {};
-  if (options.paramsFile !== null) {
-    let parsed: unknown;
-    try {
-      const text = new TextDecoder().decode(
-        await io.readFile(options.paramsFile),
-      );
-      parsed = JSON.parse(text);
-    } catch (error) {
-      throw new UsageError(
-        `Não foi possível ler os parâmetros de "${options.paramsFile}": ${reason(error)}`,
-      );
-    }
-    if (
-      typeof parsed !== 'object' ||
-      parsed === null ||
-      Array.isArray(parsed)
-    ) {
-      throw new UsageError(
-        `O ficheiro de parâmetros "${options.paramsFile}" tem de conter um objeto JSON.`,
-      );
-    }
-    raw = parsed as Record<string, unknown>;
-  }
-  for (const [key, value] of options.params) setPath(raw, key, value);
-  return raw;
-}
-
-async function readInputs(
-  paths: readonly string[],
-  io: CliIo,
-): Promise<InputFile[]> {
-  return Promise.all(
-    paths.map(async (path) => {
-      try {
-        return { name: basename(path), bytes: await io.readFile(path) };
-      } catch (error) {
-        throw new UsageError(
-          `Não foi possível ler o ficheiro "${path}": ${reason(error)}`,
-        );
-      }
-    }),
-  );
-}
-
-type Evaluation =
-  | { readonly status: 'invalid'; readonly messages: readonly string[] }
-  | BuildReportResult;
-
-function describeReceived(value: unknown, message: string): string {
-  const primitive =
-    typeof value === 'string' ||
-    typeof value === 'number' ||
-    typeof value === 'boolean';
-  if (!primitive || message.includes(`"${String(value)}"`)) return '';
-  return ` (recebido: "${String(value)}")`;
-}
-
-function withReceived(message: string, received: string): string {
-  return received === ''
-    ? message
-    : `${message.replace(/\.$/, '')}${received}.`;
-}
-
-function paramMessages(
-  issues: readonly z.core.$ZodIssue[],
-  raw: unknown,
-): string[] {
-  return issues.map(({ path, message }) => {
-    const value = valueAt(raw, path);
-    const text = isBlank(value)
-      ? REQUIRED_MESSAGE
-      : withReceived(message, describeReceived(value, message));
-    return path.length === 0
-      ? `ERRO ${text}`
-      : `ERRO parâmetro ${path.map(String).join('.')}: ${text}`;
-  });
-}
-
-type BuildContext = Parameters<typeof buildReport>[3];
-
-function evaluateWith<T extends ReportTipo>(
-  tipo: T,
-  schema: z.ZodType<ParamsByTipo[T]>,
-  raw: Record<string, unknown>,
-  loaded: LoadResult,
-  context: BuildContext,
-): Evaluation {
-  const parsed = schema.safeParse(raw);
-  if (!parsed.success) {
-    return {
-      status: 'invalid',
-      messages: paramMessages(parsed.error.issues, raw),
-    };
-  }
-  return buildReport(tipo, loaded, parsed.data, context);
-}
-
-function evaluate(
-  tipo: ReportTipo,
-  raw: Record<string, unknown>,
-  loaded: LoadResult,
-  context: BuildContext,
-): Evaluation {
-  switch (tipo) {
-    case 'evento':
-      return evaluateWith(tipo, paramsSchemas.evento, raw, loaded, context);
-    case 'pegada':
-      return evaluateWith(tipo, paramsSchemas.pegada, raw, loaded, context);
-    case 'letivo':
-      return evaluateWith(tipo, paramsSchemas.letivo, raw, loaded, context);
-    case 'fiscal':
-      return evaluateWith(tipo, paramsSchemas.fiscal, raw, loaded, context);
-  }
-}
+const STATUS_LABEL: Record<ReportStatus, string> = {
+  'por-preencher': 'por preencher',
+  'bloqueado-dados': 'bloqueado pelos dados',
+  'com-erros': 'com erros',
+  'pronto-com-avisos': 'pronto, com avisos',
+  pronto: 'pronto',
+};
 
 function printIssues(issues: readonly Issue[], io: CliIo): void {
   for (const issue of sortedForPrinting(issues)) {
     io.stderr(`${formatIssue(issue)}\n`);
   }
+}
+
+async function readWorkbook(options: CliOptions, io: CliIo) {
+  let bytes: Uint8Array;
+  try {
+    bytes = await io.readFile(options.entrada);
+  } catch (error) {
+    throw new UsageError(
+      `Não foi possível ler o ficheiro "${options.entrada}": ${reason(error)}`,
+    );
+  }
+  const config = loadConfig(
+    JSON.parse(new TextDecoder().decode(await io.readFile(CONFIG_PATH))),
+  );
+  const now =
+    options.agora === null ? lisbonDateTime(io.now()) : `${options.agora}:00`;
+  return loadWorkbook(
+    { name: basename(options.entrada), bytes },
+    { config, now, generatorVersion: GENERATOR_VERSION },
+  );
+}
+
+function describeInstance(instance: ReportInstance): string {
+  const tipo =
+    instance.tipo === null
+      ? 'tipo desconhecido'
+      : REPORT_SPECS[instance.tipo].label;
+  const dates = instance.dates.map(({ label, text }) => `${label}: ${text}`);
+  return [
+    `"${instance.sheet}"`,
+    tipo,
+    STATUS_LABEL[instance.status],
+    ...dates,
+  ].join(' · ');
+}
+
+function listReports(reports: readonly ReportInstance[], io: CliIo): void {
+  if (reports.length === 0) {
+    io.stdout('O ficheiro não tem folhas de relatório.\n');
+    return;
+  }
+  for (const instance of reports) {
+    io.stdout(`${describeInstance(instance)}\n`);
+    for (const issue of sortedForPrinting(instance.issues)) {
+      io.stdout(`  ${formatIssue(issue)}\n`);
+    }
+  }
+}
+
+function findSheet(
+  reports: readonly ReportInstance[],
+  name: string,
+): ReportInstance {
+  const found = reports.find(({ sheet }) => sheet === name);
+  if (found !== undefined) return found;
+  const names = reports.map(({ sheet }) => sheet);
+  const near = closest(name, names);
+  const hint =
+    near === null
+      ? names.length === 0
+        ? 'O ficheiro não tem folhas de relatório.'
+        : `Folhas de relatório: ${names.map((sheet) => `"${sheet}"`).join(', ')}.`
+      : `Quis dizer "${near}"?`;
+  throw new UsageError(`Não existe a folha de relatório "${name}". ${hint}`);
 }
 
 async function writeOutput(
@@ -255,46 +165,38 @@ async function writeOutput(
 }
 
 async function run(options: CliOptions, io: CliIo): Promise<number> {
-  const raw = await readParams(options, io);
-  const inputs = await readInputs(options.entradas, io);
-  const config = loadConfig(
-    JSON.parse(new TextDecoder().decode(await io.readFile(CONFIG_PATH))),
-  );
-  const now =
-    options.agora === null ? lisbonDateTime(io.now()) : `${options.agora}:00`;
+  const workbook = await readWorkbook(options, io);
+  const dataIssues = workbook.load.issues;
 
-  const loaded = await loadDataset(inputs);
-  const result = evaluate(options.tipo, raw, loaded, {
-    config,
-    now,
-    generatorVersion: GENERATOR_VERSION,
-  });
-
-  if (result.status === 'invalid') {
-    for (const message of result.messages) io.stderr(`${message}\n`);
-    return EXIT.usage;
+  if (options.listar) {
+    printIssues(dataIssues, io);
+    listReports(workbook.reports, io);
+    return dataIssues.some(({ severity }) => severity === 'error')
+      ? EXIT.blocked
+      : EXIT.ok;
   }
-  if (result.status === 'blocked') {
-    printIssues(result.issues, io);
+
+  const instance = findSheet(workbook.reports, options.folha ?? '');
+  const { report } = instance;
+  if (report === undefined || instance.tipo === null) {
+    printIssues(
+      instance.status === 'bloqueado-dados' ? dataIssues : instance.issues,
+      io,
+    );
+    io.stderr(
+      `A folha "${instance.sheet}" não está pronta (${STATUS_LABEL[instance.status]}); nenhum PDF escrito.\n`,
+    );
     return EXIT.blocked;
   }
-  if (result.status === 'failure') {
-    io.stderr(`Erro interno ao gerar o relatório: ${result.message}\n`);
-    return EXIT.internal;
-  }
 
-  printIssues(result.issues, io);
+  printIssues([...dataIssues, ...instance.issues], io);
   if (options.json !== null) {
-    await writeOutput(
-      io,
-      options.json,
-      `${JSON.stringify(result.report, null, 2)}\n`,
-    );
+    await writeOutput(io, options.json, `${JSON.stringify(report, null, 2)}\n`);
   }
   let pdf: Uint8Array;
   try {
     const renderer = await io.createRenderer();
-    const rendered = await renderer.render(options.tipo, result.report);
+    const rendered = await renderer.render(instance.tipo, report);
     for (const warning of rendered.warnings) {
       io.stderr(`AVISO motor de PDF: ${warning}\n`);
     }
@@ -303,9 +205,10 @@ async function run(options: CliOptions, io: CliIo): Promise<number> {
     io.stderr(`Erro ao gerar o PDF: ${reason(error)}\n`);
     return EXIT.internal;
   }
-  await writeOutput(io, options.saida, pdf);
+  const saida = options.saida ?? `${instance.fileStem}.pdf`;
+  await writeOutput(io, saida, pdf);
 
-  io.stdout(`PDF escrito em ${options.saida}\n`);
+  io.stdout(`PDF escrito em ${saida}\n`);
   return EXIT.ok;
 }
 

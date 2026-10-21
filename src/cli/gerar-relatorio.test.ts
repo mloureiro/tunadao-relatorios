@@ -1,16 +1,21 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readdirSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it } from 'vitest';
+import {
+  sheetFrom,
+  withReportSheets,
+} from '../../tests/support/report-workbook.ts';
 import type { Renderer } from '../engine/renderer.ts';
 import { EXIT, main, type CliIo } from './gerar-relatorio.ts';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const XLSX = `${ROOT}fixtures/generated/tesouraria.xlsx`;
-const PARAMS_DIR = `${ROOT}fixtures/v1/params/`;
+const SHEETS_XLSX = `${ROOT}fixtures/generated/invalid/report-sheets.xlsx`;
+const BROKEN_DATA_XLSX = `${ROOT}fixtures/generated/invalid/missing-fields.xlsx`;
 const EXAMPLES_DIR = `${ROOT}examples/`;
 const AGORA = '2026-10-07T12:00';
 
@@ -71,15 +76,16 @@ function writtenJson(run: Harness, path: string): Record<string, unknown> {
 describe('main()', () => {
   it('writes the PDF and a report JSON that matches the published example', async () => {
     const run = harness();
+    const example = JSON.parse(
+      await readFile(`${EXAMPLES_DIR}evento-citadao.json`, 'utf8'),
+    ) as unknown;
 
     const code = await main(
       [
-        '--tipo',
-        'evento',
         '--entrada',
         XLSX,
-        '--params',
-        `${PARAMS_DIR}evento-citadao.json`,
+        '--folha',
+        'CITADÃO 2026',
         '--agora',
         AGORA,
         '--json',
@@ -94,184 +100,157 @@ describe('main()', () => {
     expect(run.written.get('r.pdf')).toBeInstanceOf(Uint8Array);
     expect(run.rendered.map(({ tipo }) => tipo)).toEqual(['evento']);
     expect(run.stdout()).toContain('r.pdf');
+    expect(writtenJson(run, 'r.json')).toEqual(example);
   });
 
-  it.each(readdirSync(PARAMS_DIR).map((file) => file.replace(/\.json$/, '')))(
-    'builds the same report as the page for %s',
-    async (name) => {
-      const example = JSON.parse(
-        await readFile(`${EXAMPLES_DIR}${name}.json`, 'utf8'),
-      ) as { tipo: string };
-      const run = harness();
-
-      const code = await main(
-        [
-          '--tipo',
-          example.tipo,
-          '--entrada',
-          XLSX,
-          '--params',
-          `${PARAMS_DIR}${name}.json`,
-          '--agora',
-          AGORA,
-          '--json',
-          'r.json',
-        ],
-        run.io,
-      );
-
-      expect(code).toBe(EXIT.ok);
-      expect(writtenJson(run, 'r.json')).toEqual(example);
-    },
-  );
-
-  it('lets --param override the params file', async () => {
-    const run = harness();
-
-    await main(
-      [
-        '--tipo',
-        'evento',
-        '--entrada',
-        XLSX,
-        '--params',
-        `${PARAMS_DIR}evento-citadao.json`,
-        '--param',
-        'notas=Nota substituída.',
-        '--json',
-        'r.json',
-      ],
-      run.io,
-    );
-
-    const text = run.written.get('r.json') as string;
-    expect(text).toContain('Nota substituída.');
-    expect(text).not.toContain('fechar patrocínios');
-  });
-
-  it('prints blocking issues with tab, row and column and writes no PDF', async () => {
+  it('names the PDF after the report when --saida is omitted', async () => {
     const run = harness();
 
     const code = await main(
-      [
-        '--tipo',
-        'fiscal',
-        '--entrada',
-        `${ROOT}fixtures/generated/invalid/missing-fields.xlsx`,
-        '--param',
-        'ano=2025',
-      ],
+      ['--entrada', XLSX, '--folha', 'Pegada 2026', '--agora', AGORA],
+      run.io,
+    );
+
+    expect(code).toBe(EXIT.ok);
+    expect([...run.written.keys()]).toEqual([
+      '2026-09-30 Pegada de direção.pdf',
+    ]);
+  });
+
+  it('lists the fixture reports newest first with their dates in words', async () => {
+    const run = harness();
+
+    const code = await main(['--entrada', XLSX, '--listar'], run.io);
+
+    expect(code).toBe(EXIT.ok);
+    const lines = run
+      .stdout()
+      .split('\n')
+      .filter((line) => !line.startsWith('  '));
+    expect(
+      lines.filter((line) => line !== '').map((line) => line.split(' · ')[0]),
+    ).toEqual([
+      '"Pegada 2026"',
+      '"Letivo 2025-26"',
+      '"CITADÃO 2026"',
+      '"Zumba 2026"',
+      '"Fiscal 2025"',
+    ]);
+    expect(run.stdout()).toContain(
+      '"Pegada 2026" · Pegada de direção · pronto · Data do último relatório: 31 de agosto de 2026 · Data da passagem: 30 de setembro de 2026',
+    );
+    expect(run.written.size).toBe(0);
+  });
+
+  it('lists each sheet followed by its located issues', async () => {
+    const run = harness();
+
+    const code = await main(['--entrada', SHEETS_XLSX, '--listar'], run.io);
+
+    expect(code).toBe(EXIT.ok);
+    expect(run.stdout()).toContain(
+      '"Data inválida" · Relatório de evento · com erros',
+    );
+    expect(run.stdout()).toContain(
+      '  ERRO Folha "Data inválida", célula B5 — Início do evento: Data inválida: "31/02/2026".',
+    );
+  });
+
+  it('exits 1 when listing a file whose data tabs have errors', async () => {
+    const run = harness();
+
+    const code = await main(
+      ['--entrada', BROKEN_DATA_XLSX, '--listar'],
       run.io,
     );
 
     expect(code).toBe(EXIT.blocked);
     expect(run.stderr()).toContain(
-      'ERRO missing-fields.xlsx › Movimentos linha 2, coluna Atividade:',
+      'ERRO Separador Movimentos, linha 2, coluna Atividade',
+    );
+  });
+
+  it('exits 2 and suggests the closest sheet when the name is unknown', async () => {
+    const run = harness();
+
+    const code = await main(
+      ['--entrada', XLSX, '--folha', 'Citadao 2026'],
+      run.io,
+    );
+
+    expect(code).toBe(EXIT.usage);
+    expect(run.stderr()).toContain(
+      'Não existe a folha de relatório "Citadao 2026". Quis dizer "CITADÃO 2026"?',
+    );
+    expect(run.written.size).toBe(0);
+  });
+
+  it('lists the available sheets when no sheet name is close', async () => {
+    const run = harness();
+
+    const code = await main(['--entrada', XLSX, '--folha', 'xyz'], run.io);
+
+    expect(code).toBe(EXIT.usage);
+    expect(run.stderr()).toContain('Folhas de relatório: "Pegada 2026"');
+  });
+
+  it('prints the located issues of a sheet with errors and writes no PDF', async () => {
+    const run = harness();
+
+    const code = await main(
+      ['--entrada', SHEETS_XLSX, '--folha', 'Data inválida'],
+      run.io,
+    );
+
+    expect(code).toBe(EXIT.blocked);
+    expect(run.stderr()).toContain(
+      'ERRO Folha "Data inválida", célula B5 — Início do evento:',
     );
     expect(run.written.size).toBe(0);
     expect(run.rendered).toEqual([]);
   });
 
-  it('exits with usage and code 2 when --tipo is missing', async () => {
+  it('prints the data-tab issues and writes no PDF when the data has errors', async () => {
     const run = harness();
-
-    const code = await main(['--entrada', XLSX], run.io);
-
-    expect(code).toBe(EXIT.usage);
-    expect(run.stderr()).toContain('Falta indicar --tipo.');
-    expect(run.stderr()).toContain('Uso: npm run gerar');
-  });
-
-  it('reports invalid params in Portuguese with code 2', async () => {
-    const run = harness();
+    const bytes = await withReportSheets(BROKEN_DATA_XLSX, {
+      'Fiscal 2025': await sheetFrom('fiscal-2025', 'fiscal'),
+    });
+    const io: CliIo = {
+      ...run.io,
+      readFile: (path) =>
+        path === 'dados.xlsx' ? Promise.resolve(bytes) : run.io.readFile(path),
+    };
 
     const code = await main(
-      ['--tipo', 'fiscal', '--entrada', XLSX, '--param', 'ano=abc'],
-      run.io,
+      ['--entrada', 'dados.xlsx', '--folha', 'Fiscal 2025'],
+      io,
     );
 
-    expect(code).toBe(EXIT.usage);
-    expect(run.stderr()).toContain('ERRO parâmetro ano:');
+    expect(code).toBe(EXIT.blocked);
+    expect(run.stderr()).toContain(
+      'ERRO Separador Movimentos, linha 2, coluna Atividade',
+    );
     expect(run.written.size).toBe(0);
+    expect(run.rendered).toEqual([]);
   });
 
   it.each([
-    [
-      'a missing required param',
-      ['--tipo', 'fiscal'],
-      'ERRO parâmetro ano: Campo obrigatório.',
-    ],
-    [
-      'a blank required param',
-      ['--tipo', 'fiscal', '--param', 'ano='],
-      'ERRO parâmetro ano: Campo obrigatório.',
-    ],
-    [
-      'a non-numeric number',
-      ['--tipo', 'fiscal', '--param', 'ano=abc'],
-      'ERRO parâmetro ano: Tem de ser um número (recebido: "abc").',
-    ],
-    [
-      'a fractional integer',
-      ['--tipo', 'fiscal', '--param', 'ano=2025.5'],
-      'ERRO parâmetro ano: Tem de ser um número inteiro (recebido: "2025.5").',
-    ],
-    [
-      'an unknown key',
-      ['--tipo', 'fiscal', '--param', 'ano=2025', '--param', 'foo=1'],
-      'ERRO Parâmetro desconhecido: foo.',
-    ],
-    [
-      'a bad cash-count quantity',
-      [
-        '--tipo',
-        'pegada',
-        '--params',
-        `${PARAMS_DIR}pegada-2026.json`,
-        '--param',
-        'contagem.50=abc',
-      ],
-      'ERRO parâmetro contagem.50: Tem de ser um número (recebido: "abc").',
-    ],
-    [
-      'a missing money param',
-      [
-        '--tipo',
-        'pegada',
-        '--param',
-        'dataUltimoRelatorio=2026-08-31',
-        '--param',
-        'dataPassagem=2026-09-30',
-        '--param',
-        'direcaoCessante=a',
-        '--param',
-        'direcaoEntrante=b',
-      ],
-      'ERRO parâmetro saldoExtrato: Campo obrigatório.',
-    ],
-  ])('reports %s in Portuguese with code 2', async (_name, args, line) => {
-    const run = harness();
-
-    const code = await main([...args, '--entrada', XLSX], run.io);
-
-    expect(code).toBe(EXIT.usage);
-    expect(run.stderr().split('\n')).toContain(line);
-    expect(run.written.size).toBe(0);
-  });
-
-  it.each([['__proto__.polluted=1'], ['constructor.prototype.polluted=1']])(
-    'rejects the unsafe param %s with code 2',
-    async (param) => {
+    ['--tipo', 'evento'],
+    ['--params', 'p.json'],
+    ['--param', 'ano=2025'],
+  ])(
+    'refuses the removed %s with code 2 and the replacement hint',
+    async (...flag) => {
       const run = harness();
 
       const code = await main(
-        ['--tipo', 'fiscal', '--entrada', XLSX, '--param', param],
+        ['--entrada', XLSX, '--folha', 'Fiscal 2025', ...flag],
         run.io,
       );
 
       expect(code).toBe(EXIT.usage);
-      expect(run.stderr()).toContain('não é permitido');
-      expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+      expect(run.stderr()).toContain(`${flag[0]} já não existe`);
+      expect(run.stderr()).toContain('--folha');
     },
   );
 
@@ -288,16 +267,7 @@ describe('main()', () => {
       };
 
       const code = await main(
-        [
-          '--tipo',
-          'fiscal',
-          '--entrada',
-          XLSX,
-          '--params',
-          `${PARAMS_DIR}fiscal-2025.json`,
-          flag,
-          '/nonexistent/out',
-        ],
+        ['--entrada', XLSX, '--folha', 'Fiscal 2025', flag, '/nonexistent/out'],
         failing,
       );
 
@@ -308,18 +278,11 @@ describe('main()', () => {
     },
   );
 
-  it('exits 2 when an input file cannot be read', async () => {
+  it('exits 2 when the input file cannot be read', async () => {
     const run = harness();
 
     const code = await main(
-      [
-        '--tipo',
-        'fiscal',
-        '--entrada',
-        'nao-existe.xlsx',
-        '--param',
-        'ano=2025',
-      ],
+      ['--entrada', 'nao-existe.xlsx', '--listar'],
       run.io,
     );
 
@@ -333,16 +296,7 @@ describe('main()', () => {
     });
 
     const code = await main(
-      [
-        '--tipo',
-        'fiscal',
-        '--entrada',
-        XLSX,
-        '--params',
-        `${PARAMS_DIR}fiscal-2025.json`,
-        '--saida',
-        'r.pdf',
-      ],
+      ['--entrada', XLSX, '--folha', 'Fiscal 2025', '--saida', 'r.pdf'],
       run.io,
     );
 
@@ -355,16 +309,7 @@ describe('main()', () => {
     const run = harness({ now: new Date('2026-07-15T11:30:00Z') });
 
     await main(
-      [
-        '--tipo',
-        'fiscal',
-        '--entrada',
-        XLSX,
-        '--params',
-        `${PARAMS_DIR}fiscal-2025.json`,
-        '--json',
-        'r.json',
-      ],
+      ['--entrada', XLSX, '--folha', 'Fiscal 2025', '--json', 'r.json'],
       run.io,
     );
 
@@ -380,12 +325,10 @@ describe('main()', () => {
 
     await main(
       [
-        '--tipo',
-        'fiscal',
         '--entrada',
         XLSX,
-        '--params',
-        `${PARAMS_DIR}fiscal-2025.json`,
+        '--folha',
+        'Fiscal 2025',
         '--agora',
         '2026-07-15T09:05',
         '--json',
@@ -418,12 +361,10 @@ describe('the gerar script', () => {
         `${ROOT}node_modules/.bin/tsx`,
         [
           `${ROOT}src/cli/gerar-relatorio.ts`,
-          '--tipo',
-          'evento',
           '--entrada',
           XLSX,
-          '--params',
-          `${PARAMS_DIR}evento-citadao.json`,
+          '--folha',
+          'CITADÃO 2026',
           '--agora',
           AGORA,
           '--saida',
