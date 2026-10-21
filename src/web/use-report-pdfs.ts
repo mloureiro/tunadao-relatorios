@@ -74,6 +74,7 @@ export function useReportPdfs(): ReportPdfs {
     let engineFailure: string | null = null;
     try {
       for (const [index, instance] of instances.entries()) {
+        if (!mounted.current) return null;
         show({ kind: 'all', step: index + 1, total: instances.length });
         try {
           made.push({ instance, pdf: await render(instance) });
@@ -90,7 +91,7 @@ export function useReportPdfs(): ReportPdfs {
       running.current = false;
       show(null);
     }
-    return { made, failed, engineFailure };
+    return mounted.current ? { made, failed, engineFailure } : null;
   }
 
   return { pdfs, work, generate, generateAll };
