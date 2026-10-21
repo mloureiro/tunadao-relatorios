@@ -137,7 +137,9 @@ function findSheet(
   reports: readonly ReportInstance[],
   name: string,
 ): ReportInstance {
-  const found = reports.find(({ sheet }) => sheet === name);
+  const found = reports.find(
+    ({ sheet }) => sheet.normalize('NFC') === name.normalize('NFC'),
+  );
   if (found !== undefined) return found;
   const names = reports.map(({ sheet }) => sheet);
   const near = closest(name, names);

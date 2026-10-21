@@ -202,7 +202,7 @@ export const issueMessages = {
       ? `A folha não indica o tipo de relatório. Escolha um dos tipos: ${accepted.join(', ')}.`
       : `Tipo de relatório desconhecido: "${value}". Tipos aceites: ${accepted.join(', ')}.`,
   'report-version-newer': (version: number, supported: number) =>
-    `Esta folha foi criada com a versão ${String(version)} do modelo e esta aplicação só lê até à versão ${String(supported)}. Recarregue a página para atualizar a aplicação.`,
+    `Esta folha foi criada com a versão ${String(version)} do modelo e este gerador só lê até à versão ${String(supported)}. Atualize o gerador (recarregue a página ou atualize o programa).`,
   'field-missing': (label: string) =>
     `Falta o campo "${label}". Acrescente na coluna A uma linha com esse título e escreva o valor ao lado.`,
   'field-empty': (reason?: string) => reason ?? 'Valor em falta.',
