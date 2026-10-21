@@ -1,5 +1,29 @@
 # Changelog
 
+## 2.0.0
+
+- A Tesouraria passa a ser o único sítio onde se escreve um relatório. A página já não tem formulários: carrega-se o
+  `.xlsx` e cada folha de relatório do ficheiro aparece com o estado, as datas por extenso, os valores principais e os
+  erros com a célula (`Folha "Pegada 2026", célula B8`).
+- Cada relatório é uma folha do ficheiro (pegada, evento, fim de ano letivo, fim de ano fiscal), reconhecida pela célula
+  «Relatório» e não pelo nome. O modelo traz uma folha em branco de cada tipo, que também se descarrega à parte, e as
+  datas deixadas em branco que o ficheiro já conhece são deduzidas e escritas por extenso.
+- «Descarregar todos (.zip)» gera todos os relatórios prontos e guarda-os num só ficheiro.
+- «Próximas folhas»: a pegada e o fim de ano letivo seguintes, já com as datas e a direção cessante preenchidas.
+- Os nomes dos cargos e dos signatários nas assinaturas vêm da folha, e cada linha de assinatura tem data.
+- O CLI escolhe o relatório pela folha (`--folha`) e lista-as com `--listar`, que escreve tudo no stdout. Já não há
+  `--tipo`, `--param` nem `--params`.
+- Correções nos PDFs: período do evento, resultado acumulado e totais dos reembolsos no livro de caixa, lista de
+  movimentos com atividade e rubrica, notas compridas que continuam na página seguinte, pegada com os pendentes e as
+  assinaturas na mesma página.
+- Pedir um PDF logo após a primeira visita já não descarrega o motor duas vezes.
+- Removido: os ficheiros CSV já não são aceites; só `.xlsx`.
+- Removido: o saldo de abertura escrito no navegador. Declara-se em Saldos, com a fonte «Declarado». O saldo do extrato
+  bancário da pegada escreve-se na folha da pegada.
+- Os nomes das colunas calculadas do modelo foram renomeados, a lista de sub-rubricas passa a depender da rubrica e as linhas de exemplo do modelo
+  antigo passam a ser erros. Os nomes antigos continuam a ser aceites.
+- README com o novo guia, as capturas do novo ecrã e a organização da Tesouraria.
+
 ## 1.0.0
 
 - Página que lê a folha de Tesouraria (`.xlsx` ou CSV), valida os dados com a linha e a coluna de cada problema e gera os

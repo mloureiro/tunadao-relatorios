@@ -976,7 +976,7 @@
         "sha256Short": "b13cfae46798"
       }
     ],
-    "generatorVersion": "1.0.0",
+    "generatorVersion": "2.0.0",
     "attachReport": true
   }
 }
