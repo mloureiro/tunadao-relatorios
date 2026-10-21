@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  LISTS,
   emptyDataset,
+  linha,
   mov,
   pendente,
   saldo,
@@ -145,6 +147,37 @@ describe('validateDataset()', () => {
       ],
     ])('stays silent for %s', (_name, dataset) => {
       expect(validateDataset(dataset, [])).toEqual([]);
+    });
+  });
+
+  describe('unknown-ambito', () => {
+    const budget = (ambito: string) =>
+      linha({ ambito, orcadoCents: 100, rubrica: 'Bilheteira' });
+
+    it('flags an Âmbito missing from the Orçamentos list on its row and suggests the closest name', () => {
+      const dataset = emptyDataset({
+        lists: { ...LISTS, orcamentos: ['2025', 'Festival Alfa'] },
+        orcamento: [budget('Festival Alpha'), budget('2025')],
+      });
+
+      const issues = validateDataset(dataset, []);
+
+      expect(issues).toMatchObject([
+        {
+          code: 'unknown-ambito',
+          severity: 'error',
+          tab: 'Orçamento',
+          column: 'Âmbito',
+          suggestion: 'Quis dizer "Festival Alfa"?',
+        },
+      ]);
+      expect(issues[0]?.row).toBe(dataset.orcamento[0]?.src.row);
+    });
+
+    it('checks nothing when the workbook has no Orçamentos list', () => {
+      const dataset = emptyDataset({ orcamento: [budget('Qualquer coisa')] });
+
+      expect(codes(dataset)).toEqual([]);
     });
   });
 

@@ -49,6 +49,72 @@ describe('normaliseListas()', () => {
     });
   });
 
+  describe('Orçamentos block', () => {
+    const WITH_BUDGETS: Sheet = LISTAS.map((cells, at) => [
+      ...cells,
+      null,
+      at === 0
+        ? 'Orçamento'
+        : at === 1
+          ? '2025'
+          : at === 2
+            ? 'Festival Alfa'
+            : null,
+    ]);
+
+    it('reads the optional budget names next to the other four blocks', () => {
+      const { lists, issues } = read(WITH_BUDGETS);
+
+      expect(issues).toEqual([]);
+      expect(lists.orcamentos).toEqual(['2025', 'Festival Alfa']);
+      expect(lists.atividades).toEqual(['Festival Alfa', 'Serenata']);
+      expect(lists.meios).toHaveLength(3);
+      expect(lists.rubricas).toHaveLength(3);
+    });
+
+    it('leaves the list undefined when the block is absent, so nothing is checked against it', () => {
+      const { lists, issues } = read(LISTAS);
+
+      expect(issues).toEqual([]);
+      expect(lists.orcamentos).toBeUndefined();
+    });
+
+    it('reports a budget listed twice', () => {
+      const { issues } = read([
+        ...WITH_BUDGETS,
+        [...HEADER.map(() => null), null, '2025'],
+      ]);
+
+      expect(issues).toEqual([
+        expect.objectContaining({
+          code: 'duplicate-listas',
+          column: 'Orçamento',
+          message: expect.stringMatching(/2025.*Orçamentos/) as string,
+        }),
+      ]);
+    });
+  });
+
+  it('reads the rubric flag under its new header', () => {
+    const renamed: Sheet = LISTAS.map((cells, at) =>
+      at === 0
+        ? cells.map((cell) =>
+            cell === 'Conta para o resultado'
+              ? 'Conta como receita ou despesa'
+              : cell,
+          )
+        : cells,
+    );
+    const { lists, issues } = read(renamed);
+
+    expect(issues).toEqual([]);
+    expect(lists.rubricas.map((r) => r.contaResultado)).toEqual([
+      true,
+      true,
+      false,
+    ]);
+  });
+
   it('accepts the same sub-rubric name under two different rubrics', () => {
     const { lists, issues } = read(LISTAS);
 

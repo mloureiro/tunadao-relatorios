@@ -6,6 +6,7 @@ import type { RawTable } from './raw-table.ts';
 export interface ColumnSpec {
   readonly header: string;
   readonly required: boolean;
+  readonly aliases?: readonly string[];
 }
 
 export type ColumnSpecs = Readonly<Record<string, ColumnSpec>>;
@@ -13,9 +14,18 @@ export type ColumnIndex<S extends ColumnSpecs> = {
   readonly [K in keyof S]: number | null;
 };
 
-function column(header: string, required: boolean): ColumnSpec {
-  return { header, required };
+function column(
+  header: string,
+  required: boolean,
+  aliases: readonly string[] = [],
+): ColumnSpec {
+  return aliases.length === 0
+    ? { header, required }
+    : { header, required, aliases };
 }
+
+const SIGNED_VALUE_ALIASES = ['Efeito no saldo (€)'] as const;
+const RESULT_FLAG_ALIASES = ['Conta como receita ou despesa'] as const;
 
 export const MOVIMENTOS_COLUMNS = {
   data: column('Data', true),
@@ -28,8 +38,8 @@ export const MOVIMENTOS_COLUMNS = {
   meio: column('Meio', true),
   valor: column('Valor (€)', true),
   conta: column('Conta', false),
-  valorComSinal: column('Valor com sinal (€)', false),
-  contaResultado: column('Conta para o resultado', false),
+  valorComSinal: column('Valor com sinal (€)', false, SIGNED_VALUE_ALIASES),
+  contaResultado: column('Conta para o resultado', false, RESULT_FLAG_ALIASES),
 } as const satisfies ColumnSpecs;
 
 export const PENDENTES_COLUMNS = {
@@ -85,6 +95,20 @@ export const TAB_NAMES = [
   'Listas',
   'Saldos',
 ] as const satisfies readonly TabName[];
+
+const HEADER_ALIASES: ReadonlyMap<string, string> = new Map(
+  Object.values(MOVIMENTOS_COLUMNS).flatMap((spec: ColumnSpec) =>
+    (spec.aliases ?? []).map((alias): [string, string] => [
+      normaliseHeader(alias),
+      normaliseHeader(spec.header),
+    ]),
+  ),
+);
+
+export function canonicalHeader(header: string): string {
+  const wanted = normaliseHeader(header);
+  return HEADER_ALIASES.get(wanted) ?? wanted;
+}
 
 const IGNORED_SHEET_NAMES = ['Instruções'] as const;
 
@@ -164,7 +188,7 @@ function carriesNoForeignColumn(
 }
 
 export function tabForHeader(header: readonly string[]): TabName | null {
-  const present = new Set(header.map(normaliseHeader));
+  const present = new Set(header.map(canonicalHeader));
   const matches = SIGNATURES.filter(
     (signature) =>
       signature.required.every((wanted) =>
@@ -182,7 +206,7 @@ export interface ClosestTab {
 }
 
 export function closestTab(header: readonly string[]): ClosestTab | null {
-  const present = new Set(header.map(normaliseHeader));
+  const present = new Set(header.map(canonicalHeader));
   let best: ClosestTab | null = null;
   let bestShare = 0;
   for (const signature of SIGNATURES) {
@@ -213,7 +237,10 @@ export function resolveColumns<S extends ColumnSpecs>(
   const normalised = table.header.map(normaliseHeader);
   const index: Record<string, number | null> = {};
   for (const [key, spec] of Object.entries(specs)) {
-    const found = normalised.indexOf(normaliseHeader(spec.header));
+    const found =
+      [spec.header, ...(spec.aliases ?? [])]
+        .map((name) => normalised.indexOf(normaliseHeader(name)))
+        .find((at) => at >= 0) ?? -1;
     index[key] = found >= 0 ? found : null;
     if (found < 0 && spec.required) {
       issues.push(

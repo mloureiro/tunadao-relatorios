@@ -5,7 +5,7 @@ import {
   movimento,
 } from '../../../tests/support/sample.ts';
 import { table, type Sheet } from '../../../tests/support/workbook.ts';
-import type { Issue } from '../issues.ts';
+import { DERIVED_COLUMN_ADVICE, type Issue } from '../issues.ts';
 import { normaliseListas } from './lists.ts';
 import { normaliseMovimentos } from './movimentos.ts';
 
@@ -112,10 +112,58 @@ describe('normaliseMovimentos()', () => {
           row: 2,
           column,
           message: expect.stringMatching(message) as string,
+          suggestion: DERIVED_COLUMN_ADVICE,
         }),
       ]);
     },
   );
+
+  describe('with the renamed calculated columns', () => {
+    const RENAMED = MOVIMENTOS_HEADER.map((name) =>
+      name === 'Conta'
+        ? 'Conta (automático)'
+        : name === 'Valor com sinal (€)'
+          ? 'Efeito no saldo (€) (automático)'
+          : name === 'Conta para o resultado'
+            ? 'Conta como receita ou despesa'
+            : name,
+    );
+
+    it('reads the columns under their new names, so a wrong value is still caught', () => {
+      const { issues } = run(
+        [
+          movimento({
+            'Valor com sinal (€)': -120.5,
+            'Conta para o resultado': 'Não',
+            Conta: 'Banco',
+          }),
+        ],
+        RENAMED,
+      );
+
+      expect(issues.map((issue) => [issue.code, issue.column])).toEqual([
+        ['derived-mismatch', 'Conta'],
+        ['derived-mismatch', 'Valor com sinal (€)'],
+        ['derived-mismatch', 'Conta para o resultado'],
+      ]);
+    });
+
+    it('accepts values that agree', () => {
+      const { movimentos, issues } = run(
+        [
+          movimento({
+            Conta: 'Caixa',
+            'Valor com sinal (€)': 120.5,
+            'Conta para o resultado': 'Sim',
+          }),
+        ],
+        RENAMED,
+      );
+
+      expect(issues).toEqual([]);
+      expect(movimentos).toHaveLength(1);
+    });
+  });
 
   it.each([
     ['Data', 'required-empty', 'Data'],

@@ -6,7 +6,7 @@ import type {
   RubricaDef,
   SubRubricaDef,
 } from '../dataset/types.ts';
-import { headerRow } from '../input/columns.ts';
+import { canonicalHeader, headerRow } from '../input/columns.ts';
 import { isBlankRow, type RawTable } from '../input/raw-table.ts';
 import { issueMessages, makeIssue, type Issue } from '../issues.ts';
 import { normaliseHeader } from '../text.ts';
@@ -29,6 +29,10 @@ const SUB_RUBRICAS: BlockSpec = {
 };
 const ATIVIDADES: BlockSpec = { label: 'Atividades', headers: ['Atividade'] };
 const MEIOS: BlockSpec = { label: 'Meios', headers: ['Meio', 'Conta'] };
+const ORCAMENTOS: BlockSpec = {
+  label: 'Orçamentos',
+  headers: ['Orçamento'],
+};
 
 const RUBRICAS_COLUMNS = {
   rubrica: { header: 'Rubrica', required: true },
@@ -45,6 +49,9 @@ const ATIVIDADES_COLUMNS = {
 const MEIOS_COLUMNS = {
   meio: { header: 'Meio', required: true },
   conta: { header: 'Conta', required: true },
+} as const;
+const ORCAMENTOS_COLUMNS = {
+  orcamento: { header: 'Orçamento', required: true },
 } as const;
 
 function blockStart(
@@ -67,7 +74,7 @@ function locate(
   block: BlockSpec,
   issues: Issue[],
 ): number[] | null {
-  const header = table.header.map(normaliseHeader);
+  const header = table.header.map(canonicalHeader);
   const start = blockStart(header, block);
   const where = {
     file: table.source,
@@ -160,6 +167,7 @@ export function normaliseListas(
   const subRubricas: SubRubricaDef[] = [];
   const atividades: string[] = [];
   const meios: MeioDef[] = [];
+  let orcamentos: string[] | undefined;
 
   for (const table of tables) {
     const rubricaColumns = locate(table, RUBRICAS, issues);
@@ -278,7 +286,48 @@ export function normaliseListas(
       }
       meios.push({ meio, conta });
     }
+
+    const orcamentoStart = blockStart(
+      table.header.map(canonicalHeader),
+      ORCAMENTOS,
+    );
+    if (orcamentoStart !== null) {
+      orcamentos ??= [];
+      const orcamentoColumns = [orcamentoStart];
+      const orcamentoIndex = blockIndex(['orcamento'], orcamentoColumns);
+      for (const { cells, row } of blockRows(table, orcamentoColumns)) {
+        const reader = new RowReader(
+          table,
+          'Listas',
+          ORCAMENTOS_COLUMNS,
+          orcamentoIndex,
+          cells,
+          row,
+          issues,
+        );
+        const orcamento = reader.requiredText('orcamento');
+        if (orcamento === null) continue;
+        if (orcamentos.includes(orcamento)) {
+          duplicate(
+            table,
+            row,
+            ORCAMENTOS.label,
+            orcamento,
+            'Orçamento',
+            issues,
+          );
+          continue;
+        }
+        orcamentos.push(orcamento);
+      }
+    }
   }
 
-  return { rubricas, subRubricas, atividades, meios };
+  return {
+    rubricas,
+    subRubricas,
+    atividades,
+    meios,
+    ...(orcamentos === undefined ? {} : { orcamentos }),
+  };
 }

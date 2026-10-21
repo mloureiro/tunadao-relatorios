@@ -1,5 +1,11 @@
 import type { Conta, Direcao, TabName } from './dataset/types.ts';
-import { formatDate, formatMoney, formatMoneySigned } from './format.ts';
+import { addDays } from './dates.ts';
+import {
+  formatDate,
+  formatDateLong,
+  formatMoney,
+  formatMoneySigned,
+} from './format.ts';
 import type { Cents } from './money.ts';
 
 export type Severity = 'error' | 'warning';
@@ -54,6 +60,15 @@ export const ISSUE_SEVERITY = {
   'formula-no-value': 'error',
   'signature-role-unknown': 'warning',
   'text-too-long': 'warning',
+  'unknown-ambito': 'error',
+  'example-row': 'error',
+  'example-checkpoint': 'warning',
+  'unknown-budget': 'error',
+  'period-continuity': 'warning',
+  'period-outside-data': 'warning',
+  'date-in-future': 'warning',
+  'duplicate-report': 'warning',
+  'build-failed': 'error',
 } as const satisfies Record<string, Severity>;
 
 export type IssueCode = keyof typeof ISSUE_SEVERITY;
@@ -81,6 +96,9 @@ export interface IssueLocation {
   readonly cell?: string;
   readonly field?: string;
 }
+
+export const DERIVED_COLUMN_ADVICE =
+  'Esta coluna é automática: apague o que escreveu ou copie a fórmula da linha de cima.';
 
 export const issueMessages = {
   'missing-column': (column: string, tab: TabName) =>
@@ -153,7 +171,7 @@ export const issueMessages = {
   'negative-balance': (conta: Conta, date: string, cents: Cents) =>
     `O saldo de ${conta} fica negativo em ${formatDate(date)}: ${formatMoney(cents)}.`,
   'missing-opening-balance': (conta: Conta, date: string) =>
-    `Não há saldo de ${conta} anterior a ${formatDate(date)} nem saldo inicial indicado.`,
+    `Não há saldo de ${conta} anterior a ${formatDate(date)}. Acrescente no separador Saldos uma linha com Data ${formatDate(addDays(date, -1))}, Conta ${conta}, o saldo e Fonte Declarado.`,
   'manual-opening-balance': (conta: Conta, cents: Cents) =>
     `Foi usado o saldo inicial de ${conta} indicado manualmente: ${formatMoney(cents)}.`,
   'manual-opening-mismatch': (
@@ -172,7 +190,9 @@ export const issueMessages = {
   'no-previous-data': () =>
     'O período de comparação não tem movimentos. A secção indica "sem dados".',
   'undated-generos': (count: number) =>
-    `${String(count)} linha(s) de Géneros sem data foram excluídas do relatório.`,
+    count === 1
+      ? '1 linha de Géneros sem data foi excluída do relatório.'
+      : `${String(count)} linhas de Géneros sem data foram excluídas do relatório.`,
   'reconciliation-difference': (cents: Cents) =>
     `A reconciliação bancária tem uma diferença de ${formatMoneySigned(cents)}.`,
   'cash-count-difference': (cents: Cents) =>
@@ -185,7 +205,7 @@ export const issueMessages = {
     `Esta folha foi criada com a versão ${String(version)} do modelo e esta aplicação só lê até à versão ${String(supported)}. Recarregue a página para atualizar a aplicação.`,
   'field-missing': (label: string) =>
     `Falta o campo "${label}". Acrescente na coluna A uma linha com esse título e escreva o valor ao lado.`,
-  'field-empty': () => 'Valor em falta.',
+  'field-empty': (reason?: string) => reason ?? 'Valor em falta.',
   'field-invalid': (detail: string) => detail,
   'field-unknown': (label: string) =>
     `O título "${label}" não é reconhecido neste tipo de relatório e foi ignorado.`,
@@ -201,6 +221,41 @@ export const issueMessages = {
     `O cargo "${cargo}" não existe neste tipo de relatório e foi ignorado.`,
   'text-too-long': (length: number, max: number) =>
     `O texto tem ${String(length)} caracteres e o máximo recomendado é ${String(max)}. Pode não caber na página.`,
+  'unknown-ambito': (ambito: string) =>
+    `O âmbito "${ambito}" não existe na lista Orçamentos do separador Listas.`,
+  'example-row': () =>
+    'Esta linha é um exemplo do modelo ("exemplo fictício") e não pode entrar num relatório. Apague-a ou substitua-a por dados reais.',
+  'example-checkpoint': (
+    conta: Conta,
+    date: string,
+    cents: Cents,
+    fonte: string,
+  ) =>
+    `Este saldo (${conta}, ${formatDate(date)}, ${formatMoney(cents)}, ${fonte}) é um dos exemplos do modelo antigo. Apague-o ou substitua-o pelo saldo real.`,
+  'unknown-budget': (ambito: string) =>
+    `O separador Orçamento não tem linhas para "${ambito}".`,
+  'period-continuity': (
+    kind: 'gap' | 'overlap',
+    start: string,
+    otherSheet: string,
+    otherEnd: string,
+  ) =>
+    kind === 'gap'
+      ? `O período começa a ${formatDateLong(start)}, mas o relatório da folha "${otherSheet}" termina a ${formatDateLong(otherEnd)}: ficam dias sem relatório entre os dois.`
+      : `O período começa a ${formatDateLong(start)}, mas o relatório da folha "${otherSheet}" termina a ${formatDateLong(otherEnd)}: os dois períodos sobrepõem-se.`,
+  'period-outside-data': (
+    from: string,
+    to: string,
+    firstDate: string,
+    lastDate: string,
+  ) =>
+    `O período do relatório (${formatDate(from)} a ${formatDate(to)}) não coincide com nenhum movimento: os movimentos do ficheiro vão de ${formatDate(firstDate)} a ${formatDate(lastDate)}.`,
+  'date-in-future': (date: string) =>
+    `A data ${formatDateLong(date)} ainda não chegou. Confirme que escreveu o ano certo.`,
+  'duplicate-report': (otherSheet: string, key: string) =>
+    `A folha "${otherSheet}" é um relatório do mesmo tipo e com a mesma identificação (${key}). Deixe apenas uma das duas.`,
+  'build-failed': (reason: string) =>
+    `Não foi possível gerar o relatório (detalhe técnico: ${reason}).`,
 } as const satisfies Record<IssueCode, (...args: never[]) => string>;
 
 export function makeIssue(

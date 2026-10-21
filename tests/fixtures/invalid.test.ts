@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DERIVED_COLUMN_ADVICE } from '../../src/core/issues.ts';
 import { loadGenerated } from '../support/generated.ts';
 
 async function issuesOf(file: string) {
@@ -20,12 +21,14 @@ describe('invalid fixtures', () => {
         tab: 'Movimentos',
         row: 3,
         column: 'Valor com sinal (€)',
+        suggestion: DERIVED_COLUMN_ADVICE,
       },
       {
         code: 'derived-mismatch',
         tab: 'Movimentos',
         row: 4,
         column: 'Conta',
+        suggestion: DERIVED_COLUMN_ADVICE,
       },
     ]);
   });

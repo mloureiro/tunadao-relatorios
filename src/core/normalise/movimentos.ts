@@ -1,7 +1,7 @@
 import type { Conta, Lists, Movimento } from '../dataset/types.ts';
 import { MOVIMENTOS_COLUMNS, resolveColumns } from '../input/columns.ts';
 import { isBlankRow, type RawTable } from '../input/raw-table.ts';
-import { issueMessages, type Issue } from '../issues.ts';
+import { DERIVED_COLUMN_ADVICE, issueMessages, type Issue } from '../issues.ts';
 import { formatMoney } from '../format.ts';
 import {
   CONTAS,
@@ -124,6 +124,7 @@ export function normaliseMovimentos(
             conta,
           ),
           'conta',
+          DERIVED_COLUMN_ADVICE,
         );
       }
 
@@ -146,6 +147,7 @@ export function normaliseMovimentos(
             formatMoney(signedCents),
           ),
           'valorComSinal',
+          DERIVED_COLUMN_ADVICE,
         );
       }
 
@@ -162,6 +164,7 @@ export function normaliseMovimentos(
             rubricaDef.contaResultado ? 'Sim' : 'Não',
           ),
           'contaResultado',
+          DERIVED_COLUMN_ADVICE,
         );
       }
 

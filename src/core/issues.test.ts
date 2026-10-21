@@ -74,6 +74,10 @@ describe('issue catalogue', () => {
       'field-invalid',
       'field-duplicate',
       'formula-no-value',
+      'unknown-ambito',
+      'example-row',
+      'unknown-budget',
+      'build-failed',
     ]);
   });
 });
@@ -96,6 +100,23 @@ describe('issueMessages', () => {
     ).toBe(
       'O saldo de Banco em 31/12/2025 é 8.430,15 € mas os movimentos dão 8.420,15 € (diferença +10,00 €).',
     );
+  });
+});
+
+describe('reworded messages', () => {
+  it('names the exact Saldos row to add when the opening balance is missing', () => {
+    expect(
+      issueMessages['missing-opening-balance']('Caixa', '2026-01-01'),
+    ).toBe(
+      'Não há saldo de Caixa anterior a 01/01/2026. Acrescente no separador Saldos uma linha com Data 31/12/2025, Conta Caixa, o saldo e Fonte Declarado.',
+    );
+  });
+
+  it.each([
+    [1, '1 linha de Géneros sem data foi excluída do relatório.'],
+    [3, '3 linhas de Géneros sem data foram excluídas do relatório.'],
+  ])('words %i undated in-kind rows in the right number', (count, expected) => {
+    expect(issueMessages['undated-generos'](count)).toBe(expected);
   });
 });
 
