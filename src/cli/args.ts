@@ -1,19 +1,10 @@
 import { parseArgs } from 'node:util';
-import type { ReportTipo } from '../core/reports/index.ts';
-
-export const REPORT_TIPOS = [
-  'evento',
-  'pegada',
-  'letivo',
-  'fiscal',
-] as const satisfies readonly ReportTipo[];
 
 export interface CliOptions {
-  readonly tipo: ReportTipo;
-  readonly entradas: readonly string[];
-  readonly paramsFile: string | null;
-  readonly params: ReadonlyMap<string, string>;
-  readonly saida: string;
+  readonly entrada: string;
+  readonly folha: string | null;
+  readonly listar: boolean;
+  readonly saida: string | null;
   readonly json: string | null;
   readonly agora: string | null;
 }
@@ -24,6 +15,14 @@ export type ParsedArgs =
   | { readonly kind: 'run'; readonly options: CliOptions };
 
 const AGORA = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
+
+const REMOVED_OPTIONS = {
+  tipo: 'O tipo vem da folha do relatório no ficheiro. Use --folha "<nome da folha>" (veja os nomes com --listar).',
+  param:
+    'Os parâmetros preenchem-se na folha do relatório, dentro do ficheiro .xlsx. Use --folha "<nome da folha>".',
+  params:
+    'Os parâmetros preenchem-se na folha do relatório, dentro do ficheiro .xlsx. Use --folha "<nome da folha>".',
+} as const;
 
 export function isLisbonWallClock(value: string): boolean {
   const match = AGORA.exec(value);
@@ -45,26 +44,8 @@ export function isLisbonWallClock(value: string): boolean {
   );
 }
 
-function isTipo(value: string): value is ReportTipo {
-  return (REPORT_TIPOS as readonly string[]).includes(value);
-}
-
 function usageError(message: string): ParsedArgs {
   return { kind: 'usage-error', message };
-}
-
-export function parseParamPairs(
-  pairs: readonly string[],
-): ReadonlyMap<string, string> | string {
-  const params = new Map<string, string>();
-  for (const pair of pairs) {
-    const separator = pair.indexOf('=');
-    if (separator <= 0) {
-      return `O parâmetro "${pair}" tem de ter a forma chave=valor.`;
-    }
-    params.set(pair.slice(0, separator), pair.slice(separator + 1));
-  }
-  return params;
 }
 
 export function parseCliArgs(argv: readonly string[]): ParsedArgs {
@@ -74,14 +55,16 @@ export function parseCliArgs(argv: readonly string[]): ParsedArgs {
       args: [...argv],
       allowPositionals: false,
       options: {
-        tipo: { type: 'string' },
         entrada: { type: 'string', multiple: true },
-        param: { type: 'string', multiple: true },
-        params: { type: 'string' },
+        folha: { type: 'string' },
+        listar: { type: 'boolean' },
         saida: { type: 'string' },
         json: { type: 'string' },
         agora: { type: 'string' },
         ajuda: { type: 'boolean' },
+        tipo: { type: 'string', multiple: true },
+        param: { type: 'string', multiple: true },
+        params: { type: 'string', multiple: true },
       },
     }));
   } catch (error) {
@@ -92,21 +75,34 @@ export function parseCliArgs(argv: readonly string[]): ParsedArgs {
 
   if (values.ajuda === true) return { kind: 'help' };
 
-  const { tipo } = values;
-  if (tipo === undefined) return usageError('Falta indicar --tipo.');
-  if (!isTipo(tipo)) {
-    return usageError(
-      `Tipo de relatório desconhecido: "${tipo}". Valores aceites: ${REPORT_TIPOS.join(', ')}.`,
-    );
+  for (const [name, hint] of Object.entries(REMOVED_OPTIONS)) {
+    if (name in values) return usageError(`--${name} já não existe. ${hint}`);
   }
 
   const entradas = values.entrada ?? [];
-  if (entradas.length === 0) {
-    return usageError('Falta indicar pelo menos um ficheiro com --entrada.');
+  const [entrada] = entradas;
+  if (entrada === undefined) {
+    return usageError('Falta indicar o ficheiro com --entrada.');
+  }
+  if (entradas.length > 1) {
+    return usageError('Indique um único ficheiro com --entrada.');
+  }
+  if (!entrada.toLowerCase().endsWith('.xlsx')) {
+    return usageError(
+      `--entrada "${entrada}" não é um ficheiro .xlsx. Só se aceitam folhas de Tesouraria em .xlsx.`,
+    );
   }
 
-  const params = parseParamPairs(values.param ?? []);
-  if (typeof params === 'string') return usageError(params);
+  const listar = values.listar === true;
+  const folha = values.folha ?? null;
+  if (listar && folha !== null) {
+    return usageError('--folha e --listar não podem ser usados em conjunto.');
+  }
+  if (!listar && folha === null) {
+    return usageError(
+      'Indique --folha "<nome da folha>" para gerar um relatório, ou --listar para ver os relatórios do ficheiro.',
+    );
+  }
 
   const { agora } = values;
   if (agora !== undefined && !isLisbonWallClock(agora)) {
@@ -118,11 +114,10 @@ export function parseCliArgs(argv: readonly string[]): ParsedArgs {
   return {
     kind: 'run',
     options: {
-      tipo,
-      entradas,
-      paramsFile: values.params ?? null,
-      params,
-      saida: values.saida ?? `relatorio-${tipo}.pdf`,
+      entrada,
+      folha,
+      listar,
+      saida: values.saida ?? null,
       json: values.json ?? null,
       agora: agora ?? null,
     },

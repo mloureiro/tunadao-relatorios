@@ -69,37 +69,42 @@ gera relatórios mesmo sem internet. Quando há uma versão nova, aparece «Nova
 Quem prefere o terminal (ou quer automatizar) usa `npm run gerar`, que corre o mesmo pipeline de `src/core` e o mesmo wasm do Typst que a página (`typst-node.ts`), sem
 navegador. O JSON do relatório é o mesmo; o PDF não é idêntico byte a byte.
 
+Cada relatório é uma folha do ficheiro `.xlsx`: o tipo e todos os parâmetros vêm dessa folha, por isso não há parâmetros na linha de comandos.
+
 ```
-npm run gerar -- --tipo evento|pegada|letivo|fiscal --entrada <ficheiro> [--entrada <ficheiro> ...]
-  [--params <ficheiro.json>] [--param chave=valor ...] [--saida <ficheiro.pdf>] [--json <ficheiro.json>]
-  [--agora aaaa-mm-ddThh:mm] [--ajuda]
+npm run gerar -- --entrada <ficheiro.xlsx> --listar
+npm run gerar -- --entrada <ficheiro.xlsx> --folha "<nome da folha>"
+  [--saida <ficheiro.pdf>] [--json <ficheiro.json>] [--agora aaaa-mm-ddThh:mm] [--ajuda]
 ```
 
-- `--entrada` aceita uma folha `.xlsx` ou um CSV por separador (repetir a opção).
-- `--params` lê um ficheiro JSON com os parâmetros; `--param chave=valor` acrescenta ou substitui um parâmetro.
-  Campos aninhados usam pontos (`--param aberturaManual.caixa=100`). Listas (indicadores, contagem de caixa) só
-  podem vir do ficheiro JSON.
-- `--saida` por omissão é `relatorio-<tipo>.pdf`. `--json` escreve também o JSON do relatório. Ambos substituem um
-  ficheiro existente. `fixtures/v1/params/*.json` mostra os parâmetros de cada tipo.
+- `--entrada` é um único ficheiro `.xlsx`.
+- `--listar` mostra uma linha por folha de relatório (nome, tipo, estado e datas por extenso), da mais recente para a
+  mais antiga, seguida dos problemas dessa folha com a célula: `ERRO|AVISO Folha "nome", célula B5 — campo: mensagem`.
+- `--folha` gera o relatório dessa folha (nome exato). Se o nome não existir, o CLI sugere o mais parecido. Uma folha
+  com erros mostra os problemas e não escreve nenhum PDF. `--folha` e `--listar` não se combinam, e é preciso um dos dois.
+- `--saida` por omissão é `<data> <relatório>.pdf` na pasta atual (por exemplo `2026-09-30 Pegada de direção.pdf`).
+  `--json` escreve também o JSON do relatório. Ambos substituem um ficheiro existente.
 - `--agora` é a data e hora de geração em hora de Lisboa; por omissão, a hora atual de Lisboa.
-- Os problemas dos dados saem em stderr, um por linha: `ERRO|AVISO <ficheiro> › <separador> linha N, coluna C:
-mensagem (sugestão: ...)`.
+- Os problemas dos separadores de dados saem em stderr, um por linha: `ERRO|AVISO Separador Movimentos, linha N, coluna C — mensagem (sugestão: ...)`.
+- `--tipo`, `--param` e `--params` já não existem; usá-los é um erro de utilização que indica a alternativa.
 
-| Código | Significado                                                         |
-| ------ | ------------------------------------------------------------------- |
-| 0      | PDF gerado (pode haver avisos)                                      |
-| 1      | erros nos dados de entrada; nenhum PDF escrito                      |
-| 2      | utilização incorreta: argumentos, ficheiros ou parâmetros inválidos |
-| 3      | erro interno ao gerar o relatório ou o PDF                          |
+| Código | Significado                                                           |
+| ------ | --------------------------------------------------------------------- |
+| 0      | PDF gerado (pode haver avisos), ou lista impressa                     |
+| 1      | erros nos separadores de dados ou na folha pedida; nenhum PDF escrito |
+| 2      | utilização incorreta: argumentos, ficheiro ou nome de folha inválidos |
+| 3      | erro interno ao gerar o relatório ou o PDF                            |
 
 Exemplos com os dados fictícios do repositório (a pasta `saida/` é ignorada pelo git e tem de existir):
 
 ```
 mkdir -p saida
-npm run gerar -- --tipo evento --entrada fixtures/generated/tesouraria.xlsx --params fixtures/v1/params/evento-citadao.json --saida saida/evento.pdf
-npm run gerar -- --tipo pegada --entrada fixtures/generated/tesouraria.xlsx --params fixtures/v1/params/pegada-2026.json --saida saida/pegada.pdf
-npm run gerar -- --tipo letivo --entrada fixtures/generated/tesouraria.xlsx --params fixtures/v1/params/letivo-2025-26.json --saida saida/letivo.pdf
-npm run gerar -- --tipo fiscal --entrada fixtures/generated/tesouraria.xlsx --params fixtures/v1/params/fiscal-2025.json --saida saida/fiscal.pdf --json saida/fiscal.json
+npm run gerar -- --entrada fixtures/generated/tesouraria.xlsx --listar
+npm run gerar -- --entrada fixtures/generated/tesouraria.xlsx --folha "Pegada 2026" --saida saida/pegada.pdf
+npm run gerar -- --entrada fixtures/generated/tesouraria.xlsx --folha "Letivo 2025-26" --saida saida/letivo.pdf
+npm run gerar -- --entrada fixtures/generated/tesouraria.xlsx --folha "CITADÃO 2026" --saida saida/evento.pdf
+npm run gerar -- --entrada fixtures/generated/tesouraria.xlsx --folha "Fiscal 2025" --saida saida/fiscal.pdf --json saida/fiscal.json
+npm run gerar -- --entrada fixtures/generated/invalid/report-sheets.xlsx --listar
 ```
 
 ## Como mudar o logo, as rubricas, as cores e as assinaturas
