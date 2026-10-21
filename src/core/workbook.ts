@@ -52,7 +52,6 @@ export interface WorkbookResult {
 interface Prepared {
   readonly draft: SheetDraft;
   readonly resolution: Resolution;
-  readonly order: number;
 }
 
 interface ReadyReport {
@@ -102,7 +101,7 @@ function endDateOf(
           .map((m) => m.data)
           .toSorted()
           .at(-1);
-  return date('eventoFim') ?? date('contarAte') ?? lastOfActivity;
+  return date('contarAte') ?? date('eventoFim') ?? lastOfActivity;
 }
 
 function dateLines({ draft, resolution }: Prepared): DateLine[] {
@@ -307,10 +306,9 @@ export async function loadWorkbook(
   const drafts = reportSheets.map((grid) =>
     readReportSheet(grid, { config: ctx.config }),
   );
-  const prepared: Prepared[] = drafts.map((draft, order) => ({
+  const prepared: Prepared[] = drafts.map((draft) => ({
     draft,
     resolution: resolveDefaults(draft, drafts, load.dataset),
-    order,
   }));
   const checked: CheckedSheet[] = prepared.map(({ draft, resolution }) => ({
     draft,

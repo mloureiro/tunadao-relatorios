@@ -100,7 +100,7 @@ describe('loadWorkbook with the five v1 report sheets and three dates left blank
     expect(result.reports.map((r) => r.fileStem)).toEqual([
       '2026-09-30 Pegada de direção',
       '2026-08-31 Fim de ano letivo',
-      '2026-05-03 Relatório de evento - 20º CITADÃO',
+      '2026-06-15 Relatório de evento - 20º CITADÃO',
       '2026-03-14 Relatório de evento - Zumba na Caneca',
       '2025-12-31 Fim de ano fiscal 2025',
     ]);
@@ -159,7 +159,7 @@ describe('data tab shipped with v1', () => {
     expect(result.starters).toEqual([]);
   });
 
-  it('flags every example row and example checkpoint of the v1 template', async () => {
+  it('flags every fictitious row of the v1 template, in all four tabs, and nothing in the v1 fixture', async () => {
     const result = await loadWorkbook(
       {
         name: 'modelo.xlsx',
@@ -168,14 +168,32 @@ describe('data tab shipped with v1', () => {
       CTX,
     );
     const issues = result.load.issues;
+    const rowsOf = (tab: string) =>
+      issues
+        .filter((i) => i.code === 'example-row' && i.tab === tab)
+        .map((i) => i.row);
 
-    expect(issues.filter((i) => i.code === 'example-row')).toHaveLength(6);
-    expect(
-      issues.filter((i) => i.code === 'example-row').map((i) => i.row),
-    ).toEqual([2, 3, 4, 5, 6, 7]);
+    expect(rowsOf('Movimentos')).toEqual([2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(rowsOf('Pendentes')).toEqual([2, 3]);
+    expect(rowsOf('Orçamento')).toEqual([2, 3, 4]);
+    expect(rowsOf('Géneros')).toEqual([2, 3]);
     expect(issues.filter((i) => i.code === 'example-checkpoint')).toHaveLength(
       4,
     );
     expect(result.summary).toBeNull();
+  });
+
+  it('flags no example row in the v1 fixture', async () => {
+    const result = await loadWorkbook(
+      {
+        name: 'tesouraria.xlsx',
+        bytes: new Uint8Array(await readFile(V1_FIXTURE)),
+      },
+      CTX,
+    );
+
+    expect(result.load.issues.map(({ code }) => code)).not.toContain(
+      'example-row',
+    );
   });
 });
