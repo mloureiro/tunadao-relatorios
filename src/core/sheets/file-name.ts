@@ -1,4 +1,5 @@
 import type { IsoDate } from '../dates.ts';
+import type { ReportTipo } from '../reports/index.ts';
 
 const FORBIDDEN = /[/\\:*?"<>|]/g;
 const CONTROL = /\p{Cc}/gu;
@@ -17,4 +18,8 @@ export function reportFileName(parts: {
     .trim()
     .replace(/[. ]+$/, '');
   return base === '' ? 'relatorio' : base;
+}
+
+export function starterFileName(tipo: ReportTipo): string {
+  return `folha-${tipo}.xlsx`;
 }

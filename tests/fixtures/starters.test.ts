@@ -2,12 +2,10 @@ import { readdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import ExcelJS from 'exceljs';
 import { describe, expect, it } from 'vitest';
-import {
-  buildStarterFiles,
-  starterFileName,
-} from '../../scripts/lib/starter-files.ts';
+import { buildStarterFiles } from '../../scripts/lib/starter-files.ts';
 import type { ReportTipo } from '../../src/core/reports/index.ts';
 import { REPORT_TIPOS } from '../../src/core/sheets/catalogue.ts';
+import { starterFileName } from '../../src/core/sheets/file-name.ts';
 import { buildLayout } from '../../src/core/sheets/layout.ts';
 import { loadWorkbook } from '../../src/core/workbook.ts';
 import { CTX } from '../support/report-workbook.ts';
