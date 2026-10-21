@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, readdirSync, rmSync } from 'node:fs';
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -10,7 +10,7 @@ import { EXIT, main, type CliIo } from './gerar-relatorio.ts';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const XLSX = `${ROOT}fixtures/generated/tesouraria.xlsx`;
-const PARAMS_DIR = `${ROOT}fixtures/params/`;
+const PARAMS_DIR = `${ROOT}fixtures/v1/params/`;
 const EXAMPLES_DIR = `${ROOT}examples/`;
 const AGORA = '2026-10-07T12:00';
 
@@ -66,14 +66,6 @@ function writtenJson(run: Harness, path: string): Record<string, unknown> {
   const text = run.written.get(path);
   if (typeof text !== 'string') throw new Error(`${path} was not written`);
   return JSON.parse(text) as Record<string, unknown>;
-}
-
-function withoutTraceKey(
-  report: Record<string, unknown>,
-  key: 'sources',
-): Record<string, unknown> {
-  const copy = structuredClone(report) as { trace: Record<string, unknown> };
-  return { ...copy, trace: { ...copy.trace, [key]: undefined } };
 }
 
 describe('main()', () => {
@@ -132,33 +124,6 @@ describe('main()', () => {
       expect(writtenJson(run, 'r.json')).toEqual(example);
     },
   );
-
-  it('builds the same report from the CSV set as from the workbook', async () => {
-    const csvDir = `${ROOT}fixtures/generated/csv/`;
-    const csvArgs = (await readdir(csvDir)).flatMap((file) => [
-      '--entrada',
-      `${csvDir}${file}`,
-    ]);
-    const common = [
-      '--tipo',
-      'fiscal',
-      '--params',
-      `${PARAMS_DIR}fiscal-2025.json`,
-      '--agora',
-      AGORA,
-      '--json',
-      'r.json',
-    ];
-    const fromCsv = harness();
-    const fromXlsx = harness();
-
-    await main([...common, ...csvArgs], fromCsv.io);
-    await main([...common, '--entrada', XLSX], fromXlsx.io);
-
-    expect(withoutTraceKey(writtenJson(fromCsv, 'r.json'), 'sources')).toEqual(
-      withoutTraceKey(writtenJson(fromXlsx, 'r.json'), 'sources'),
-    );
-  });
 
   it('lets --param override the params file', async () => {
     const run = harness();

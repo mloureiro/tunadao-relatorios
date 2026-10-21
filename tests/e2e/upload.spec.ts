@@ -1,4 +1,4 @@
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 import { trackForeignRequests } from './same-origin';
@@ -20,9 +20,19 @@ function fileInput(page: Page) {
   return page.locator('input[type="file"]');
 }
 
-async function csvSet(): Promise<string[]> {
-  const folder = join(GENERATED, 'csv');
-  return (await readdir(folder)).map((name) => join(folder, name));
+const LISTAS_CSV = [
+  'Rubrica;Tipo;Conta para o resultado;;Sub-rubrica;Rubrica;;Atividade;;Meio;Conta',
+  'Quotas;Entrada;Sim;;;;;Funcionamento;;Caixa;Caixa',
+  ';;;;;;;;;Banco;Banco',
+].join('\n');
+
+const MOVIMENTOS_CSV = [
+  'Data;N.º doc;Descrição;Atividade;Rubrica;Sub-rubrica;Tipo;Meio;Valor (€)',
+  '10/02/2024;R-001;Quotas 2024;Funcionamento;Quotas;;Entrada;Banco;880,00 €',
+].join('\n');
+
+function csv(name: string, text: string) {
+  return { name, mimeType: 'text/csv', buffer: Buffer.from(text) };
 }
 
 test('the template downloads unchanged', async ({ page }) => {
@@ -105,7 +115,10 @@ test('the Typst engine starts loading once, when the page is idle', async ({
 test('a set of CSV files is validated together', async ({ page }) => {
   await page.goto('./');
 
-  await fileInput(page).setInputFiles(await csvSet());
+  await fileInput(page).setInputFiles([
+    csv('listas.csv', LISTAS_CSV),
+    csv('movimentos.csv', MOVIMENTOS_CSV),
+  ]);
 
   await expect(page.getByText('Dados válidos', { exact: true })).toBeVisible();
   await expect(
@@ -116,16 +129,8 @@ test('a set of CSV files is validated together', async ({ page }) => {
 test('a CSV with unknown columns is mapped once and remembered', async ({
   page,
 }) => {
-  const listas = {
-    name: 'listas.csv',
-    mimeType: 'text/csv',
-    buffer: await readFile(join(GENERATED, 'csv/listas.csv')),
-  };
-  const foreign = {
-    name: 'extrato.csv',
-    mimeType: 'text/csv',
-    buffer: Buffer.from(FOREIGN_CSV),
-  };
+  const listas = csv('listas.csv', LISTAS_CSV);
+  const foreign = csv('extrato.csv', FOREIGN_CSV);
   await page.goto('./');
 
   await fileInput(page).setInputFiles([foreign, listas]);

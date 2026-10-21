@@ -1,5 +1,6 @@
 import type {
   MovimentoSpec,
+  ReportSheetSpec,
   SaldoSpec,
   WorkbookSpec,
 } from '../../../scripts/lib/workbook-writer.ts';
@@ -25,6 +26,7 @@ export function movimento(
 export function invalidWorkbook(
   movimentos: readonly MovimentoSpec[],
   saldos: readonly SaldoSpec[] = [],
+  reportSheets: readonly ReportSheetSpec[] = [],
 ): WorkbookSpec {
   return {
     listas: LISTAS,
@@ -33,6 +35,7 @@ export function invalidWorkbook(
     orcamento: [],
     generos: [],
     saldos,
+    reportSheets,
     instrucoes: [
       {
         titulo: 'Ficheiro de teste com erros propositados',
