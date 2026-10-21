@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { buildWorkbook } from '../../../tests/support/workbook.ts';
+import * as XLSX from 'xlsx';
+import {
+  serial,
+  worksheet,
+  type TestRows,
+} from '../../../tests/support/report-sheet.ts';
 import { readXlsx } from './xlsx.ts';
 
 describe('readXlsx()', () => {
@@ -92,5 +98,105 @@ describe('readXlsx()', () => {
       { severity: 'error', code: 'duplicate-sheet', tab: 'Orçamento' },
     ]);
     expect(issues[0]?.message).toContain('"Orçamento" e "Orcamento"');
+  });
+
+  describe('report sheets', () => {
+    function workbookBytes(
+      sheets: Record<string, Parameters<typeof worksheet>[0]>,
+      date1904 = false,
+    ): Uint8Array {
+      const workbook = XLSX.utils.book_new();
+      for (const [name, rows] of Object.entries(sheets)) {
+        XLSX.utils.book_append_sheet(workbook, worksheet(rows), name);
+      }
+      if (date1904) workbook.Workbook = { WBProps: { date1904: true } };
+      return new Uint8Array(
+        XLSX.write(workbook, {
+          type: 'array',
+          bookType: 'xlsx',
+        }) as ArrayBuffer,
+      );
+    }
+
+    it('returns a sheet with a type marker as a grid, with no ignored-sheet warning', () => {
+      const { tables, issues, reportSheets } = readXlsx(
+        'a.xlsx',
+        workbookBytes({
+          Orçamento: [['Âmbito'], ['2026']],
+          'Pegada 2026': [['Relatório', 'Pegada de direção']],
+          Instruções: [['Relatório', 'texto livre']],
+        }),
+      );
+
+      expect(tables.map((table) => table.tab)).toEqual(['Orçamento']);
+      expect(issues).toEqual([]);
+      expect(reportSheets.map((grid) => grid.name)).toEqual(['Pegada 2026']);
+    });
+
+    it('finds the marker whatever the sheet is named, even with an unknown type', () => {
+      const { reportSheets, issues } = readXlsx(
+        'a.xlsx',
+        workbookBytes({ Qualquer: [[null], ['Tipo de relatório', 'Outro']] }),
+      );
+
+      expect(reportSheets).toHaveLength(1);
+      expect(issues).toEqual([]);
+    });
+
+    it('still ignores a sheet whose marker is below the first ten rows', () => {
+      const rows: TestRows = Array.from({ length: 10 }, () => [null]);
+      rows.push(['Relatório', 'Fim de ano fiscal']);
+      const { reportSheets, issues } = readXlsx(
+        'a.xlsx',
+        workbookBytes({ Fiscal: rows }),
+      );
+
+      expect(reportSheets).toEqual([]);
+      expect(issues).toMatchObject([{ code: 'ignored-sheet' }]);
+    });
+
+    it('lets a data-tab name win over a marker in the same sheet', () => {
+      const { tables, reportSheets } = readXlsx(
+        'a.xlsx',
+        workbookBytes({ Orçamento: [['Relatório', 'Pegada de direção']] }),
+      );
+
+      expect(tables.map((table) => table.tab)).toEqual(['Orçamento']);
+      expect(reportSheets).toEqual([]);
+    });
+
+    it('exposes values, formulas, cached values and the date system through the grid', () => {
+      const { reportSheets } = readXlsx(
+        'a.xlsx',
+        workbookBytes(
+          {
+            Folha: [
+              ['Relatório', 'Fim de ano fiscal'],
+              ['Ano', { f: 'A9+1', v: 2025 }],
+              ['Data', serial('2026-06-15')],
+              ['Texto', null],
+            ],
+          },
+          true,
+        ),
+      );
+      const [grid] = reportSheets;
+
+      expect(grid).toMatchObject({
+        name: 'Folha',
+        rowCount: 4,
+        date1904: true,
+      });
+      expect(grid?.cell(0, 1)).toMatchObject({
+        t: 's',
+        v: 'Fim de ano fiscal',
+      });
+      expect(grid?.cell(1, 1)).toMatchObject({ t: 'n', v: 2025, f: 'A9+1' });
+      expect(grid?.cell(2, 1)).toMatchObject({
+        t: 'n',
+        v: serial('2026-06-15'),
+      });
+      expect(grid?.cell(3, 1)).toBeUndefined();
+    });
   });
 });
