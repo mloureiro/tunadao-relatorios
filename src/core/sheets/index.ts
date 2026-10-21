@@ -20,6 +20,7 @@ export type {
   CellFormat,
   CellRole,
   LayoutCell,
+  LayoutConfig,
   LayoutRow,
   SheetLayout,
 } from './layout.ts';

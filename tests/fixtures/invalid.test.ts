@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { DERIVED_COLUMN_ADVICE } from '../../src/core/issues.ts';
-import { loadGenerated } from '../support/generated.ts';
+import { loadWorkbook } from '../../src/core/workbook.ts';
+import { loadGenerated, readGenerated } from '../support/generated.ts';
+import { CTX } from '../support/report-workbook.ts';
 
 async function issuesOf(file: string) {
   const { issues } = await loadGenerated(`invalid/${file}`);
@@ -83,5 +85,32 @@ describe('invalid fixtures', () => {
         column: 'Saldo (€)',
       },
     ]);
+  });
+
+  it('raises one intended code at the intended cell on each broken report sheet', async () => {
+    const result = await loadWorkbook(
+      await readGenerated('invalid/report-sheets.xlsx'),
+      CTX,
+    );
+
+    expect(result.load.issues).toEqual([]);
+    expect(
+      Object.fromEntries(
+        result.reports.map(({ sheet, status, issues }) => [
+          sheet,
+          [status, ...issues.map(({ code, cell }) => `${code}@${cell ?? ''}`)],
+        ]),
+      ),
+    ).toEqual({
+      Válida: ['pronto'],
+      'Sem atividade': ['com-erros', 'field-empty@B4'],
+      'Data inválida': ['com-erros', 'field-invalid@B5'],
+      'Data em texto': ['pronto-com-avisos', 'date-as-text@B5'],
+      'Fórmula sem valor': ['com-erros', 'formula-no-value@B4'],
+      'Orçamento desconhecido': ['com-erros', 'unknown-budget@B9'],
+      'Versão nova': ['com-erros', 'report-version-newer@B2'],
+      'Tipo desconhecido': ['com-erros', 'report-type-unknown@B1'],
+      'Denominação errada': ['com-erros', 'field-invalid@A31'],
+    });
   });
 });

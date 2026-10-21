@@ -1,24 +1,30 @@
 import { readFile } from 'node:fs/promises';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { formatMoney } from '../../src/core/format.ts';
-import type { ReportJson } from '../../src/core/reports/index.ts';
+import { loadFiles } from '../../src/core/pipeline.ts';
+import {
+  paramsSchemas,
+  type ReportJson,
+} from '../../src/core/reports/index.ts';
+import { validateDraft } from '../../src/core/sheets/raw-params.ts';
+import { readReportSheet } from '../../src/core/sheets/read-sheet.ts';
+import { resolveDefaults } from '../../src/core/sheets/resolve.ts';
 import { loadWorkbook, type WorkbookResult } from '../../src/core/workbook.ts';
 import {
   CTX,
   V1_FIXTURE,
   V1_TEMPLATE,
   readParams,
-  sheetRows,
-  withReportSheets,
 } from '../support/report-workbook.ts';
-import type { TestRows } from '../support/report-sheet.ts';
+
+const GENERATED_FIXTURE = 'fixtures/generated/tesouraria.xlsx';
 
 const SHEETS = [
-  ['Pegada 2026', 'pegada', 'pegada-2026', ['dataUltimoRelatorio']],
-  ['Evento CITADÃO', 'evento', 'evento-citadao', ['refPendentes']],
-  ['Evento Zumba', 'evento', 'evento-zumba', []],
-  ['Letivo 2025-26', 'letivo', 'letivo-2025-26', ['inicio']],
-  ['Fiscal 2025', 'fiscal', 'fiscal-2025', []],
+  ['Pegada 2026', 'pegada', 'pegada-2026'],
+  ['CITADÃO 2026', 'evento', 'evento-citadao'],
+  ['Zumba 2026', 'evento', 'evento-zumba'],
+  ['Letivo 2025-26', 'letivo', 'letivo-2025-26'],
+  ['Fiscal 2025', 'fiscal', 'fiscal-2025'],
 ] as const;
 
 function withoutHashes(report: ReportJson): unknown {
@@ -32,15 +38,11 @@ function withoutHashes(report: ReportJson): unknown {
 }
 
 async function workbookOf(): Promise<WorkbookResult> {
-  const sheets: Record<string, TestRows> = {};
-  for (const [sheet, tipo, name, blank] of SHEETS) {
-    sheets[sheet] = sheetRows(tipo, await readParams(name), blank);
-  }
-  const bytes = await withReportSheets(V1_FIXTURE, sheets);
+  const bytes = new Uint8Array(await readFile(GENERATED_FIXTURE));
   return loadWorkbook({ name: 'tesouraria.xlsx', bytes }, CTX);
 }
 
-describe('loadWorkbook with the five v1 report sheets and three dates left blank', () => {
+describe('loadWorkbook with the generated fixture, five report sheets and three dates left blank', () => {
   let result: WorkbookResult;
   beforeAll(async () => {
     result = await workbookOf();
@@ -73,6 +75,27 @@ describe('loadWorkbook with the five v1 report sheets and three dates left blank
     }
   });
 
+  it('reads from every sheet exactly the parameters the v1 schema accepts for the v1 file, derived dates included', async () => {
+    const bytes = new Uint8Array(await readFile(GENERATED_FIXTURE));
+    const { result: loaded, reportSheets } = await loadFiles([
+      { name: 'tesouraria.xlsx', bytes },
+    ]);
+    const drafts = reportSheets.map((grid) =>
+      readReportSheet(grid, { config: CTX.config }),
+    );
+
+    for (const [sheet, tipo, name] of SHEETS) {
+      const draft = drafts.find((d) => d.sheet === sheet);
+      if (draft === undefined) throw new Error(`No sheet ${sheet}`);
+      const resolution = resolveDefaults(draft, drafts, loaded.dataset);
+
+      expect(validateDraft(draft, resolution).params, sheet).toEqual({
+        tipo,
+        params: paramsSchemas[tipo].parse(await readParams(name)),
+      });
+    }
+  });
+
   it('derives the three blank dates and shows where each came from', () => {
     const dateOf = (sheet: string, label: string) =>
       result.reports
@@ -89,7 +112,7 @@ describe('loadWorkbook with the five v1 report sheets and three dates left blank
       text: '31 de agosto de 2026',
       derivedFrom: 'fim do relatório da folha "Letivo 2025-26"',
     });
-    expect(dateOf('Evento CITADÃO', 'Pendentes à data de')).toEqual({
+    expect(dateOf('CITADÃO 2026', 'Pendentes à data de')).toEqual({
       label: 'Pendentes à data de',
       text: '15 de junho de 2026',
       derivedFrom: 'data de "Contar movimentos até"',

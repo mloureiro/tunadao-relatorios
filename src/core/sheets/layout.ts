@@ -15,6 +15,8 @@ import {
   type ReportSpec,
 } from './catalogue.ts';
 
+export type LayoutConfig = Pick<Config, 'signatures'>;
+
 export type CellRole =
   'label' | 'input' | 'title' | 'hint' | 'header' | 'preprinted' | 'display';
 
@@ -103,7 +105,7 @@ function addBlock(
   builder: Builder,
   spec: BlockSpec,
   tipo: ReportTipo,
-  config: Config,
+  config: LayoutConfig,
 ): void {
   const title = [cell('A', 'title', { text: spec.title })];
   if (spec.hint !== undefined) {
@@ -165,7 +167,10 @@ function addBlock(
   }
 }
 
-export function buildLayout(tipo: ReportTipo, config: Config): SheetLayout {
+export function buildLayout(
+  tipo: ReportTipo,
+  config: LayoutConfig,
+): SheetLayout {
   const spec: ReportSpec = REPORT_SPECS[tipo];
   const builder = new Builder();
 

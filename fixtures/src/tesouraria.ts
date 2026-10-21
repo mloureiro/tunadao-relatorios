@@ -10,6 +10,7 @@ import { FIXTURE_LISTAS } from './listas.ts';
 import { MOVIMENTOS_2024 } from './movimentos-2024.ts';
 import { MOVIMENTOS_2025 } from './movimentos-2025.ts';
 import { MOVIMENTOS_2026 } from './movimentos-2026.ts';
+import { RELATORIOS } from './relatorios.ts';
 
 function pendente(
   tipo: PendenteSpec['tipo'],
@@ -257,6 +258,7 @@ export const TESOURARIA: WorkbookSpec = {
   orcamento: ORCAMENTO,
   generos: GENEROS,
   saldos: SALDOS,
+  reportSheets: RELATORIOS,
   instrucoes: [
     {
       titulo: 'Tesouraria fictícia do TUNADÃO 1998',

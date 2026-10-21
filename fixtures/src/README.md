@@ -6,7 +6,7 @@ Tudo o que está aqui é inventado. Nenhuma linha vem de contas reais do TUNADÃ
 
 Uma tesouraria encadeada de janeiro de 2024 a setembro de 2026. Cada período abre onde o anterior fechou, por isso os cinco relatórios de exemplo (relatório e contas de 2025, fim de ano letivo 2025/26, passagem de pasta de setembro de 2026, relatório do 20º CITADÃO e ficha da Zumba na Caneca) saem dos mesmos movimentos.
 
-Os ficheiros em `fixtures/generated/` são gerados com `npm run build:fixtures` e estão versionados. Um teste falha se deixarem de corresponder a este código.
+Os ficheiros em `fixtures/generated/` são gerados com `npm run build:fixtures` e estão versionados. A pasta `fixtures/v1/` guarda uma cópia congelada dos ficheiros da versão anterior e nunca é regenerada. Um teste falha se deixarem de corresponder a este código.
 
 ## Ficheiros
 
@@ -14,8 +14,8 @@ Os ficheiros em `fixtures/generated/` são gerados com `npm run build:fixtures` 
 - `movimentos-2024.ts`, `movimentos-2025.ts`, `movimentos-2026.ts`: os movimentos de cada ano, agrupados por atividade.
 - `linhas.ts`: funções auxiliares (`entrada`, `saida`, `transferencia`) e a numeração dos documentos (R-, P- e T-, que recomeça em cada ano).
 - `tesouraria.ts`: junta tudo com os pendentes, o orçamento, os géneros e os saldos.
-- `invalid/`: um conjunto pequeno por classe de erro, com os erros colocados de propósito.
-- `../params/`: parâmetros de cada relatório de exemplo. Os valores monetários dos parâmetros estão em euros.
+- `invalid/`: um conjunto pequeno por classe de erro, com os erros colocados de propósito. `report-sheets.ts` tem uma folha de relatório por classe de erro.
+- `relatorios.ts`: as cinco folhas de relatório do ficheiro (`CITADÃO 2026`, `Zumba 2026`, `Pegada 2026`, `Letivo 2025-26`, `Fiscal 2025`), com os valores dos relatórios de exemplo. Três campos ficam em branco de propósito para o gerador os deduzir: o início do ano letivo, a data do último relatório da pegada e a data de referência dos pendentes do CITADÃO.
 
 ## O que cada período reproduz
 

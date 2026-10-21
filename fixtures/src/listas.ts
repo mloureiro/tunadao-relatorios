@@ -21,6 +21,7 @@ export interface ListasSpec {
   readonly subRubricas: readonly SubRubricaSpec[];
   readonly atividades: readonly string[];
   readonly meios: readonly MeioSpec[];
+  readonly orcamentos: readonly string[];
 }
 
 function receita(rubrica: string): RubricaSpec {
@@ -91,6 +92,7 @@ export const LISTAS: ListasSpec = {
     { meio: 'MB Way', conta: 'Banco' },
     { meio: 'TPA', conta: 'Banco' },
   ],
+  orcamentos: [],
 };
 
 export const FIXTURE_LISTAS: ListasSpec = {
@@ -105,4 +107,5 @@ export const FIXTURE_LISTAS: ListasSpec = {
     '20º CITADÃO',
     'Festivais',
   ],
+  orcamentos: ['20º CITADÃO', '2025'],
 };

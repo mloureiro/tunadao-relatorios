@@ -1,243 +1,132 @@
-import { LISTAS } from '../fixtures/src/listas.ts';
-import type { WorkbookSpec } from './lib/workbook-writer.ts';
+import { LISTAS, type ListasSpec } from '../fixtures/src/listas.ts';
+import {
+  DERIVED_ROWS,
+  type InstrucaoSpec,
+  type ReportSheetSpec,
+  type WorkbookSpec,
+} from './lib/workbook-writer.ts';
+
+export const TEMPLATE_VERSION = 2;
+
+const TEMPLATE_LISTAS: ListasSpec = {
+  ...LISTAS,
+  atividades: [
+    'Funcionamento',
+    'Zumba na Caneca 2026',
+    '20º CITADÃO',
+    'Arraial de outono 2026',
+  ],
+};
+
+export const MODEL_SHEETS: readonly ReportSheetSpec[] = [
+  { tipo: 'pegada', name: 'Modelo Pegada' },
+  { tipo: 'evento', name: 'Modelo Evento' },
+  { tipo: 'letivo', name: 'Modelo Letivo' },
+  { tipo: 'fiscal', name: 'Modelo Fiscal' },
+];
+
+const INSTRUCOES: readonly InstrucaoSpec[] = [
+  {
+    titulo: 'Modelo de tesouraria do TUNADÃO 1998',
+    paragrafos: [
+      'Este ficheiro guarda as contas da tuna. Depois de preenchido, carregue-o na página do gerador de relatórios: a página mostra um relatório por cada folha de relatório e descarrega-o em PDF. O ficheiro nunca sai do seu computador.',
+      `Versão do modelo de tesouraria: ${String(TEMPLATE_VERSION)}`,
+    ],
+  },
+  {
+    titulo: 'Por onde começar',
+    paragrafos: [
+      '1. Listas: confirme as rubricas, as atividades, os meios de pagamento e os orçamentos. Acrescente no fim de cada coluna o que faltar. Um evento que se repete (o CITADÃO, a Zumba) tem uma atividade por edição, por exemplo "Zumba na Caneca 2027", porque o relatório do evento soma todos os movimentos da atividade.',
+      '2. Saldos: a primeira linha de cada conta (Caixa e Banco) é o dinheiro que havia no fim do dia anterior ao primeiro movimento que vai registar. Use a Fonte "Declarado". Não registe saldos iniciais como movimentos.',
+      '3. Movimentos: uma linha por cada recebimento e cada pagamento, na data em que o dinheiro entrou ou saiu. Escolha a rubrica, a sub-rubrica, a atividade e o meio nas listas.',
+      '4. Pendentes: valores a receber e a pagar que ainda não foram liquidados.',
+      '5. Orçamento e Géneros: só se for usar orçamentos ou apoios em espécie.',
+      '6. Folhas de relatório: para cada relatório, copie a folha "Modelo" do tipo que precisa (botão direito no separador, Mover ou copiar, Criar uma cópia), dê-lhe um nome e preencha-a. Pode ter quantas folhas quiser no mesmo ficheiro: uma por relatório.',
+      '7. Guarde o ficheiro como .xlsx e carregue-o na página do gerador.',
+    ],
+  },
+  {
+    titulo: 'Antes de gerar cada relatório',
+    paragrafos: [
+      'Pegada de direção: todos os movimentos até à data da passagem estão registados. O saldo do extrato bancário está escrito na folha. Os pagamentos e os depósitos que o banco ainda não mostra estão listados. A contagem de caixa tem a quantidade de cada nota e moeda. Os nomes das direções estão escritos.',
+      'Relatório de evento: todos os movimentos do evento têm a atividade certa. A atividade está escolhida na folha. Se houver orçamento, está no separador Orçamento com o nome da atividade, ou escolhido em "Orçamento a usar".',
+      'Fim de ano letivo: os movimentos do período estão registados. O fim do período está escrito. Se deixar o início em branco, usa-se o dia a seguir ao fim do relatório anterior deste ficheiro.',
+      'Fim de ano fiscal: os movimentos de 1 de janeiro a 31 de dezembro estão registados. O ano está escrito. O parecer do Conselho Fiscal está escrito, se já o tiver.',
+    ],
+  },
+  {
+    titulo: 'Exemplo de três movimentos',
+    paragrafos: [
+      'A terceira linha é um reembolso: dinheiro que voltou de uma despesa. Regista-se como Entrada, com a rubrica dessa despesa, e abate à despesa.',
+    ],
+    tabela: [
+      [
+        'Data',
+        'Descrição',
+        'Atividade',
+        'Rubrica',
+        'Tipo',
+        'Meio',
+        'Valor (€)',
+      ],
+      [
+        '05/02/2026',
+        'Quotas de fevereiro',
+        'Funcionamento',
+        'Quotas',
+        'Entrada',
+        'Caixa',
+        '120,00',
+      ],
+      [
+        '06/02/2026',
+        'Impressão de cartazes',
+        'Zumba na Caneca 2026',
+        'Comunicação e gráfica',
+        'Saída',
+        'Caixa',
+        '48,00',
+      ],
+      [
+        '20/02/2026',
+        'Devolução de parte da caução',
+        '20º CITADÃO',
+        'Alimentação e alojamento',
+        'Entrada',
+        'Banco',
+        '100,00',
+      ],
+    ],
+  },
+  {
+    titulo: 'Conceitos',
+    paragrafos: [
+      'Receita e despesa, e movimentos que só mudam o saldo: cada rubrica diz, no separador Listas, se conta como receita ou despesa. Sim: o movimento entra no relatório. Não: só muda o dinheiro disponível, como acontece com as transferências internas.',
+      'Transferência entre contas (por exemplo, depositar numerário no banco): registe duas linhas com a rubrica "Transferências internas", uma Saída na conta de origem e uma Entrada na conta de destino, com o mesmo valor e a mesma data.',
+      'Valor: escreva sempre um número positivo. O sentido do movimento está na coluna Tipo (Entrada ou Saída).',
+      'Sub-rubrica: é opcional. Quando a deixa em branco, o movimento fica na própria rubrica. A lista mostra só as sub-rubricas da rubrica escolhida, e a célula fica vermelha se a combinação não existir.',
+      `Colunas cinzentas: no separador Movimentos, as colunas "(automático)" calculam-se sozinhas até à linha ${String(DERIVED_ROWS)}. Não escreva nelas.`,
+      'Pontos de controlo (separador Saldos): cada linha diz quanto dinheiro devia haver numa conta no fim de um dia. A fonte indica de onde vem o valor: Extrato (extrato bancário), Contagem (contagem do dinheiro) ou Declarado (indicado sem comprovativo). O gerador confere cada saldo com os movimentos desde o saldo anterior e diz a diferença, se houver.',
+    ],
+  },
+  {
+    titulo: 'No Excel, no LibreOffice e no Google Sheets',
+    paragrafos: [
+      'Google Sheets: antes de preencher, escolha Ficheiro, Definições, Região: Portugal (basta uma vez), para as datas serem lidas como dia/mês/ano. Para descarregar, escolha Ficheiro, Transferir, Microsoft Excel (.xlsx).',
+      'LibreOffice: guarde com Ficheiro, Guardar como, Excel 2007-365 (.xlsx). O formato .ods não é aceite.',
+      'Folhas de relatório descarregadas à parte: no Excel, abra a folha e use Mover ou copiar para a pôr neste ficheiro. No LibreOffice, use Folha, Inserir folha a partir de ficheiro. No Google Sheets, use Ficheiro, Importar, Inserir novas folhas.',
+      'Nas notas, cada linha é um parágrafo. Para mudar de linha dentro da mesma célula: no Excel, Alt+Enter; no LibreOffice e no Google Sheets, Ctrl+Enter.',
+    ],
+  },
+];
 
 export const TEMPLATE_SPEC: WorkbookSpec = {
-  listas: LISTAS,
-  movimentos: [
-    {
-      data: '2026-02-05',
-      doc: 'R-001',
-      descricao: 'Inscrições (exemplo fictício)',
-      atividade: 'Zumba na Caneca',
-      rubrica: 'Inscrições e bilheteira',
-      subRubrica: 'Bilheteira',
-      tipo: 'Entrada',
-      meio: 'Caixa',
-      valorCents: 12000,
-    },
-    {
-      data: '2026-02-06',
-      doc: 'P-001',
-      descricao: 'Cartazes e impressões (exemplo fictício)',
-      atividade: 'Zumba na Caneca',
-      rubrica: 'Comunicação e gráfica',
-      subRubrica: 'Cartazes e impressões',
-      tipo: 'Saída',
-      meio: 'Caixa',
-      valorCents: 4800,
-    },
-    {
-      data: '2026-02-10',
-      doc: 'P-002',
-      descricao: 'Aluguer de som (exemplo fictício)',
-      atividade: 'Zumba na Caneca',
-      rubrica: 'Produção (som, luz, palco)',
-      subRubrica: 'Som e luz',
-      tipo: 'Saída',
-      meio: 'Banco',
-      valorCents: 30000,
-    },
-    {
-      data: '2026-02-12',
-      doc: 'R-002',
-      descricao: 'Patrocínio do ginásio (exemplo fictício)',
-      atividade: 'Zumba na Caneca',
-      rubrica: 'Patrocínios',
-      subRubrica: 'Patrocínio do evento',
-      tipo: 'Entrada',
-      meio: 'Banco',
-      valorCents: 50000,
-    },
-    {
-      data: '2026-02-15',
-      doc: null,
-      descricao: 'Vendas do bar por TPA (exemplo fictício)',
-      atividade: 'Zumba na Caneca',
-      rubrica: 'Bar e merchandising',
-      subRubrica: 'Bar',
-      tipo: 'Entrada',
-      meio: 'TPA',
-      valorCents: 8550,
-    },
-    {
-      data: '2026-02-16',
-      doc: 'P-003',
-      descricao: 'Caução do alojamento (exemplo fictício)',
-      atividade: '20º CITADÃO',
-      rubrica: 'Alimentação e alojamento',
-      subRubrica: 'Alojamento',
-      tipo: 'Saída',
-      meio: 'Banco',
-      valorCents: 40000,
-    },
-    {
-      data: '2026-02-20',
-      doc: 'R-003',
-      descricao: 'Devolução de parte da caução (exemplo de reembolso)',
-      atividade: '20º CITADÃO',
-      rubrica: 'Alimentação e alojamento',
-      subRubrica: 'Alojamento',
-      tipo: 'Entrada',
-      meio: 'Banco',
-      valorCents: 10000,
-    },
-    {
-      data: '2026-02-22',
-      doc: 'T-001',
-      descricao: 'Depósito de numerário (saída da caixa)',
-      atividade: 'Funcionamento',
-      rubrica: 'Transferências internas',
-      subRubrica: null,
-      tipo: 'Saída',
-      meio: 'Caixa',
-      valorCents: 10000,
-    },
-    {
-      data: '2026-02-22',
-      doc: 'T-001',
-      descricao: 'Depósito de numerário (entrada no banco)',
-      atividade: 'Funcionamento',
-      rubrica: 'Transferências internas',
-      subRubrica: null,
-      tipo: 'Entrada',
-      meio: 'Banco',
-      valorCents: 10000,
-    },
-  ],
-  pendentes: [
-    {
-      tipo: 'A receber',
-      entidade: 'Câmara Municipal (exemplo)',
-      descricao: 'Apoio ao evento por receber',
-      atividade: 'Zumba na Caneca',
-      valorCents: 25000,
-      dataRegisto: '2026-02-10',
-      dataLiquidacao: null,
-      notas: 'Protocolo assinado, pagamento previsto em março',
-    },
-    {
-      tipo: 'A pagar',
-      entidade: 'Gráfica Exemplo',
-      descricao: 'Impressão de t-shirts',
-      atividade: 'Festivais',
-      valorCents: 18000,
-      dataRegisto: '2026-02-20',
-      dataLiquidacao: null,
-      notas: null,
-    },
-  ],
-  orcamento: [
-    {
-      ambito: 'Zumba na Caneca',
-      tipo: 'Entrada',
-      rubrica: 'Inscrições e bilheteira',
-      subRubrica: 'Bilheteira',
-      orcadoCents: 40000,
-    },
-    {
-      ambito: 'Zumba na Caneca',
-      tipo: 'Saída',
-      rubrica: 'Produção (som, luz, palco)',
-      subRubrica: 'Som e luz',
-      orcadoCents: 30000,
-    },
-    {
-      ambito: '2026',
-      tipo: 'Saída',
-      rubrica: 'Comunicação e gráfica',
-      subRubrica: null,
-      orcadoCents: 20000,
-    },
-  ],
-  generos: [
-    {
-      data: '2026-02-14',
-      atividade: 'Zumba na Caneca',
-      tipo: 'Cedência de sala (exemplo)',
-      quantidade: '1 dia',
-      emFalta: null,
-      valorEstimadoCents: 15000,
-    },
-    {
-      data: null,
-      atividade: 'Festivais',
-      tipo: 'Cartazes oferecidos (exemplo)',
-      quantidade: '20 unidades',
-      emFalta: 5,
-      valorEstimadoCents: null,
-    },
-  ],
-  saldos: [
-    {
-      data: '2026-01-31',
-      conta: 'Caixa',
-      saldoCents: 15000,
-      fonte: 'Contagem',
-    },
-    {
-      data: '2026-01-31',
-      conta: 'Banco',
-      saldoCents: 300000,
-      fonte: 'Extrato',
-    },
-    {
-      data: '2026-02-28',
-      conta: 'Caixa',
-      saldoCents: 12200,
-      fonte: 'Contagem',
-    },
-    {
-      data: '2026-02-28',
-      conta: 'Banco',
-      saldoCents: 308550,
-      fonte: 'Extrato',
-    },
-  ],
-  instrucoes: [
-    {
-      titulo: 'Modelo de tesouraria do TUNADÃO 1998',
-      paragrafos: [
-        'Este ficheiro reúne os dados da tesouraria. Depois de preenchido, carregue-o na página do gerador de relatórios para obter o relatório em PDF.',
-        'Todas as linhas de exemplo são fictícias. Apague-as antes de começar a registar os seus movimentos.',
-      ],
-    },
-    {
-      titulo: 'Para que serve cada separador',
-      paragrafos: [
-        'Movimentos: cada recebimento e cada pagamento, com a data em que o dinheiro entrou ou saiu. A tuna trabalha em regime de caixa, por isso só contam os movimentos de dinheiro.',
-        'Pendentes: valores a receber e dívidas a pagar que ainda não foram liquidados. Preencha a data de liquidação quando o dinheiro mudar de mãos e registe então o movimento correspondente.',
-        'Orçamento: o valor orçado por rubrica, para uma atividade ou para um período (por exemplo, "20º CITADÃO" ou "2026").',
-        'Géneros: apoios em espécie. São listados à parte e nunca entram no saldo.',
-        'Saldos: pontos de controlo do dinheiro que existe em cada conta. Ver a secção seguinte.',
-        'Listas: as rubricas, sub-rubricas, atividades e meios de pagamento que aparecem nas listas suspensas dos outros separadores.',
-      ],
-    },
-    {
-      titulo: 'Como funcionam os pontos de controlo (Saldos)',
-      paragrafos: [
-        'Cada linha indica o saldo de uma conta (Caixa ou Banco) no fim de um dia, depois de contar todos os movimentos desse dia: é o saldo contabilístico, não o saldo disponível.',
-        'A primeira linha de cada conta é o saldo de abertura. Não registe saldos iniciais como movimentos.',
-        'A fonte indica de onde vem o valor: Extrato (extrato bancário), Contagem (contagem física da caixa) ou Declarado (indicado sem comprovativo).',
-        'Cada novo ponto de controlo é conferido com o anterior: o saldo anterior mais os movimentos entre as duas datas tem de dar o novo saldo. Se não der, o gerador indica a diferença.',
-      ],
-    },
-    {
-      titulo: 'Reembolsos e transferências',
-      paragrafos: [
-        'Reembolso: se recebeu de volta dinheiro de uma despesa (por exemplo, uma caução), registe uma Entrada com a rubrica dessa despesa. O valor abate à despesa e não conta como receita.',
-        'Transferência entre contas (por exemplo, depositar numerário no banco): registe duas linhas com a rubrica "Transferências internas", uma Saída na conta de origem e uma Entrada na conta de destino, com o mesmo valor e a mesma data. Não contam como receita nem despesa.',
-      ],
-    },
-    {
-      titulo: 'Regras de preenchimento',
-      paragrafos: [
-        'O valor é sempre positivo. O sentido do movimento indica-se na coluna Tipo (Entrada ou Saída).',
-        'A sub-rubrica é opcional. Quando a deixa vazia, o movimento fica na própria rubrica.',
-        'Escolha rubricas, sub-rubricas, atividades e meios nas listas suspensas. A lista da sub-rubrica mostra todas as sub-rubricas; escolha uma que pertença à rubrica indicada.',
-        'Nunca edite as colunas Conta, Valor com sinal (€) e Conta para o resultado: são calculadas automaticamente a partir das restantes, até à linha 5000.',
-        'Cada edição de um evento que se repete usa a sua própria Atividade (por exemplo, "20º CITADÃO" ou "Zumba na Caneca 2025"), porque o relatório do evento soma todos os movimentos da atividade.',
-        'Para acrescentar uma rubrica, atividade ou meio, escreva-o no fim da respetiva coluna do separador Listas. As listas suspensas passam a incluí-lo.',
-      ],
-    },
-  ],
+  listas: TEMPLATE_LISTAS,
+  movimentos: [],
+  pendentes: [],
+  orcamento: [],
+  generos: [],
+  saldos: [],
+  instrucoes: INSTRUCOES,
+  reportSheets: MODEL_SHEETS,
 };
