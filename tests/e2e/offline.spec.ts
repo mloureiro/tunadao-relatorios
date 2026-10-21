@@ -72,7 +72,7 @@ test('the page works offline on a later visit and still produces a PDF', async (
   );
 });
 
-test('a first visit downloads the PDF engine from the network once', async ({
+test('a first visit downloads the PDF engine from the network once, even when a PDF is requested at once', async ({
   page,
   context,
   browserName,
@@ -81,21 +81,34 @@ test('a first visit downloads the PDF engine from the network once', async ({
     browserName !== 'chromium',
     'Only chromium reports the service worker own requests to the context.',
   );
+  test.setTimeout(240_000);
   const fromNetwork: string[] = [];
   context.on('response', (response) => {
     if (response.url().endsWith('.wasm') && !response.fromServiceWorker()) {
       fromNetwork.push(response.url());
     }
   });
-  const served = page.waitForResponse(
-    (response) =>
-      response.url().endsWith('.wasm') && response.fromServiceWorker(),
-    { timeout: 60_000 },
-  );
-
+  await context.route('**/*.wasm', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await route.continue();
+  });
   await page.goto('./');
   await page.locator('input[type="file"]').setInputFiles(VALID);
-  await served;
+  const card = page
+    .getByRole('listitem')
+    .filter({ hasText: 'folha CITADÃO 2026' });
+  const download = page.waitForEvent('download', { timeout: 150_000 });
+  await card.getByRole('button', { name: 'Descarregar PDF' }).click();
+  await download;
+  await expect
+    .poll(() =>
+      page.evaluate(async () => {
+        const [name] = await caches.keys();
+        const cache = await caches.open(name ?? '');
+        return (await cache.keys()).some(({ url }) => url.endsWith('.wasm'));
+      }),
+    )
+    .toBe(true);
 
   expect(fromNetwork).toHaveLength(1);
 });

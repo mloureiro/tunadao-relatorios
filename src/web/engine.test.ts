@@ -4,6 +4,12 @@ import type { WebRenderer } from '@/engine/typst-web';
 const created: WebRenderer[] = [];
 let failNext = true;
 let renderFailure: Error | null = null;
+let settle: () => void = () => undefined;
+let settled = Promise.resolve();
+
+vi.mock('./service-worker', () => ({
+  serviceWorkerSettled: () => settled,
+}));
 
 vi.mock('@/engine/typst-web', () => ({
   createWebRenderer: (): WebRenderer => {
@@ -34,9 +40,27 @@ beforeEach(() => {
   created.length = 0;
   failNext = true;
   renderFailure = null;
+  settled = Promise.resolve();
 });
 
 describe('renderReport()', () => {
+  it('creates the renderer only once the service worker has settled, so the engine is fetched a single time', async () => {
+    vi.resetModules();
+    const fresh = await import('./engine');
+    failNext = false;
+    settled = new Promise<void>((resolve) => {
+      settle = resolve;
+    });
+
+    const rendering = fresh.renderReport('fiscal', {});
+    await Promise.resolve();
+    expect(created).toHaveLength(0);
+
+    settle();
+    await rendering;
+    expect(created).toHaveLength(1);
+  });
+
   it('reports a failed engine load in Portuguese, then recovers with a new renderer', async () => {
     await expect(renderReport('fiscal', {})).rejects.toBeInstanceOf(
       EngineLoadError,
