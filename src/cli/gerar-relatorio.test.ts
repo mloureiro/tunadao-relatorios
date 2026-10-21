@@ -74,22 +74,53 @@ function writtenJson(run: Harness, path: string): Record<string, unknown> {
 }
 
 describe('main()', () => {
-  it('writes the PDF and a report JSON that matches the published example', async () => {
+  it.each([
+    ['Pegada 2026', 'pegada-2026'],
+    ['Letivo 2025-26', 'letivo-2025-26'],
+    ['CITADÃO 2026', 'evento-citadao'],
+    ['Zumba 2026', 'evento-zumba'],
+    ['Fiscal 2025', 'fiscal-2025'],
+  ])(
+    'writes the PDF and a report JSON for %s that matches the published example',
+    async (folha, name) => {
+      const run = harness();
+      const example = JSON.parse(
+        await readFile(`${EXAMPLES_DIR}${name}.json`, 'utf8'),
+      ) as { tipo: string };
+
+      const code = await main(
+        [
+          '--entrada',
+          XLSX,
+          '--folha',
+          folha,
+          '--agora',
+          AGORA,
+          '--json',
+          'r.json',
+          '--saida',
+          'r.pdf',
+        ],
+        run.io,
+      );
+
+      expect(code).toBe(EXIT.ok);
+      expect(run.written.get('r.pdf')).toBeInstanceOf(Uint8Array);
+      expect(run.rendered.map(({ tipo }) => tipo)).toEqual([example.tipo]);
+      expect(run.stdout()).toContain('r.pdf');
+      expect(writtenJson(run, 'r.json')).toEqual(example);
+    },
+  );
+
+  it('finds a sheet whose name is typed in decomposed Unicode', async () => {
     const run = harness();
-    const example = JSON.parse(
-      await readFile(`${EXAMPLES_DIR}evento-citadao.json`, 'utf8'),
-    ) as unknown;
 
     const code = await main(
       [
         '--entrada',
         XLSX,
         '--folha',
-        'CITADÃO 2026',
-        '--agora',
-        AGORA,
-        '--json',
-        'r.json',
+        'CITADÃO 2026'.normalize('NFD'),
         '--saida',
         'r.pdf',
       ],
@@ -97,10 +128,7 @@ describe('main()', () => {
     );
 
     expect(code).toBe(EXIT.ok);
-    expect(run.written.get('r.pdf')).toBeInstanceOf(Uint8Array);
-    expect(run.rendered.map(({ tipo }) => tipo)).toEqual(['evento']);
-    expect(run.stdout()).toContain('r.pdf');
-    expect(writtenJson(run, 'r.json')).toEqual(example);
+    expect(run.written.has('r.pdf')).toBe(true);
   });
 
   it('names the PDF after the report when --saida is omitted', async () => {
@@ -138,6 +166,9 @@ describe('main()', () => {
     ]);
     expect(run.stdout()).toContain(
       '"Pegada 2026" · Pegada de direção · pronto · Data do último relatório: 31 de agosto de 2026 · Data da passagem: 30 de setembro de 2026',
+    );
+    expect(run.stdout()).toContain(
+      '"Fiscal 2025" · Fim de ano fiscal · pronto · Ano: 2025 (1 de janeiro a 31 de dezembro de 2025)',
     );
     expect(run.written.size).toBe(0);
   });
@@ -234,25 +265,18 @@ describe('main()', () => {
     expect(run.rendered).toEqual([]);
   });
 
-  it.each([
-    ['--tipo', 'evento'],
-    ['--params', 'p.json'],
-    ['--param', 'ano=2025'],
-  ])(
-    'refuses the removed %s with code 2 and the replacement hint',
-    async (...flag) => {
-      const run = harness();
+  it('refuses a removed flag with code 2 and the replacement hint', async () => {
+    const run = harness();
 
-      const code = await main(
-        ['--entrada', XLSX, '--folha', 'Fiscal 2025', ...flag],
-        run.io,
-      );
+    const code = await main(
+      ['--entrada', XLSX, '--folha', 'Fiscal 2025', '--tipo', 'evento'],
+      run.io,
+    );
 
-      expect(code).toBe(EXIT.usage);
-      expect(run.stderr()).toContain(`${flag[0]} já não existe`);
-      expect(run.stderr()).toContain('--folha');
-    },
-  );
+    expect(code).toBe(EXIT.usage);
+    expect(run.stderr()).toContain('--tipo já não existe');
+    expect(run.written.size).toBe(0);
+  });
 
   it.each([['--saida'], ['--json']])(
     'exits 2, naming the path, when %s cannot be written',

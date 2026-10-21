@@ -108,6 +108,17 @@ function dateLines({ draft, resolution }: Prepared): DateLine[] {
   const { tipo } = draft;
   if (tipo === null || !isReadable(draft)) return [];
   return REPORT_SPECS[tipo].fields.flatMap((field) => {
+    if (field.kind === 'year') {
+      const year = yearOf(draft);
+      return year === null
+        ? []
+        : [
+            {
+              label: field.label,
+              text: `${String(year)} (1 de janeiro a 31 de dezembro de ${String(year)})`,
+            },
+          ];
+    }
     if (field.kind !== 'date') return [];
     const iso = resolvedDate(draft, resolution, field.key);
     if (iso === null) return [];

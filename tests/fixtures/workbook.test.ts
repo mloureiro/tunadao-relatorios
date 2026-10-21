@@ -119,6 +119,17 @@ describe('loadWorkbook with the generated fixture, five report sheets and three 
     });
   });
 
+  it('shows the fiscal year as a period in words', () => {
+    expect(
+      result.reports
+        .find((r) => r.sheet === 'Fiscal 2025')
+        ?.dates.find((d) => d.label === 'Ano'),
+    ).toEqual({
+      label: 'Ano',
+      text: '2025 (1 de janeiro a 31 de dezembro de 2025)',
+    });
+  });
+
   it('orders the reports newest first and names each file', () => {
     expect(result.reports.map((r) => r.fileStem)).toEqual([
       '2026-09-30 Pegada de direção',
