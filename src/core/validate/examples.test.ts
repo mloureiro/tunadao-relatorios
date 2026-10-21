@@ -49,13 +49,15 @@ describe('exampleRowIssues()', () => {
     ).toEqual([]);
   });
 
-  it('flags the v1 example rows that carry no marker, matching description and amount exactly', () => {
+  it('flags the v1 example rows that carry no marker, matching date, description and amount exactly', () => {
     const issues = exampleRowIssues([
       table('Movimentos', [
         MOVIMENTOS_HEADER,
-        [45930, 'Depósito de numerário (saída da caixa)', 100],
-        [45931, 'Depósito de numerário (saída da caixa)', 100.5],
-        [45932, 'Depósito de numerário', 100],
+        [46075, 'Depósito de numerário (saída da caixa)', 100],
+        [46075, 'Depósito de numerário (saída da caixa)', 100.5],
+        [46075, 'Depósito de numerário', 100],
+        [46103, 'Depósito de numerário (saída da caixa)', 100],
+        ['22/02/2026', 'Depósito de numerário (entrada no banco)', '100,00 €'],
       ]),
       table('Pendentes', [
         ['Entidade', 'Valor (€)'],
@@ -63,9 +65,17 @@ describe('exampleRowIssues()', () => {
         ['Gráfica Exemplo', 181],
       ]),
       table('Orçamento', [
-        ['Âmbito', 'Rubrica', 'Orçado (€)'],
-        ['2026', 'Comunicação e gráfica', 200],
-        ['2027', 'Comunicação e gráfica', 200],
+        ['Âmbito', 'Tipo', 'Rubrica', 'Sub-rubrica', 'Orçado (€)'],
+        ['2026', 'Saída', 'Comunicação e gráfica', null, 200],
+        ['2027', 'Saída', 'Comunicação e gráfica', null, 200],
+        ['2026', 'Entrada', 'Comunicação e gráfica', null, 200],
+        [
+          '2026',
+          'Saída',
+          'Comunicação e gráfica',
+          'Cartazes e impressões',
+          200,
+        ],
       ]),
       table('Géneros', [
         ['Atividade', 'Tipo'],
@@ -76,6 +86,7 @@ describe('exampleRowIssues()', () => {
 
     expect(issues.map(({ tab, row }) => [tab, row])).toEqual([
       ['Movimentos', 2],
+      ['Movimentos', 6],
       ['Pendentes', 2],
       ['Orçamento', 2],
       ['Géneros', 2],
