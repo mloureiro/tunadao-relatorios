@@ -8,6 +8,7 @@ import {
   SUPPORTED_LAYOUT_VERSION,
   type ReportSpec,
 } from './catalogue.ts';
+import type { Resolution } from './resolve.ts';
 import type { DraftBlock, SheetDraft } from './types.ts';
 
 export interface CellRef {
@@ -125,7 +126,10 @@ function fieldLabelFor(spec: ReportSpec, key: string): string {
   );
 }
 
-export function validateDraft(draft: SheetDraft): DraftValidation {
+export function validateDraft(
+  draft: SheetDraft,
+  resolution?: Resolution,
+): DraftValidation {
   const { tipo } = draft;
   if (
     tipo === null ||
@@ -135,7 +139,14 @@ export function validateDraft(draft: SheetDraft): DraftValidation {
     return { params: null, issues: [...draft.issues] };
   }
 
-  const { raw, cellOf } = toRawParams(draft);
+  const { raw: typed, cellOf } = toRawParams(draft);
+  const raw = {
+    ...typed,
+    ...Object.fromEntries(
+      [...(resolution?.derived ?? [])].map(([key, { value }]) => [key, value]),
+    ),
+  };
+  const reasons = resolution?.reasons ?? new Map<string, string>();
   const spec: ReportSpec = REPORT_SPECS[tipo];
   const parsed = paramsSchemas[tipo].safeParse(raw);
   if (parsed.success) {
@@ -171,6 +182,7 @@ export function validateDraft(draft: SheetDraft): DraftValidation {
       cellOf,
       located,
       missingLabels,
+      reasons,
     });
     if (issue === null) continue;
     const signature = `${issue.cell ?? ''}|${issue.field ?? ''}|${issue.message}`;
@@ -188,13 +200,14 @@ interface MapContext {
   readonly cellOf: ReadonlyMap<string, CellRef>;
   readonly located: ReadonlySet<string>;
   readonly missingLabels: ReadonlySet<string>;
+  readonly reasons: ReadonlyMap<string, string>;
 }
 
 function zodIssueToIssue(
   zodIssue: z.core.$ZodIssue,
   context: MapContext,
 ): Issue | null {
-  const { draft, spec, raw, cellOf, located, missingLabels } = context;
+  const { draft, spec, raw, cellOf, located, missingLabels, reasons } = context;
   const path = zodIssue.path;
   const target = locate(path, cellOf);
   const blank = isBlankAt(raw, path);
@@ -205,6 +218,16 @@ function zodIssueToIssue(
 
   if (target === null && missingLabels.has(label)) return null;
   if (target !== null && located.has(target.cell)) return null;
+
+  const reason =
+    path.length === 1 && rootKey !== null ? reasons.get(rootKey) : undefined;
+  if (reason !== undefined) {
+    return issueAt('field-empty', issueMessages['field-empty'](reason), {
+      sheet: draft.sheet,
+      ...(target === null ? {} : { cell: target.cell }),
+      field: label,
+    });
+  }
 
   if (target === null && rootKey !== null) {
     return issueAt('field-missing', issueMessages['field-missing'](label), {
