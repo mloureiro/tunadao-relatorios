@@ -5,6 +5,8 @@ import {
   tabForSheetName,
 } from './columns.ts';
 import { issueMessages, makeIssue, type Issue } from '../issues.ts';
+import { gridFromWorksheet, type SheetGrid } from '../sheets/grid.ts';
+import { findTypeMarker } from '../sheets/read-sheet.ts';
 import { headerText, toCell, type Cell, type RawTable } from './raw-table.ts';
 
 function sheetRows(sheet: XLSX.WorkSheet): unknown[][] {
@@ -24,6 +26,7 @@ function sheetRows(sheet: XLSX.WorkSheet): unknown[][] {
 export interface XlsxRead {
   readonly tables: RawTable[];
   readonly issues: Issue[];
+  readonly reportSheets: SheetGrid[];
 }
 
 export function readXlsx(name: string, bytes: Uint8Array): XlsxRead {
@@ -31,6 +34,7 @@ export function readXlsx(name: string, bytes: Uint8Array): XlsxRead {
   const date1904 = workbook.Workbook?.WBProps?.date1904 === true;
   const tables: RawTable[] = [];
   const issues: Issue[] = [];
+  const reportSheets: SheetGrid[] = [];
   const keptSheet = new Map<string, string>();
 
   for (const sheetName of workbook.SheetNames) {
@@ -39,17 +43,21 @@ export function readXlsx(name: string, bytes: Uint8Array): XlsxRead {
     if (sheet === undefined) continue;
 
     if (tab === null) {
-      if (!isIgnoredSheetName(sheetName)) {
-        const near = suggestTabForSheetName(sheetName);
-        issues.push(
-          makeIssue(
-            'ignored-sheet',
-            issueMessages['ignored-sheet'](sheetName, near),
-            { file: name },
-            near ?? undefined,
-          ),
-        );
+      if (isIgnoredSheetName(sheetName)) continue;
+      const grid = gridFromWorksheet(sheetName, sheet, date1904);
+      if (findTypeMarker(grid) !== null) {
+        reportSheets.push(grid);
+        continue;
       }
+      const near = suggestTabForSheetName(sheetName);
+      issues.push(
+        makeIssue(
+          'ignored-sheet',
+          issueMessages['ignored-sheet'](sheetName, near),
+          { file: name },
+          near ?? undefined,
+        ),
+      );
       continue;
     }
 
@@ -76,5 +84,5 @@ export function readXlsx(name: string, bytes: Uint8Array): XlsxRead {
       date1904,
     });
   }
-  return { tables, issues };
+  return { tables, issues, reportSheets };
 }

@@ -19,6 +19,20 @@ function withoutFileNames(dataset: Dataset): unknown {
 }
 
 describe('loadDataset()', () => {
+  it('does not warn about a report sheet sitting next to the data tabs', async () => {
+    const { issues } = await loadDataset([
+      {
+        name: 'tesouraria.xlsx',
+        bytes: buildWorkbook({
+          ...XLSX_SHEETS,
+          'Pegada 2026': [['Relatório', 'Pegada de direção']],
+        }),
+      },
+    ]);
+
+    expect(issues).toEqual([]);
+  });
+
   it('loads a workbook with every tab into a dataset with no issues', async () => {
     const { dataset, issues, unresolved } = await loadDataset([
       { name: 'tesouraria.xlsx', bytes: buildWorkbook(XLSX_SHEETS) },
