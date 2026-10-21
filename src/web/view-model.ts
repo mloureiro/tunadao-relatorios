@@ -1,7 +1,12 @@
 import { TAB_NAMES } from '@/core/input/columns';
-import { formatDate } from '@/core/format';
+import { formatDate, formatDateLong } from '@/core/format';
 import { formatIssueLocation, type Issue } from '@/core/issues';
-import type { ReportInstance, ReportStatus } from '@/core/sheets/instance';
+import { REPORT_SPECS } from '@/core/sheets/catalogue';
+import type {
+  ReportInstance,
+  ReportStatus,
+  StarterOffer,
+} from '@/core/sheets/instance';
 import type { DataSummary } from '@/core/summary';
 import type { WorkbookResult } from '@/core/workbook';
 
@@ -162,4 +167,52 @@ export function loadedAnnouncement(result: WorkbookResult): string {
 
 export function clockLabel(lisbonIso: string): string {
   return lisbonIso.slice(11, 16);
+}
+
+export interface ZipSkip {
+  readonly sheet: string;
+  readonly reason: string;
+}
+
+export function skippedForZip(
+  reports: readonly ReportInstance[],
+  failed: readonly ReportInstance[],
+): ZipSkip[] {
+  const notReady = reports
+    .filter((instance) => !isReady(instance))
+    .map((instance) => ({
+      sheet: instance.sheet,
+      reason: STATUS_LABEL[instance.status].toLowerCase(),
+    }));
+  const broken = failed.map(({ sheet }) => ({
+    sheet,
+    reason: 'não foi possível gerar o PDF',
+  }));
+  return [...notReady, ...broken];
+}
+
+export function zipResultLine(
+  included: number,
+  skipped: readonly ZipSkip[],
+): string {
+  const done = `Zip descarregado com ${plural(included, 'relatório', 'relatórios')}.`;
+  if (skipped.length === 0) return done;
+  const names = skipped
+    .map(({ sheet, reason }) => `"${sheet}" (${reason})`)
+    .join(', ');
+  return `${done} Não incluídos: ${names}.`;
+}
+
+export function nextSheetFacts(offer: StarterOffer): Fact[] {
+  const { fields } = REPORT_SPECS[offer.tipo];
+  return Object.entries(offer.values).flatMap(([key, value]) => {
+    const field = fields.find((candidate) => candidate.key === key);
+    if (field === undefined) return [];
+    return [
+      {
+        label: field.label,
+        value: field.kind === 'date' ? formatDateLong(value) : value,
+      },
+    ];
+  });
 }

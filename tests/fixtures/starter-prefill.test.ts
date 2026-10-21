@@ -6,6 +6,8 @@ import { loadConfig } from '../../src/core/config/schema.ts';
 import { readXlsx } from '../../src/core/input/xlsx.ts';
 import { readReportSheet } from '../../src/core/sheets/read-sheet.ts';
 import { prefillStarter } from '../../src/core/starter/prefill.ts';
+import { loadWorkbook } from '../../src/core/workbook.ts';
+import { CTX } from '../support/report-workbook.ts';
 
 const SHEET = 'xl/worksheets/sheet1.xml';
 
@@ -107,5 +109,50 @@ describe('prefillStarter()', () => {
     expect(() =>
       prefillStarter(starter, 'pegada', { inicio: '2026-01-01' }),
     ).toThrow(/Unknown pegada field/);
+  });
+});
+
+describe('the pre-filled next pegada offered by the fixture workbook', () => {
+  it('reads as 30/09/2026 and Direção 2026/27, and once inserted into the workbook lists as a new Pegada with the empty required fields as errors', async () => {
+    const fixture = new Uint8Array(
+      await readFile('fixtures/generated/tesouraria.xlsx'),
+    );
+    const before = await loadWorkbook(
+      { name: 'tesouraria.xlsx', bytes: fixture },
+      CTX,
+    );
+    const offer = before.starters.find(({ tipo }) => tipo === 'pegada');
+    if (offer === undefined) throw new Error('No next pegada offered');
+
+    const filled = prefillStarter(starter, 'pegada', offer.values);
+    expect(valueAt(filled, 'B4')).toBe(46295);
+    expect(valueAt(filled, 'B6')).toBe('Direção 2026/27');
+
+    const book = XLSX.read(fixture, { type: 'array' });
+    const starterBook = XLSX.read(filled, { type: 'array' });
+    const sheet = starterBook.Sheets[starterBook.SheetNames[0] ?? ''];
+    if (sheet === undefined) throw new Error('Starter has no sheet');
+    XLSX.utils.book_append_sheet(book, sheet, 'Pegada seguinte');
+    const merged = new Uint8Array(
+      XLSX.write(book, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer,
+    );
+
+    const after = await loadWorkbook(
+      { name: 'tesouraria.xlsx', bytes: merged },
+      CTX,
+    );
+    const added = after.reports.find(
+      ({ sheet: name }) => name === 'Pegada seguinte',
+    );
+
+    expect(after.reports).toHaveLength(before.reports.length + 1);
+    expect(added?.tipo).toBe('pegada');
+    expect(added?.status).toBe('com-erros');
+    expect(added?.dates.map(({ text }) => text)).toContain(
+      '30 de setembro de 2026',
+    );
+    expect(
+      added?.issues.filter(({ severity }) => severity === 'error').length,
+    ).toBeGreaterThan(0);
   });
 });

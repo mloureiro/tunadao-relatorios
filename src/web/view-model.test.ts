@@ -13,8 +13,11 @@ import {
   NOT_A_WORKBOOK,
   ONE_FILE_ONLY,
   sheetIssueParts,
+  nextSheetFacts,
+  skippedForZip,
   statusNote,
   summaryFacts,
+  zipResultLine,
 } from './view-model';
 
 const dataIssue = (
@@ -192,5 +195,47 @@ describe('loadedAnnouncement()', () => {
     ],
   ])('says %j with %i reports', (issues, reports, expected) => {
     expect(loadedAnnouncement(result(issues, reports))).toBe(expected);
+  });
+});
+
+describe('zip result line', () => {
+  const sheet = (name: string, status: ReportInstance['status']) =>
+    ({ sheet: name, status }) as ReportInstance;
+
+  it('names every sheet left out, with the reason', () => {
+    const skipped = skippedForZip(
+      [
+        sheet('Pegada 2026', 'pronto'),
+        sheet('Evento X', 'com-erros'),
+        sheet('Modelo Fiscal', 'por-preencher'),
+      ],
+      [sheet('Fiscal 2025', 'pronto')],
+    );
+
+    expect(zipResultLine(4, skipped)).toBe(
+      'Zip descarregado com 4 relatórios. Não incluídos: "Evento X" (com erros), "Modelo Fiscal" (por preencher), "Fiscal 2025" (não foi possível gerar o PDF).',
+    );
+  });
+
+  it('says nothing about skipped sheets when none were left out, and counts one in the singular', () => {
+    expect(zipResultLine(1, [])).toBe('Zip descarregado com 1 relatório.');
+  });
+});
+
+describe('nextSheetFacts()', () => {
+  it('writes dates in words and keeps text as it is', () => {
+    expect(
+      nextSheetFacts({
+        tipo: 'pegada',
+        fileName: 'folha-proxima-pegada.xlsx',
+        values: {
+          dataUltimoRelatorio: '2026-09-30',
+          direcaoCessante: 'Direção 2026/27',
+        },
+      }),
+    ).toEqual([
+      { label: 'Data do último relatório', value: '30 de setembro de 2026' },
+      { label: 'Direção cessante', value: 'Direção 2026/27' },
+    ]);
   });
 });

@@ -1,66 +1,14 @@
 import { execFileSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
 import { expect, test } from '@playwright/test';
-import { dropWorkbook, entry, ROOT, VALID } from './pages';
+import { cliReportJson, withoutGenerationTime, type Json } from './cli';
+import { dropWorkbook, entry, VALID } from './pages';
+import { REPORTS } from './reports';
 import { trackForeignRequests } from './same-origin';
 
-type Json = Record<string, unknown>;
+test.describe.configure({ timeout: 300_000 });
 
-async function example(name: string): Promise<Json> {
-  return JSON.parse(
-    await readFile(join(ROOT, 'examples', `${name}.json`), 'utf8'),
-  ) as Json;
-}
-
-function withoutGenerationTime(report: Json): Json {
-  const trace = { ...(report.trace as Json) };
-  delete trace.generatedAt;
-  delete trace.generatedAtLabel;
-  return { ...report, trace };
-}
-
-const REPORTS = [
-  {
-    sheet: 'Pegada 2026',
-    pdf: '2026-09-30 Pegada de direção.pdf',
-    example: 'pegada-2026',
-    control: '13.844,05 €',
-    dates: ['30 de setembro de 2026', '31 de agosto de 2026'],
-  },
-  {
-    sheet: 'Letivo 2025-26',
-    pdf: '2026-08-31 Fim de ano letivo.pdf',
-    example: 'letivo-2025-26',
-    control: '27.792,70 €',
-    dates: ['1 de janeiro de 2026', '31 de agosto de 2026'],
-  },
-  {
-    sheet: 'CITADÃO 2026',
-    pdf: '2026-06-15 Relatório de evento - 20º CITADÃO.pdf',
-    example: 'evento-citadao',
-    control: '20.225,20 €',
-    dates: ['30 de abril de 2026', '3 de maio de 2026', '15 de junho de 2026'],
-  },
-  {
-    sheet: 'Zumba 2026',
-    pdf: '2026-03-14 Relatório de evento - Zumba na Caneca.pdf',
-    example: 'evento-zumba',
-    control: 'Zumba na Caneca',
-    dates: ['14 de março de 2026', '18 de março de 2026'],
-  },
-  {
-    sheet: 'Fiscal 2025',
-    pdf: '2025-12-31 Fim de ano fiscal 2025.pdf',
-    example: 'fiscal-2025',
-    control: '6.231,55 €',
-    dates: ['2025 (1 de janeiro a 31 de dezembro de 2025)'],
-  },
-] as const;
-
-test.describe.configure({ timeout: 240_000 });
-
-test('dropping the workbook lists five reports and each one downloads its PDF and data', async ({
+test('dropping the workbook lists five reports and each one downloads its PDF and data, equal to the command line output', async ({
   page,
   context,
   baseURL,
@@ -82,7 +30,7 @@ test('dropping the workbook lists five reports and each one downloads its PDF an
     'origem: dia seguinte ao relatório da folha "Fiscal 2025"',
   );
 
-  for (const { sheet, pdf, example: name, control } of REPORTS) {
+  for (const { sheet, pdf, control } of REPORTS) {
     const card = entry(page, sheet);
 
     const pdfDownload = page.waitForEvent('download');
@@ -108,7 +56,7 @@ test('dropping the workbook lists five reports and each one downloads its PDF an
       withoutGenerationTime(
         JSON.parse(await readFile(await json.path(), 'utf8')) as Json,
       ),
-    ).toEqual(withoutGenerationTime(await example(name)));
+    ).toEqual(withoutGenerationTime(cliReportJson(VALID, sheet)));
   }
 
   expect(foreign).toEqual([]);

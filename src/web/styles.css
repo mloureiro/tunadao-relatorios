@@ -683,6 +683,54 @@ main {
   background: var(--paper);
 }
 
+.download-all-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.download-all .entry-failure {
+  margin: 0;
+}
+
+.next-list {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.next-list > li {
+  padding: 0.9rem 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--sheet);
+}
+
+.next-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 2rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.9375rem;
+}
+
+.next-facts div {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.next-facts dt {
+  color: var(--ink-soft);
+}
+
+.next-facts dd {
+  margin: 0;
+  font-weight: 700;
+}
+
 .drop-overlay {
   position: fixed;
   inset: 0;

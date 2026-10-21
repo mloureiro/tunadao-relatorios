@@ -147,6 +147,7 @@ export function App() {
             <ReportList
               key={loaded.id}
               reports={loaded.result.reports}
+              starters={loaded.result.starters}
               focusOnMount={dataErrors === 0}
               announce={announce}
             />
