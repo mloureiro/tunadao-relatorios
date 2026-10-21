@@ -42,6 +42,9 @@ O percurso cabe num só ecrã e a página não tem formulários.
    sem sair da página; «dados (.json)» guarda os números do relatório. Os ficheiros chamam-se, por exemplo,
    `2026-09-30 Pegada de direção.pdf` ou `2026-06-15 Relatório de evento - 20º CITADÃO.pdf` (a data é a do fim do
    relatório).
+
+   ![Primeira página do PDF da pegada de exemplo](docs/img/06-relatorio-exemplo.png)
+
 5. **Ou descarregue tudo de uma vez.** «Descarregar todos (.zip)» gera os PDFs de todas as folhas prontas, um a um
    («A gerar 2 de 5…»), e guarda-os num só ficheiro `Relatórios.zip`. Os PDFs que já tinha gerado nessa visita
    não se geram outra vez. A linha por baixo do botão diz quantos relatórios entraram e nomeia as folhas que ficaram

@@ -10,7 +10,7 @@
   datas deixadas em branco que o ficheiro já conhece são deduzidas e escritas por extenso.
 - «Descarregar todos (.zip)» gera todos os relatórios prontos e guarda-os num só ficheiro.
 - «Próximas folhas»: a pegada e o fim de ano letivo seguintes, já com as datas e a direção cessante preenchidas.
-- Os nomes dos cargos e dos signatários nas assinaturas vêm da folha, e cada linha de assinatura tem data.
+- Os nomes dos signatários vêm da folha (bloco Assinaturas) e cada linha de assinatura tem data.
 - O CLI escolhe o relatório pela folha (`--folha`) e lista-as com `--listar`, que escreve tudo no stdout. Já não há
   `--tipo`, `--param` nem `--params`.
 - Correções nos PDFs: período do evento, resultado acumulado e totais dos reembolsos no livro de caixa, lista de
