@@ -55,33 +55,20 @@ test('the page works offline on a later visit and still produces a PDF', async (
   await context.setOffline(true);
   await page.reload();
   await expect(
-    page.getByRole('heading', { name: 'Gerador de relatórios financeiros' }),
+    page.getByRole('heading', {
+      name: 'Relatórios financeiros do TUNADÃO 1998',
+    }),
   ).toBeVisible();
 
   await page.locator('input[type="file"]').setInputFiles(VALID);
-  await page.getByRole('button', { name: 'Continuar' }).click();
-  await page.getByText('Relatório de evento', { exact: true }).click();
+  const card = page
+    .getByRole('listitem')
+    .filter({ hasText: 'folha CITADÃO 2026' });
 
-  const form = page.locator('form.report-form');
-  await form
-    .getByLabel('Atividade', { exact: true })
-    .selectOption('20º CITADÃO');
-  await form.getByLabel('Início do evento').fill('30/04/2026');
-  await form.getByLabel('Fim do evento').fill('03/05/2026');
-  await form.getByLabel('Contar movimentos até').fill('15/06/2026');
-  await form.getByLabel('Data de referência dos pendentes').fill('2026-06-15');
-
-  const generate = page.getByRole('button', { name: 'Gerar PDF' });
-  await expect(generate).toBeEnabled();
-  await generate.click();
-  await expect(
-    page.getByRole('heading', { name: 'Relatório gerado' }),
-  ).toBeVisible({ timeout: 90_000 });
-
-  const download = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Descarregar PDF' }).click();
-  expect((await download).suggestedFilename()).toBe(
-    'relatorio-evento-20o-citadao-2026-05-03.pdf',
+  const download = page.waitForEvent('download', { timeout: 90_000 });
+  await card.getByRole('button', { name: 'Descarregar PDF' }).click();
+  expect((await download).suggestedFilename().normalize('NFC')).toBe(
+    '2026-06-15 Relatório de evento - 20º CITADÃO.pdf',
   );
 });
 

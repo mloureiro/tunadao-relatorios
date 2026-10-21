@@ -45,7 +45,7 @@ export function buildLetivo(
 ): BuildOutput {
   const { lists } = dataset;
   const { inicio, fim } = params;
-  const figures = periodFigures(dataset, inicio, fim, params.aberturaManual);
+  const figures = periodFigures(dataset, inicio, fim);
   const inside = inPeriod(dataset.movimentos, inicio, fim);
   const result = resultMovements(inside);
   const budget =
@@ -129,7 +129,7 @@ export function buildLetivo(
       ),
       sections,
       signatures: signaturesOf(config.signatures.letivo, params.assinaturas),
-      trace: traceOf(ctx, params.anexarJson),
+      trace: traceOf(ctx),
     },
     issues: dedupeIssues([
       ...figures.issues,

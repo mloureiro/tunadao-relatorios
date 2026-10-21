@@ -64,7 +64,7 @@ export function buildFiscal(
   const year = String(params.ano).padStart(4, '0');
   const start = `${year}-01-01`;
   const end = `${year}-12-31`;
-  const figures = periodFigures(dataset, start, end, params.aberturaManual);
+  const figures = periodFigures(dataset, start, end);
   const inside = inPeriod(dataset.movimentos, start, end);
   const result = resultMovements(inside);
   const budget = budgetVsActual(
@@ -129,7 +129,7 @@ export function buildFiscal(
       ),
       sections,
       signatures: signaturesOf(config.signatures.fiscal, params.assinaturas),
-      trace: traceOf(ctx, params.anexarJson),
+      trace: traceOf(ctx),
     },
     issues: dedupeIssues([
       ...figures.issues,

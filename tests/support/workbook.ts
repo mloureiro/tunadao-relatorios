@@ -25,24 +25,6 @@ export function buildWorkbook(
   );
 }
 
-const CP1252_EXTRAS = new Map([['€', 0x80]]);
-
-export function encodeCsv(
-  text: string,
-  encoding: 'utf-8' | 'utf-8-bom' | 'windows-1252',
-): Uint8Array {
-  if (encoding === 'windows-1252') {
-    return Uint8Array.from(Array.from(text), (char) => {
-      const code = char.codePointAt(0) ?? 0;
-      return CP1252_EXTRAS.get(char) ?? (code <= 0xff ? code : 0x3f);
-    });
-  }
-  const body = new TextEncoder().encode(text);
-  return encoding === 'utf-8-bom'
-    ? Uint8Array.from([0xef, 0xbb, 0xbf, ...body])
-    : body;
-}
-
 export function table(
   tab: TabName,
   rows: Sheet,

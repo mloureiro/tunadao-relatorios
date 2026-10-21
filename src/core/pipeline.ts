@@ -1,7 +1,6 @@
 import type { Config } from './config/schema.ts';
 import type { Dataset } from './dataset/types.ts';
 import { closestTab } from './input/columns.ts';
-import { readCsv } from './input/csv.ts';
 import type { RawTable } from './input/raw-table.ts';
 import { readXlsx } from './input/xlsx.ts';
 import type { SheetGrid } from './sheets/grid.ts';
@@ -47,13 +46,10 @@ interface FileRead {
 }
 
 function readTables(file: InputFile): FileRead {
-  return startsWith(file.bytes, ZIP_MAGIC) || startsWith(file.bytes, OLE_MAGIC)
-    ? readXlsx(file.name, file.bytes)
-    : {
-        tables: [readCsv(file.name, file.bytes)],
-        issues: [],
-        reportSheets: [],
-      };
+  if (startsWith(file.bytes, ZIP_MAGIC) || startsWith(file.bytes, OLE_MAGIC)) {
+    return readXlsx(file.name, file.bytes);
+  }
+  throw new Error('o ficheiro não é uma folha .xlsx');
 }
 
 function readFile(file: InputFile): FileRead {

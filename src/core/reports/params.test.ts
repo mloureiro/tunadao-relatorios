@@ -80,12 +80,11 @@ describe('date and money parsing', () => {
 });
 
 describe('evento defaults and rules', () => {
-  it('defaults the budget scope to the activity and keeps the JSON attachment on', () => {
+  it('defaults the budget scope to the activity and leaves optional fields absent', () => {
     const parsed = eventoParamsSchema.parse(evento);
 
     expect(parsed).toMatchObject({
       ambitoOrcamento: 'Festival Alfa',
-      anexarJson: true,
       indicadores: [],
     });
     expect(parsed).not.toHaveProperty('contarAte');
@@ -183,18 +182,6 @@ describe('pegada rules', () => {
     ).toBe(false);
   });
 
-  it('converts the manual opening to cents per account and drops an empty one', () => {
-    expect(
-      pegadaParamsSchema.parse({
-        ...pegada,
-        aberturaManual: { caixa: 100, banco: '1.234,56' },
-      }).aberturaManual,
-    ).toEqual({ Caixa: 10000, Banco: 123456 });
-    expect(
-      pegadaParamsSchema.parse({ ...pegada, aberturaManual: {} }),
-    ).not.toHaveProperty('aberturaManual');
-  });
-
   it('requires the handover to come after the last report', () => {
     expect(
       pegadaParamsSchema.safeParse({
@@ -209,10 +196,9 @@ describe('letivo and fiscal rules', () => {
   it('defaults the movement annex on for letivo and off for fiscal', () => {
     expect(
       letivoParamsSchema.parse({ inicio: '2026-01-01', fim: '2026-08-31' }),
-    ).toMatchObject({ anexar: true, anexarJson: true });
+    ).toMatchObject({ anexar: true });
     expect(fiscalParamsSchema.parse({ ano: 2025 })).toMatchObject({
       anexoMovimentos: false,
-      anexarJson: true,
     });
   });
 
@@ -231,9 +217,8 @@ describe('letivo and fiscal rules', () => {
       fiscalParamsSchema.parse({
         ano: '2025',
         anexoMovimentos: 'true',
-        anexarJson: 'false',
       }),
-    ).toMatchObject({ ano: 2025, anexoMovimentos: true, anexarJson: false });
+    ).toMatchObject({ ano: 2025, anexoMovimentos: true });
   });
 
   it('leaves the letivo budget scope unset when not given', () => {
@@ -282,11 +267,6 @@ describe('error messages', () => {
       'bad item',
       pegadaParamsSchema,
       { ...pegada, naoDebitados: [{ descricao: 1 }] },
-    ],
-    [
-      'bad opening',
-      pegadaParamsSchema,
-      { ...pegada, aberturaManual: { caixa: 'x', extra: 1 } },
     ],
   ])('speaks pt-PT for %s', (_, schema, input) => {
     const result = schema.safeParse(input);

@@ -249,18 +249,3 @@ describe.each(['evento', 'pegada', 'letivo', 'fiscal'] as const)(
     });
   },
 );
-
-describe('the report JSON attachment flag', () => {
-  it('follows anexarJson', () => {
-    const result = buildReport(
-      'fiscal',
-      loaded(),
-      fiscalParamsSchema.parse({ ano: 2025, anexarJson: false }),
-      ctx,
-    );
-
-    expect(result.status === 'report' && result.report.trace.attachReport).toBe(
-      false,
-    );
-  });
-});

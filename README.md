@@ -8,6 +8,8 @@ Há quatro relatórios: **Relatório de evento**, **Pegada de direção**, **Fim
 
 ## Como usar a página
 
+> A página já não tem formulários: carregue o `.xlsx` e cada folha de relatório do ficheiro aparece com o seu estado, os erros e os botões «Descarregar PDF», «Pré-visualizar» e «dados (.json)». Para corrigir algo, edite o ficheiro e carregue a versão corrigida. Os passos 5 a 9 abaixo e as imagens descrevem o fluxo antigo e serão reescritos.
+
 ![Início](docs/img/01-inicio.png)
 
 1. **Descarregue o modelo.** Na página inicial, o botão «Descarregar modelo (.xlsx)» dá-lhe a folha de Tesouraria

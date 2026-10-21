@@ -153,7 +153,7 @@ export function buildEvento(
       ),
       sections,
       signatures: signaturesOf(config.signatures.evento, params.assinaturas),
-      trace: traceOf(ctx, params.anexarJson),
+      trace: traceOf(ctx),
     },
     issues: dedupeIssues([...event.issues, ...budget.issues, ...negativeNets]),
   };

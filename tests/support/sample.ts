@@ -144,33 +144,3 @@ export const XLSX_SHEETS: Readonly<Record<string, Sheet>> = {
     [45930, 'Caixa', 100, 'Contagem'],
   ],
 };
-
-export const CSV_FILES: Readonly<Record<string, string>> = {
-  'movimentos.csv': [
-    'Data;N.º doc;Descrição;Atividade;Rubrica;Sub-rubrica;Tipo;Meio;Valor (€);Conta;Valor com sinal (€);Conta para o resultado',
-    '30/09/2025;F1;Bilhetes vendidos;Festival Alfa;Bilheteira;Bilhetes;Entrada;Caixa;120,50 €;;;',
-    '01/10/2025;;Jantar;Serenata;Alimentação;;Saída;MB Way;1.234,56 €;;;',
-  ].join('\r\n'),
-  'pendentes.csv': [
-    'Tipo;Entidade;Descrição;Atividade;Valor (€);Data de registo;Data de liquidação;Notas',
-    'A receber;Câmara;Apoio;Festival Alfa;300,00 €;05/10/2025;;',
-  ].join('\r\n'),
-  'orcamento.csv': [
-    'Âmbito;Tipo;Rubrica;Sub-rubrica;Orçado (€)',
-    'Festival Alfa;Entrada;Bilheteira;Bilhetes;500,00 €',
-  ].join('\r\n'),
-  'generos.csv': [
-    'Data;Atividade;Tipo;Quantidade;Em falta;Valor estimado (€)',
-    ';Festival Alfa;Alojamento;4 dias;2;80,00 €',
-  ].join('\r\n'),
-  'listas.csv': [
-    'Rubrica;Tipo;Conta para o resultado;;Sub-rubrica;Rubrica;;Atividade;;Meio;Conta',
-    'Bilheteira;Entrada;Sim;;Bilhetes;Bilheteira;;Festival Alfa;;Caixa;Caixa',
-    'Alimentação;Saída;Sim;;Outros;Bilheteira;;Serenata;;Banco;Banco',
-    'Transferências internas;;Não;;Outros;Alimentação;;;;MB Way;Banco',
-  ].join('\r\n'),
-  'saldos.csv': [
-    'Data;Conta;Saldo (€);Fonte',
-    '30/09/2025;Caixa;100,00 €;Contagem',
-  ].join('\r\n'),
-};

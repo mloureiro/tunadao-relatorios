@@ -1,22 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
-  CSV_FILES,
   LISTAS,
   MOVIMENTOS_HEADER,
   XLSX_SHEETS,
   movimento,
 } from '../../tests/support/sample.ts';
-import { buildWorkbook, encodeCsv } from '../../tests/support/workbook.ts';
-import type { Dataset } from './dataset/types.ts';
+import { buildWorkbook } from '../../tests/support/workbook.ts';
 import { loadDataset } from './pipeline.ts';
 
 const ABC_SHA256 =
   'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad';
-
-function withoutFileNames(dataset: Dataset): unknown {
-  const text = JSON.stringify({ ...dataset, sources: [] });
-  return JSON.parse(text.replace(/"file":"[^"]*"/g, '"file":""')) as unknown;
-}
 
 describe('loadDataset()', () => {
   it('does not warn about a report sheet sitting next to the data tabs', async () => {
@@ -58,33 +51,14 @@ describe('loadDataset()', () => {
 
   it('records the SHA-256 of each file in the order given', async () => {
     const { dataset } = await loadDataset([
-      { name: 'a.csv', bytes: new TextEncoder().encode('abc') },
+      { name: 'a.txt', bytes: new TextEncoder().encode('abc') },
       { name: 'b.xlsx', bytes: buildWorkbook(XLSX_SHEETS) },
     ]);
 
-    expect(dataset.sources[0]).toEqual({ name: 'a.csv', sha256: ABC_SHA256 });
+    expect(dataset.sources[0]).toEqual({ name: 'a.txt', sha256: ABC_SHA256 });
     expect(dataset.sources[1]?.name).toBe('b.xlsx');
     expect(dataset.sources[1]?.sha256).toMatch(/^[0-9a-f]{64}$/);
   });
-
-  it.each(['utf-8-bom', 'windows-1252'] as const)(
-    'reads a %s CSV set like the workbook',
-    async (encoding) => {
-      const fromXlsx = await loadDataset([
-        { name: 'a.xlsx', bytes: buildWorkbook(XLSX_SHEETS) },
-      ]);
-      const fromCsv = await loadDataset(
-        Object.entries(CSV_FILES).map(([name, text]) => ({
-          name,
-          bytes: encodeCsv(text, encoding),
-        })),
-      );
-
-      expect(withoutFileNames(fromCsv.dataset)).toEqual(
-        withoutFileNames(fromXlsx.dataset),
-      );
-    },
-  );
 
   it('normalises columns in a different order, with an extra column, like the canonical order', async () => {
     const order = [8, 0, 3, 2, 4, 6, 7, 5, 1];
@@ -197,30 +171,24 @@ describe('loadDataset()', () => {
     ]);
   });
 
-  it('names the closest tab and the missing headers for a CSV that matches no tab', async () => {
-    const csv = new TextEncoder().encode(
-      'Tipo;Entidad;Descrição;Atividade;Valor (€);Data de registo\nA pagar;Bar;Jantar;Geral;5,00;01/01/2025',
-    );
-
-    const { issues, dataset } = await loadDataset([
-      { name: 'pendentes.csv', bytes: csv },
-    ]);
-
-    expect(dataset.generos).toEqual([]);
-    expect(issues[0]).toMatchObject({
-      code: 'unrecognised-file',
-      severity: 'error',
-      file: 'pendentes.csv',
-    });
-    expect(issues[0]?.message).toMatch(/Pendentes.*Entidade/);
-  });
-
   it.each([
     ['a PDF', new TextEncoder().encode('%PDF-1.7\n%âãÏÓ\n1 0 obj')],
     ['an empty file', new Uint8Array()],
-    ['a workbook with no known tab', buildWorkbook({ Outra: [['x']] })],
-  ])('reports %s as an unrecognised file', async (_name, bytes) => {
+    ['a CSV', new TextEncoder().encode('Data;Valor\n01/01/2025;5,00')],
+  ])('reports %s as unreadable', async (_name, bytes) => {
     const { issues } = await loadDataset([{ name: 'coisa', bytes }]);
+
+    expect(issues[0]).toMatchObject({
+      code: 'unreadable-file',
+      severity: 'error',
+      file: 'coisa',
+    });
+  });
+
+  it('reports a workbook with no known tab as an unrecognised file', async () => {
+    const { issues } = await loadDataset([
+      { name: 'coisa', bytes: buildWorkbook({ Outra: [['x']] }) },
+    ]);
 
     expect(issues[0]).toMatchObject({
       code: 'unrecognised-file',

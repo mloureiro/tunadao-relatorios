@@ -1,262 +1,167 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'preact/hooks';
-import type { ColumnMapping } from '@/core/input/csv';
-import { loadDataset, type InputFile } from '@/core/pipeline';
+import { useCallback, useRef, useState } from 'preact/hooks';
+import { loadWorkbook, type WorkbookResult } from '@/core/workbook';
+import { GENERATOR_VERSION } from '@/core/version';
+import { lisbonDateTime } from '@/host/lisbon-time';
+import { config } from './config';
 import { startEngine } from './engine';
+import { DataIssues } from './DataIssues';
+import { DataSummary } from './DataSummary';
+import { FileBar } from './FileBar';
+import { Intake } from './Intake';
+import { Notice } from './Notice';
+import { ReportList } from './ReportList';
 import { UpdateNotice } from './UpdateNotice';
-import { IssuesPanel } from './IssuesPanel';
-import { prepareInputs, readInputFiles, selectionProblem } from './load-files';
-import { MappingPanel } from './MappingPanel';
-import { ReportFlow } from './ReportFlow';
-import { browserStorage, clearProfile, saveProfile } from './profiles';
-import { resetState, setState, useAppState } from './state';
-import { Stepper } from './Stepper';
-import { UploadPanel } from './UploadPanel';
-import { countIssues, describeCounts, type IssueCounts } from './validation';
+import { useWindowDrop } from './use-window-drop';
+import {
+  checkContents,
+  checkSelection,
+  clockLabel,
+  countErrors,
+  isUnreadable,
+  loadedAnnouncement,
+  UNREADABLE,
+} from './view-model';
 
-interface StatusInput {
-  loading: boolean;
-  loadFailed: boolean;
-  pendingName: string | null;
-  hasResult: boolean;
-  valid: boolean;
-  counts: IssueCounts;
-}
-
-function describeStatus(input: StatusInput): string {
-  if (input.loading) return 'A validar os dados…';
-  if (input.loadFailed) return 'Não foi possível validar os dados.';
-  if (input.pendingName !== null) {
-    return `Falta associar as colunas de ${input.pendingName}.`;
-  }
-  if (!input.hasResult) return '';
-  const counts = describeCounts(input.counts);
-  return input.valid
-    ? `Dados válidos. ${counts}.`
-    : `Há erros a corrigir. ${counts}.`;
+interface Loaded {
+  readonly id: number;
+  readonly name: string;
+  readonly time: string;
+  readonly result: WorkbookResult;
 }
 
 export function App() {
-  const { files, dataset, issues, loadResult } = useAppState();
-  const [rawFiles, setRawFiles] = useState<InputFile[]>([]);
-  const [chosen, setChosen] = useState<Record<string, ColumnMapping>>({});
-  const [profileVersion, setProfileVersion] = useState(0);
-  const [problem, setProblem] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [loadFailed, setLoadFailed] = useState(false);
-  const [reporting, setReporting] = useState(false);
-  const [previewing, setPreviewing] = useState(false);
-  const [reportAnnouncement, setReportAnnouncement] = useState('');
-  const selection = useRef(0);
-  const onPreviewing = useCallback((value: boolean) => {
-    setPreviewing(value);
+  const [loaded, setLoaded] = useState<Loaded | null>(null);
+  const [reading, setReading] = useState<string | null>(null);
+  const [notice, setNotice] = useState<{ id: number; text: string } | null>(
+    null,
+  );
+  const [announcement, setAnnouncement] = useState('');
+  const attempt = useRef(0);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const announce = useCallback((message: string) => {
+    clearTimeout(timer.current);
+    setAnnouncement('');
+    timer.current = setTimeout(() => {
+      setAnnouncement(message);
+    }, 60);
   }, []);
 
-  const prepared = useMemo(
-    () => prepareInputs(rawFiles, chosen, browserStorage()),
-    [rawFiles, chosen, profileVersion],
+  const pick = useCallback(
+    async (files: File[]) => {
+      const file = files[0];
+      if (file === undefined) return;
+      attempt.current += 1;
+      const mine = attempt.current;
+      const refuse = (text: string) => {
+        setReading(null);
+        setNotice({ id: mine, text });
+        announce(text);
+      };
+
+      const refusal = checkSelection(files.map(({ name }) => name));
+      if (refusal !== null) {
+        refuse(refusal);
+        return;
+      }
+      setNotice(null);
+      setReading(file.name);
+      void startEngine().catch(() => undefined);
+      announce('A ler o ficheiro…');
+
+      try {
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        const wrongContents = checkContents(bytes);
+        if (wrongContents !== null) {
+          if (mine === attempt.current) refuse(wrongContents);
+          return;
+        }
+        const now = lisbonDateTime(new Date());
+        const result = await loadWorkbook(
+          { name: file.name, bytes },
+          { config, now, generatorVersion: GENERATOR_VERSION },
+        );
+        if (mine !== attempt.current) return;
+        if (isUnreadable(result)) {
+          refuse(UNREADABLE);
+          return;
+        }
+        setReading(null);
+        setLoaded({ id: mine, name: file.name, time: clockLabel(now), result });
+        announce(loadedAnnouncement(result));
+      } catch {
+        if (mine === attempt.current) refuse(UNREADABLE);
+      }
+    },
+    [announce],
   );
 
-  useEffect(() => {
-    if (prepared.ready.length === 0) {
-      resetState();
-      return;
-    }
-    let current = true;
-    setLoading(true);
-    setLoadFailed(false);
-    loadDataset(prepared.ready).then(
-      (result) => {
-        if (!current) return;
-        setLoading(false);
-        setState({
-          files: prepared.ready,
-          dataset: result.dataset,
-          issues: result.issues,
-          loadResult: result,
-        });
-      },
-      () => {
-        if (!current) return;
-        setLoading(false);
-        setLoadFailed(true);
-        resetState();
-      },
-    );
-    return () => {
-      current = false;
-    };
-  }, [prepared]);
+  const dragging = useWindowDrop((files) => void pick(files), announce);
+  const onPick = (files: File[]) => void pick(files);
 
-  async function pick(chosenFiles: File[]) {
-    if (chosenFiles.length === 0) return;
-    selection.current += 1;
-    const mine = selection.current;
-    const rejected = selectionProblem(chosenFiles.map((file) => file.name));
-    setProblem(rejected);
-    if (rejected !== null) return;
-    void startEngine().catch(() => undefined);
-    let read: InputFile[];
-    try {
-      read = await readInputFiles(chosenFiles);
-    } catch {
-      if (mine === selection.current) {
-        setProblem(
-          'Não foi possível ler o ficheiro. Volte a escolhê-lo ou copie-o para este computador.',
-        );
-      }
-      return;
-    }
-    if (mine !== selection.current) return;
-    setChosen({});
-    setRawFiles(read);
-  }
-
-  function clear() {
-    selection.current += 1;
-    setRawFiles([]);
-    setChosen({});
-    setProblem(null);
-  }
-
-  const first = prepared.pending[0];
-  const hasData = rawFiles.length > 0;
-  const counts = countIssues(issues);
-  const hasErrors = counts.errors > 0;
-  const valid =
-    hasData &&
-    !loading &&
-    dataset !== null &&
-    first === undefined &&
-    !hasErrors;
-
-  useEffect(() => {
-    if (!valid) setReporting(false);
-  }, [valid]);
-
-  const inReport = reporting && valid && loadResult !== null;
-
-  const announcement = describeStatus({
-    loading,
-    loadFailed,
-    pendingName: first?.name ?? null,
-    hasResult: hasData && dataset !== null,
-    valid,
-    counts,
-  });
-
-  const wasReporting = useRef(false);
-  useEffect(() => {
-    if (wasReporting.current && !inReport) {
-      document.getElementById('validacao-titulo')?.focus();
-    }
-    wasReporting.current = inReport;
-  }, [inReport]);
-
-  const stepIndex = !inReport ? 0 : previewing ? 2 : 1;
+  const dataErrors =
+    loaded === null ? 0 : countErrors(loaded.result.load.issues);
 
   return (
     <div class="page">
       <header class="masthead">
-        <h1>Gerador de relatórios financeiros · TUNADÃO 1998</h1>
-        <Stepper current={stepIndex} />
+        <h1>
+          Relatórios financeiros do <span class="wordmark">TUNADÃO 1998</span>
+        </h1>
       </header>
 
       <p role="status" class="visually-hidden">
-        {reportAnnouncement === '' ? announcement : reportAnnouncement}
+        {announcement}
       </p>
 
-      <UpdateNotice />
+      <UpdateNotice announce={announce} />
 
       <main>
-        {inReport ? (
-          <ReportFlow
-            loadResult={loadResult}
-            onBack={() => {
-              setReporting(false);
-              setPreviewing(false);
-              setReportAnnouncement('');
-            }}
-            onPreviewing={onPreviewing}
-            onAnnounce={setReportAnnouncement}
-          />
+        {reading !== null ? (
+          <section class="filebar" aria-label="Ficheiro a ler">
+            <p class="filebar-name">
+              <span class="filebar-file">{reading}</span>
+              <span class="filebar-time">A ler o ficheiro…</span>
+            </p>
+          </section>
+        ) : loaded === null ? (
+          <>
+            {notice !== null && (
+              <Notice key={notice.id} message={notice.text} />
+            )}
+            <Intake dragging={dragging} onPick={onPick} />
+          </>
         ) : (
           <>
-            <UploadPanel
-              files={rawFiles}
-              problem={problem}
-              onPick={(picked) => void pick(picked)}
-              onClear={clear}
-            />
-
-            {prepared.autoMapped.length > 0 && (
-              <section class="notice notice-info" aria-label="Perfis aplicados">
-                {prepared.autoMapped.map(({ name, table }) => (
-                  <p key={name}>
-                    Aplicámos o perfil guardado de colunas ao ficheiro{' '}
-                    <strong>{name}</strong>.{' '}
-                    <button
-                      type="button"
-                      class="link-button"
-                      onClick={() => {
-                        clearProfile(browserStorage(), table.header);
-                        setProfileVersion((version) => version + 1);
-                      }}
-                    >
-                      Esquecer perfil
-                    </button>
-                  </p>
-                ))}
-              </section>
+            <FileBar name={loaded.name} time={loaded.time} onPick={onPick} />
+            {notice !== null && (
+              <Notice key={notice.id} message={notice.text} />
             )}
-
-            {first !== undefined && (
-              <MappingPanel
-                key={first.name}
-                pending={first}
-                onApply={(mapping, save) => {
-                  if (save)
-                    saveProfile(browserStorage(), first.table.header, mapping);
-                  setChosen((previous) => ({
-                    ...previous,
-                    [first.name]: mapping,
-                  }));
-                }}
+            {loaded.result.summary !== null && (
+              <DataSummary summary={loaded.result.summary} />
+            )}
+            {loaded.result.load.issues.length > 0 && (
+              <DataIssues
+                key={loaded.id}
+                issues={loaded.result.load.issues}
+                focusOnMount={dataErrors > 0}
               />
             )}
-
-            {hasData && loading && <p>A validar os dados…</p>}
-            {loadFailed && (
-              <p class="notice notice-error" role="alert">
-                Não foi possível validar os dados. Volte a escolher o ficheiro.
-              </p>
-            )}
-            {hasData &&
-              !loading &&
-              (dataset !== null || first !== undefined) && (
-                <IssuesPanel
-                  issues={issues}
-                  valid={valid}
-                  blockedByMapping={first !== undefined}
-                  onContinue={() => {
-                    setReporting(true);
-                  }}
-                />
-              )}
-            {files.length === 0 && !hasData && (
-              <p class="lead">
-                Comece por carregar o ficheiro da Tesouraria. Os erros aparecem
-                aqui com o separador, a linha e a coluna a corrigir.
-              </p>
-            )}
+            <ReportList
+              key={loaded.id}
+              reports={loaded.result.reports}
+              focusOnMount={dataErrors === 0}
+              announce={announce}
+            />
           </>
         )}
       </main>
+
+      {dragging && (
+        <div class="drop-overlay" aria-hidden="true">
+          <p>Largue o ficheiro para o carregar</p>
+        </div>
+      )}
     </div>
   );
 }

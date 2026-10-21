@@ -104,10 +104,7 @@ export function themeOf(config: Config): ReportJson['theme'] {
   return { ...config.theme };
 }
 
-export function traceOf(
-  ctx: BuildContext,
-  attachReport: boolean,
-): ReportJson['trace'] {
+export function traceOf(ctx: BuildContext): ReportJson['trace'] {
   return {
     generatedAt: ctx.now,
     generatedAtLabel: formatDateTime(ctx.now),
@@ -116,7 +113,7 @@ export function traceOf(
       sha256Short: sha256.slice(0, SHORT_SHA_LENGTH),
     })),
     generatorVersion: ctx.generatorVersion,
-    attachReport,
+    attachReport: true,
   };
 }
 
