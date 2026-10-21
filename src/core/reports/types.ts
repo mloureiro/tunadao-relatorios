@@ -70,6 +70,7 @@ export interface BudgetRow {
   readonly orcado: Money;
   readonly realizado: Money;
   readonly desvio: Money;
+  readonly desvioLabel?: string;
   readonly execucao: string;
 }
 
@@ -77,9 +78,9 @@ export interface BudgetSection {
   readonly kind: 'budget';
   readonly title: string;
   readonly side: 'receita' | 'despesa';
+  readonly labelHeader: string;
   readonly rows: readonly BudgetRow[];
   readonly total: BudgetRow;
-  readonly note?: string;
 }
 
 export interface ActivityRow {
@@ -185,6 +186,10 @@ export interface MovementsSection {
   readonly title: string;
   readonly columns: 'cashbook' | 'signed';
   readonly rows: readonly MovementRow[];
+  readonly totals?: {
+    readonly entrada: Money;
+    readonly saida: Money;
+  };
   readonly outside?: {
     readonly title: string;
     readonly rows: readonly MovementRow[];
@@ -253,10 +258,11 @@ export type Section =
 export interface Signature {
   readonly title: string;
   readonly name?: string;
+  readonly detail?: string;
 }
 
 export interface ReportJson {
-  readonly schemaVersion: 1;
+  readonly schemaVersion: 2;
   readonly tipo: ReportTipo;
   readonly theme: {
     readonly navy: string;

@@ -73,6 +73,29 @@ describe('toRawParams()', () => {
     });
   });
 
+  it('carries the signature lines of a configured cargo and drops the unknown ones', () => {
+    const { raw, cellOf } = toRawParams(
+      draftOf(
+        pegada(
+          ['Assinaturas'],
+          ['Cargo', 'Nome'],
+          ['Direção cessante', 'Ana Silva'],
+          ['Tesoureira', 'Eva Reis'],
+          ['conselho fiscal', 'Rui Costa'],
+        ),
+      ),
+    );
+
+    expect(raw.assinaturas).toEqual([
+      { cargo: 'Direção cessante', nome: 'Ana Silva' },
+      { cargo: 'Conselho Fiscal', nome: 'Rui Costa' },
+    ]);
+    expect(Object.fromEntries(cellOf)).toMatchObject({
+      'assinaturas/0/nome': { cell: 'B9' },
+      'assinaturas/1/nome': { cell: 'B11' },
+    });
+  });
+
   it('leaves out blank fields so the schema defaults apply', () => {
     const { raw } = toRawParams(
       draftOf([

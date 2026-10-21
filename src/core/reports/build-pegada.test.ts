@@ -72,11 +72,31 @@ describe('buildPegada()', () => {
     );
   });
 
-  it('carries the board names on the cessante and entrante signature lines only', () => {
+  it('prints the board labels as detail on the cessante and entrante signature lines only', () => {
     expect(build().report.signatures).toEqual([
-      { title: 'Direção cessante', name: 'Direção 2025/26' },
-      { title: 'Direção entrante', name: 'Direção 2026/27' },
+      { title: 'Direção cessante', detail: 'Direção 2025/26' },
+      { title: 'Direção entrante', detail: 'Direção 2026/27' },
       { title: 'Conselho Fiscal' },
+    ]);
+  });
+
+  it('matches the signatory names to the configured cargos ignoring case and accents, and leaves out unknown cargos', () => {
+    const { signatures } = build({
+      assinaturas: [
+        { cargo: 'DIREÇÃO CESSANTE', nome: 'Ana Silva' },
+        { cargo: 'conselho fiscal', nome: 'Rui Costa' },
+        { cargo: 'Tesoureira', nome: 'Eva Reis' },
+      ],
+    }).report;
+
+    expect(signatures).toEqual([
+      {
+        title: 'Direção cessante',
+        name: 'Ana Silva',
+        detail: 'Direção 2025/26',
+      },
+      { title: 'Direção entrante', detail: 'Direção 2026/27' },
+      { title: 'Conselho Fiscal', name: 'Rui Costa' },
     ]);
   });
 

@@ -54,6 +54,11 @@ export const RELATORIOS: readonly ReportSheetSpec[] = [
       contagem: { '50': 8, '20': 5, '10': 3, '5': 5, '2': 6, '1': 6 },
       notas:
         'Valores, pendentes e acessos conferidos pelas duas direções e pelo Conselho Fiscal.',
+      assinaturas: {
+        'Direção cessante': 'Marta Figueiredo',
+        'Direção entrante': 'Duarte Pinheiro',
+        'Conselho Fiscal': 'Helena Quintela',
+      },
     },
   },
   {

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "tipo": "evento",
   "theme": {
     "navy": "#1D2F6F",
@@ -33,8 +33,8 @@
     "org": "TUNADÃO 1998",
     "subtitle": "Tuna do Instituto Politécnico de Viseu",
     "title": "Relatório de evento",
-    "periodLabel": "14/03/2026",
-    "lead": "Zumba na Caneca · Movimentos de 03/03/2026 a 18/03/2026"
+    "periodLabel": "Evento de 14/03/2026",
+    "lead": "Zumba na Caneca · Valores dos movimentos de 03/03/2026 a 18/03/2026"
   },
   "sections": [
     {
@@ -196,7 +196,7 @@
     },
     {
       "kind": "pending",
-      "title": "Direitos e compromissos do evento",
+      "title": "Pendentes (a receber e a pagar)",
       "refLabel": "Situação a 18/03/2026",
       "receber": [],
       "pagar": [],
@@ -222,7 +222,7 @@
     },
     {
       "kind": "movements",
-      "title": "Livro de caixa do evento",
+      "title": "Movimentos do evento",
       "columns": "cashbook",
       "rows": [
         {
@@ -446,22 +446,17 @@
           "outsideResult": false
         }
       ],
-      "footer": [
-        {
-          "label": "Entradas brutas",
-          "value": {
-            "cents": 292750,
-            "text": "2.927,50 €"
-          }
+      "totals": {
+        "entrada": {
+          "cents": 292750,
+          "text": "2.927,50 €"
         },
-        {
-          "label": "Saídas brutas",
-          "value": {
-            "cents": 144740,
-            "text": "1.447,40 €"
-          }
+        "saida": {
+          "cents": 144740,
+          "text": "1.447,40 €"
         }
-      ]
+      },
+      "footer": []
     }
   ],
   "signatures": [
@@ -478,7 +473,7 @@
     "sources": [
       {
         "name": "tesouraria.xlsx",
-        "sha256Short": "38fdd5c6ec21"
+        "sha256Short": "b13cfae46798"
       }
     ],
     "generatorVersion": "1.0.0",

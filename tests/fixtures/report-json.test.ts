@@ -169,6 +169,22 @@ describe('pegada report', () => {
     });
   });
 
+  it('prints the signatory names from the sheet, with the board labels as detail', () => {
+    expect(report('pegada-2026').signatures).toEqual([
+      {
+        title: 'Direção cessante',
+        name: 'Marta Figueiredo',
+        detail: 'Direção 2025/26',
+      },
+      {
+        title: 'Direção entrante',
+        name: 'Duarte Pinheiro',
+        detail: 'Direção 2026/27',
+      },
+      { title: 'Conselho Fiscal', name: 'Helena Quintela' },
+    ]);
+  });
+
   it('closes the movement list onto the balance variation', () => {
     const movements = movementsOf(report('pegada-2026'));
 

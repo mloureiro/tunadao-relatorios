@@ -80,8 +80,19 @@ function blockRaw(
       }
       cellOf.set(block.key, { cell: block.titleCell, field });
       break;
-    case 'signatures':
+    case 'signatures': {
+      const rows: Record<string, unknown>[] = [];
+      for (const { role, name, cell } of block.lines) {
+        if (role === null) continue;
+        cellOf.set(`${block.key}/${String(rows.length)}/nome`, {
+          cell,
+          field,
+        });
+        rows.push({ cargo: role, nome: name });
+      }
+      if (rows.length > 0) raw[block.key] = rows;
       break;
+    }
   }
 }
 

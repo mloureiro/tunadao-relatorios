@@ -118,7 +118,7 @@ export function comparisonSection(
   level: AggregationLevel,
 ): { section: YearComparisonSection; issues: Issue[] } {
   const previous = previousPeriod(dataset, figures.start, figures.end, level);
-  const title = 'Comparação com o período homólogo';
+  const title = 'Comparação com o mesmo período do ano anterior';
 
   if (previous.status === 'sem-dados') {
     return {

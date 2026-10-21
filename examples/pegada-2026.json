@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "tipo": "pegada",
   "theme": {
     "navy": "#1D2F6F",
@@ -421,7 +421,7 @@
     },
     {
       "kind": "pending",
-      "title": "Direitos e compromissos à data da entrega",
+      "title": "Pendentes (a receber e a pagar)",
       "refLabel": "Situação a 30/09/2026",
       "receber": [
         {
@@ -479,14 +479,17 @@
   "signatures": [
     {
       "title": "Direção cessante",
-      "name": "Direção 2025/26"
+      "name": "Marta Figueiredo",
+      "detail": "Direção 2025/26"
     },
     {
       "title": "Direção entrante",
-      "name": "Direção 2026/27"
+      "name": "Duarte Pinheiro",
+      "detail": "Direção 2026/27"
     },
     {
-      "title": "Conselho Fiscal"
+      "title": "Conselho Fiscal",
+      "name": "Helena Quintela"
     }
   ],
   "trace": {
@@ -495,7 +498,7 @@
     "sources": [
       {
         "name": "tesouraria.xlsx",
-        "sha256Short": "38fdd5c6ec21"
+        "sha256Short": "b13cfae46798"
       }
     ],
     "generatorVersion": "1.0.0",
