@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { ReportInstance } from '@/core/sheets/instance';
 import { saveFile } from './download';
-import { EngineLoadError, renderReport } from './engine';
+import { EngineLoadError } from './engine';
 import { engineProgressLabel } from './engine-progress';
 import { StatusMark } from './StatusMark';
 import { useAppState } from './state';
@@ -15,10 +15,14 @@ import {
 
 const GENERIC_FAILURE = 'Erro interno ao gerar o relatório.';
 
-type Phase = 'idle' | 'generating' | 'done' | 'failed';
+type Phase = 'idle' | 'done' | 'failed';
 
 interface Props {
   readonly instance: ReportInstance;
+  readonly pdf: Uint8Array | undefined;
+  readonly generating: boolean;
+  readonly locked: boolean;
+  readonly generate: () => Promise<Uint8Array>;
   readonly previewing: boolean;
   readonly onPreview: (open: boolean) => void;
   readonly announce: (message: string) => void;
@@ -49,6 +53,10 @@ function IssueLine({
 
 export function ReportEntry({
   instance,
+  pdf,
+  generating,
+  locked,
+  generate,
   previewing,
   onPreview,
   announce,
@@ -92,16 +100,15 @@ export function ReportEntry({
 
   async function ensurePdf(): Promise<string | null> {
     if (pdfUrl !== null) return pdfUrl;
-    if (instance.report === undefined || instance.tipo === null) return null;
-    setPhase('generating');
+    const blobOf = (bytes: Uint8Array) =>
+      new Blob([bytes.slice().buffer], { type: 'application/pdf' });
+    if (pdf !== undefined) return setPdf(blobOf(pdf));
     setFailure(null);
     announce('A gerar o PDF…');
     try {
-      const pdf = await renderReport(instance.tipo, instance.report);
+      const bytes = await generate();
       if (!mounted.current) return null;
-      const url = setPdf(
-        new Blob([pdf.slice().buffer], { type: 'application/pdf' }),
-      );
+      const url = setPdf(blobOf(bytes));
       setPhase('done');
       return url;
     } catch (error) {
@@ -116,7 +123,7 @@ export function ReportEntry({
   }
 
   async function download() {
-    if (generating) return;
+    if (locked) return;
     const url = await ensurePdf();
     if (url === null) return;
     saveFile(url, pdfName);
@@ -124,15 +131,13 @@ export function ReportEntry({
   }
 
   async function togglePreview() {
-    if (generating) return;
+    if (locked) return;
     if (previewing) {
       onPreview(false);
       return;
     }
     if ((await ensurePdf()) !== null) onPreview(true);
   }
-
-  const generating = phase === 'generating';
 
   return (
     <li
@@ -198,7 +203,7 @@ export function ReportEntry({
               type="button"
               class="button"
               disabled={!ready}
-              aria-disabled={generating}
+              aria-disabled={locked}
               aria-busy={generating}
               onClick={() => void download()}
             >
@@ -209,7 +214,7 @@ export function ReportEntry({
               class="button button-secondary"
               ref={previewButton}
               disabled={!ready}
-              aria-disabled={generating}
+              aria-disabled={locked}
               aria-expanded={previewing}
               onClick={() => void togglePreview()}
             >
