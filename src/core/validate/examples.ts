@@ -1,5 +1,5 @@
 import type { Cents, Conta, Dataset, FonteSaldo } from '../dataset/types.ts';
-import type { IsoDate } from '../dates.ts';
+import { fromExcelSerial, parseDateText, type IsoDate } from '../dates.ts';
 import type { Cell, RawTable } from '../input/raw-table.ts';
 import { parseMoney } from '../money.ts';
 import { issueMessages, makeIssue, type Issue } from '../issues.ts';
@@ -28,22 +28,28 @@ const EXAMPLE_CHECKPOINTS: readonly ExampleCheckpoint[] = [
 ];
 
 interface ExampleRow {
-  readonly text: Readonly<Record<string, string>>;
+  readonly text: Readonly<Record<string, string | null>>;
   readonly money?: readonly [column: string, cents: Cents];
+  readonly date?: IsoDate;
 }
 
 const EXAMPLE_ROWS: Readonly<Record<string, readonly ExampleRow[]>> = {
   Movimentos: [
-    ['Inscrições (exemplo fictício)', 12000],
-    ['Cartazes e impressões (exemplo fictício)', 4800],
-    ['Aluguer de som (exemplo fictício)', 30000],
-    ['Patrocínio do ginásio (exemplo fictício)', 50000],
-    ['Vendas do bar por TPA (exemplo fictício)', 8550],
-    ['Caução do alojamento (exemplo fictício)', 40000],
-    ['Devolução de parte da caução (exemplo de reembolso)', 10000],
-    ['Depósito de numerário (saída da caixa)', 10000],
-    ['Depósito de numerário (entrada no banco)', 10000],
-  ].map(([descricao, cents]) => ({
+    ['2026-02-05', 'Inscrições (exemplo fictício)', 12000],
+    ['2026-02-06', 'Cartazes e impressões (exemplo fictício)', 4800],
+    ['2026-02-10', 'Aluguer de som (exemplo fictício)', 30000],
+    ['2026-02-12', 'Patrocínio do ginásio (exemplo fictício)', 50000],
+    ['2026-02-15', 'Vendas do bar por TPA (exemplo fictício)', 8550],
+    ['2026-02-16', 'Caução do alojamento (exemplo fictício)', 40000],
+    [
+      '2026-02-20',
+      'Devolução de parte da caução (exemplo de reembolso)',
+      10000,
+    ],
+    ['2026-02-22', 'Depósito de numerário (saída da caixa)', 10000],
+    ['2026-02-22', 'Depósito de numerário (entrada no banco)', 10000],
+  ].map(([date, descricao, cents]) => ({
+    date: String(date),
     text: { Descrição: String(descricao) },
     money: ['Valor (€)', Number(cents)] as const,
   })),
@@ -55,11 +61,28 @@ const EXAMPLE_ROWS: Readonly<Record<string, readonly ExampleRow[]>> = {
     { text: { Entidade: 'Gráfica Exemplo' }, money: ['Valor (€)', 18000] },
   ],
   Orçamento: [
-    ['Zumba na Caneca', 'Inscrições e bilheteira', 40000],
-    ['Zumba na Caneca', 'Produção (som, luz, palco)', 30000],
-    ['2026', 'Comunicação e gráfica', 20000],
-  ].map(([ambito, rubrica, cents]) => ({
-    text: { Âmbito: String(ambito), Rubrica: String(rubrica) },
+    [
+      'Zumba na Caneca',
+      'Entrada',
+      'Inscrições e bilheteira',
+      'Bilheteira',
+      40000,
+    ],
+    [
+      'Zumba na Caneca',
+      'Saída',
+      'Produção (som, luz, palco)',
+      'Som e luz',
+      30000,
+    ],
+    ['2026', 'Saída', 'Comunicação e gráfica', null, 20000],
+  ].map(([ambito, tipo, rubrica, sub, cents]) => ({
+    text: {
+      Âmbito: String(ambito),
+      Tipo: String(tipo),
+      Rubrica: String(rubrica),
+      'Sub-rubrica': sub === null ? null : String(sub),
+    },
     money: ['Orçado (€)', Number(cents)] as const,
   })),
   Géneros: [
@@ -82,6 +105,18 @@ function cellAt(table: RawTable, cells: readonly Cell[], column: string): Cell {
   return at < 0 ? null : (cells[at] ?? null);
 }
 
+function dateMatches(
+  table: RawTable,
+  cells: readonly Cell[],
+  wanted: IsoDate,
+): boolean {
+  const cell = cellAt(table, cells, 'Data');
+  if (typeof cell === 'number') {
+    return fromExcelSerial(cell, table.date1904) === wanted;
+  }
+  return typeof cell === 'string' && parseDateText(cell) === wanted;
+}
+
 function matchesExample(
   table: RawTable,
   cells: readonly Cell[],
@@ -89,9 +124,15 @@ function matchesExample(
 ): boolean {
   const textMatches = Object.entries(example.text).every(([column, wanted]) => {
     const cell = cellAt(table, cells, column);
-    return typeof cell === 'string' && normalise(cell) === normalise(wanted);
+    return wanted === null
+      ? cell === null
+      : typeof cell === 'string' && normalise(cell) === normalise(wanted);
   });
-  if (!textMatches || example.money === undefined) return textMatches;
+  if (!textMatches) return false;
+  if (example.date !== undefined && !dateMatches(table, cells, example.date)) {
+    return false;
+  }
+  if (example.money === undefined) return true;
   const [column, cents] = example.money;
   const cell = cellAt(table, cells, column);
   if (typeof cell === 'boolean' || cell === null) return false;
