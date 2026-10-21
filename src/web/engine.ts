@@ -15,35 +15,36 @@ export class EngineLoadError extends Error {
 
 const RENDER_FAILURE = 'Erro interno ao gerar o relatório.';
 
-let renderer: WebRenderer | null = null;
-let warmUp: Promise<void> | null = null;
+let starting: Promise<WebRenderer> | null = null;
 
 function setEngine(patch: Partial<ReturnType<typeof getState>['engine']>) {
   setState({ engine: { ...getState().engine, ...patch } });
 }
 
-export function startEngine(): Promise<WebRenderer> {
-  renderer ??= createWebRenderer({
+async function createAndWarmUp(): Promise<WebRenderer> {
+  await serviceWorkerSettled();
+  const active = createWebRenderer({
     onProgress: (progress) => {
       setEngine({ progress });
     },
   });
-  const active = renderer;
-  if (warmUp === null) {
-    setEngine({ status: 'loading', message: '' });
-    warmUp = active.warmUp().then(
-      () => {
-        setEngine({ status: 'ready' });
-      },
-      () => {
-        warmUp = null;
-        renderer = null;
-        setEngine({ status: 'error', message: LOAD_FAILURE });
-        throw new EngineLoadError();
-      },
-    );
+  try {
+    await active.warmUp();
+  } catch {
+    starting = null;
+    setEngine({ status: 'error', message: LOAD_FAILURE });
+    throw new EngineLoadError();
   }
-  return warmUp.then(() => active);
+  setEngine({ status: 'ready' });
+  return active;
+}
+
+export function startEngine(): Promise<WebRenderer> {
+  if (starting === null) {
+    setEngine({ status: 'loading', message: '' });
+    starting = createAndWarmUp();
+  }
+  return starting;
 }
 
 export async function renderReport(
