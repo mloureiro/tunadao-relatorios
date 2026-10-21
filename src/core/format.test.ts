@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   formatDate,
+  formatDateLong,
   formatDateTime,
   formatEuros,
   formatMoney,
@@ -114,5 +115,20 @@ describe('formatDate() and formatDateTime()', () => {
 
   it('rejects a date without a time', () => {
     expect(() => formatDateTime('2026-09-30')).toThrow(RangeError);
+  });
+});
+
+describe('formatDateLong()', () => {
+  it.each([
+    ['2026-09-15', '15 de setembro de 2026'],
+    ['2026-01-01', '1 de janeiro de 2026'],
+    ['2024-02-29', '29 de fevereiro de 2024'],
+    ['2025-03-05', '5 de março de 2025'],
+  ])('%s', (iso, expected) => {
+    expect(formatDateLong(iso)).toBe(expected);
+  });
+
+  it('rejects text that is not a calendar date', () => {
+    expect(() => formatDateLong('2026-13-01')).toThrow(RangeError);
   });
 });

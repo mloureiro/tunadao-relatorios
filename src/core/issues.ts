@@ -42,6 +42,18 @@ export const ISSUE_SEVERITY = {
   'undated-generos': 'warning',
   'reconciliation-difference': 'warning',
   'cash-count-difference': 'warning',
+  'report-type-unknown': 'error',
+  'report-version-newer': 'error',
+  'field-missing': 'error',
+  'field-empty': 'error',
+  'field-invalid': 'error',
+  'field-unknown': 'warning',
+  'field-duplicate': 'error',
+  'date-as-text': 'warning',
+  'formula-input': 'warning',
+  'formula-no-value': 'error',
+  'signature-role-unknown': 'warning',
+  'text-too-long': 'warning',
 } as const satisfies Record<string, Severity>;
 
 export type IssueCode = keyof typeof ISSUE_SEVERITY;
@@ -53,6 +65,9 @@ export interface Issue {
   readonly tab?: TabName;
   readonly row?: number;
   readonly column?: string;
+  readonly sheet?: string;
+  readonly cell?: string;
+  readonly field?: string;
   readonly message: string;
   readonly suggestion?: string;
 }
@@ -62,6 +77,9 @@ export interface IssueLocation {
   readonly tab?: TabName;
   readonly row?: number;
   readonly column?: string;
+  readonly sheet?: string;
+  readonly cell?: string;
+  readonly field?: string;
 }
 
 export const issueMessages = {
@@ -159,6 +177,30 @@ export const issueMessages = {
     `A reconciliação bancária tem uma diferença de ${formatMoneySigned(cents)}.`,
   'cash-count-difference': (cents: Cents) =>
     `A contagem de caixa difere do saldo calculado em ${formatMoneySigned(cents)}.`,
+  'report-type-unknown': (value: string | null, accepted: readonly string[]) =>
+    value === null
+      ? `A folha não indica o tipo de relatório. Escolha um dos tipos: ${accepted.join(', ')}.`
+      : `Tipo de relatório desconhecido: "${value}". Tipos aceites: ${accepted.join(', ')}.`,
+  'report-version-newer': (version: number, supported: number) =>
+    `Esta folha foi criada com a versão ${String(version)} do modelo e esta aplicação só lê até à versão ${String(supported)}. Recarregue a página para atualizar a aplicação.`,
+  'field-missing': (label: string) =>
+    `Falta o campo "${label}". Acrescente na coluna A uma linha com esse título e escreva o valor ao lado.`,
+  'field-empty': () => 'Valor em falta.',
+  'field-invalid': (detail: string) => detail,
+  'field-unknown': (label: string) =>
+    `O título "${label}" não é reconhecido neste tipo de relatório e foi ignorado.`,
+  'field-duplicate': (label: string, firstCell: string) =>
+    `O campo "${label}" já foi indicado na célula ${firstCell}. Deixe apenas uma linha.`,
+  'date-as-text': (value: string) =>
+    `A data "${value}" foi lida como texto. Confirme que a folha está em Português (Portugal).`,
+  'formula-input': () =>
+    'Esta célula tem uma fórmula; foi usado o último valor calculado. Escreva o valor diretamente.',
+  'formula-no-value': () =>
+    'Esta célula tem uma fórmula sem valor calculado. Abra e grave o ficheiro na folha de cálculo antes de carregar.',
+  'signature-role-unknown': (cargo: string) =>
+    `O cargo "${cargo}" não existe neste tipo de relatório e foi ignorado.`,
+  'text-too-long': (length: number, max: number) =>
+    `O texto tem ${String(length)} caracteres e o máximo recomendado é ${String(max)}. Pode não caber na página.`,
 } as const satisfies Record<IssueCode, (...args: never[]) => string>;
 
 export function makeIssue(
@@ -178,4 +220,23 @@ export function makeIssue(
 
 export function didYouMean(candidate: string | null): string | undefined {
   return candidate === null ? undefined : `Quis dizer "${candidate}"?`;
+}
+
+export function formatIssueLocation(issue: Issue): string {
+  if (issue.sheet !== undefined) {
+    const sheet = `Folha "${issue.sheet}"`;
+    const where =
+      issue.cell === undefined ? sheet : `${sheet}, célula ${issue.cell}`;
+    return issue.field === undefined
+      ? `${where} — ${issue.message}`
+      : `${where} — ${issue.field}: ${issue.message}`;
+  }
+  const parts = [
+    issue.tab === undefined ? null : `Separador ${issue.tab}`,
+    issue.row === undefined ? null : `linha ${String(issue.row)}`,
+    issue.column === undefined ? null : `coluna ${issue.column}`,
+  ].filter((part) => part !== null);
+  return parts.length === 0
+    ? issue.message
+    : `${parts.join(', ')} — ${issue.message}`;
 }

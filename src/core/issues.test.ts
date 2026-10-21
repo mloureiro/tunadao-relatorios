@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { ISSUE_SEVERITY, issueMessages, makeIssue } from './issues.ts';
+import {
+  ISSUE_SEVERITY,
+  formatIssueLocation,
+  issueMessages,
+  makeIssue,
+} from './issues.ts';
 
 describe('makeIssue()', () => {
   it('takes the severity from the catalogue and carries the location', () => {
@@ -62,6 +67,13 @@ describe('issue catalogue', () => {
       'checkpoint-mismatch',
       'missing-opening-balance',
       'manual-opening-mismatch',
+      'report-type-unknown',
+      'report-version-newer',
+      'field-missing',
+      'field-empty',
+      'field-invalid',
+      'field-duplicate',
+      'formula-no-value',
     ]);
   });
 });
@@ -109,5 +121,51 @@ describe('file-level messages', () => {
     ],
   ])('words an unrecognised file with closest %j', (closest, expected) => {
     expect(issueMessages['unrecognised-file']('a.csv', closest)).toBe(expected);
+  });
+});
+
+describe('formatIssueLocation()', () => {
+  it('names the sheet, the cell and the field of a report-sheet issue', () => {
+    const issue = makeIssue('field-empty', issueMessages['field-empty'](), {
+      sheet: 'Pegada 2026',
+      cell: 'B8',
+      field: 'Saldo do extrato bancário na data da passagem (€)',
+    });
+
+    expect(formatIssueLocation(issue)).toBe(
+      'Folha "Pegada 2026", célula B8 — Saldo do extrato bancário na data da passagem (€): Valor em falta.',
+    );
+  });
+
+  it('omits the cell and the field a sheet-level issue does not have', () => {
+    expect(
+      formatIssueLocation(
+        makeIssue('field-missing', 'Falta o campo "Ano".', {
+          sheet: 'Fiscal 2025',
+        }),
+      ),
+    ).toBe('Folha "Fiscal 2025" — Falta o campo "Ano".');
+    expect(
+      formatIssueLocation(
+        makeIssue('field-missing', 'Falta o campo "Ano".', {
+          sheet: 'Fiscal 2025',
+          field: 'Ano',
+        }),
+      ),
+    ).toBe('Folha "Fiscal 2025" — Ano: Falta o campo "Ano".');
+  });
+
+  it.each([
+    [
+      { tab: 'Movimentos' as const, row: 12, column: 'Rubrica' },
+      'Separador Movimentos, linha 12, coluna Rubrica — M',
+    ],
+    [{ tab: 'Saldos' as const, row: 3 }, 'Separador Saldos, linha 3 — M'],
+    [{ tab: 'Listas' as const }, 'Separador Listas — M'],
+    [{ file: 'a.xlsx' }, 'M'],
+  ])('keeps the data-tab wording for %j', (where, expected) => {
+    expect(formatIssueLocation(makeIssue('required-empty', 'M', where))).toBe(
+      expected,
+    );
   });
 });

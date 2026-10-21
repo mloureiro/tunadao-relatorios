@@ -14,7 +14,7 @@ function requireInteger(value: number, what: string): void {
   }
 }
 
-function group(digits: string): string {
+export function groupThousands(digits: string): string {
   const first = digits.length % 3 || 3;
   const parts = [digits.slice(0, first)];
   for (let at = first; at < digits.length; at += 3)
@@ -29,7 +29,7 @@ function pad2(value: number): string {
 function magnitude(cents: Cents): string {
   const abs = Math.abs(cents);
   const fraction = abs % 100;
-  return `${group(String((abs - fraction) / 100))},${pad2(fraction)}${EURO}`;
+  return `${groupThousands(String((abs - fraction) / 100))},${pad2(fraction)}${EURO}`;
 }
 
 export function formatMoney(cents: Cents): string {
@@ -46,14 +46,14 @@ export function formatMoneySigned(cents: Cents): string {
 export function formatEuros(cents: Cents): string {
   requireInteger(cents, 'cents');
   const euros = roundHalfAway(cents, 100);
-  return `${euros < 0 ? MINUS : ''}${group(String(Math.abs(euros)))}${EURO}`;
+  return `${euros < 0 ? MINUS : ''}${groupThousands(String(Math.abs(euros)))}${EURO}`;
 }
 
 export function formatPermille(value: number): string {
   requireInteger(value, 'permille');
   const abs = Math.abs(value);
   const tenth = abs % 10;
-  return `${value < 0 ? MINUS : ''}${group(String((abs - tenth) / 10))},${String(tenth)}%`;
+  return `${value < 0 ? MINUS : ''}${groupThousands(String((abs - tenth) / 10))},${String(tenth)}%`;
 }
 
 export function formatShare(value: number): string {
@@ -72,4 +72,24 @@ export function formatDateTime(localIso: string): string {
   if (match === null)
     throw new RangeError(`Not a local date-time: ${localIso}`);
   return `${formatDate(match[1] ?? '')} ${match[2] ?? ''}:${match[3] ?? ''}`;
+}
+
+const MONTHS = [
+  'janeiro',
+  'fevereiro',
+  'março',
+  'abril',
+  'maio',
+  'junho',
+  'julho',
+  'agosto',
+  'setembro',
+  'outubro',
+  'novembro',
+  'dezembro',
+] as const;
+
+export function formatDateLong(iso: string): string {
+  const { year, month, day } = parseIso(iso);
+  return `${String(day)} de ${MONTHS[month - 1] ?? ''} de ${String(year)}`;
 }
