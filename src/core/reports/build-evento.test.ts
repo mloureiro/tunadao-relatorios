@@ -68,6 +68,13 @@ describe('buildEvento()', () => {
       section.footer.find((line) => line.label.startsWith('Recebido'))?.value
         .text,
     ).toBe(eur('100,00 €'));
+    expect(
+      section.footer.map((line) => [line.label.split(' ')[0], line.column]),
+    ).toEqual([
+      ['Reembolsos', 'entrada'],
+      ['Recebido', 'entrada'],
+      ['Pago', 'saida'],
+    ]);
   });
 
   it('puts the optional sections in the event order and shows in-kind in the summary only when it has a value', () => {

@@ -179,6 +179,7 @@ export interface MovementRow {
 export interface FooterLine {
   readonly label: string;
   readonly value: Money;
+  readonly column?: 'entrada' | 'saida';
 }
 
 export interface MovementsSection {
