@@ -118,6 +118,37 @@ describe('derived dates', () => {
     });
   });
 
+  it('warns on the derived start when the report it came from has errors, and stays silent when that report is fine', async () => {
+    const letivo: Entry = [
+      'Letivo',
+      await sheetFrom('letivo-2025-26', 'letivo', {}, ['inicio']),
+    ];
+    const broken = await load([
+      [
+        'Fiscal',
+        await sheetFrom('fiscal-2025', 'fiscal', {
+          ambitoOrcamento: 'Inexistente',
+        }),
+      ],
+      letivo,
+    ]);
+    const fine = await load([await fiscal2025('Fiscal'), letivo]);
+
+    expect(instance(broken, 'Fiscal').status).toBe('com-erros');
+    expect(instance(broken, 'Letivo').status).toBe('pronto-com-avisos');
+    expect(instance(broken, 'Letivo').issues).toMatchObject([
+      {
+        code: 'derived-from-erroneous-sheet',
+        severity: 'warning',
+        cell: cellOf('letivo', 'inicio'),
+        field: 'Início do período',
+      },
+    ]);
+    expect(instance(broken, 'Letivo').issues[0]?.message).toContain('"Fiscal"');
+    expect(instance(fine, 'Letivo').status).toBe('pronto');
+    expect(instance(fine, 'Letivo').issues).toEqual([]);
+  });
+
   it('does not derive a letivo start from a report that ends after it', async () => {
     const result = await load([
       ['Letivo', await sheetFrom('letivo-2025-26', 'letivo', {}, ['inicio'])],

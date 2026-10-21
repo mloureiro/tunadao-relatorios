@@ -3,7 +3,6 @@ import { loadWorkbook, type WorkbookResult } from '@/core/workbook';
 import { GENERATOR_VERSION } from '@/core/version';
 import { lisbonDateTime } from '@/host/lisbon-time';
 import { config } from './config';
-import { startEngine } from './engine';
 import { DataIssues } from './DataIssues';
 import { DataSummary } from './DataSummary';
 import { FileBar } from './FileBar';
@@ -56,7 +55,6 @@ export function App() {
       const refuse = (text: string) => {
         setReading(null);
         setNotice({ id: mine, text });
-        announce(text);
       };
 
       const refusal = checkSelection(files.map(({ name }) => name));
@@ -66,7 +64,6 @@ export function App() {
       }
       setNotice(null);
       setReading(file.name);
-      void startEngine().catch(() => undefined);
       announce('A ler o ficheiro…');
 
       try {

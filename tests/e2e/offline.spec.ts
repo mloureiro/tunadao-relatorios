@@ -94,6 +94,7 @@ test('a first visit downloads the PDF engine from the network once', async ({
   );
 
   await page.goto('./');
+  await page.locator('input[type="file"]').setInputFiles(VALID);
   await served;
 
   expect(fromNetwork).toHaveLength(1);

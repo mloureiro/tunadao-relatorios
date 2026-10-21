@@ -6,6 +6,8 @@ declare global {
   }
 }
 
+test.use({ serviceWorkers: 'block' });
+
 test('the render worker runs under the page CSP, where dynamic code is blocked', async ({
   page,
 }) => {

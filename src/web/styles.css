@@ -212,6 +212,10 @@ main {
   background: var(--tint);
 }
 
+.button[aria-disabled='true'] {
+  cursor: progress;
+}
+
 .button:disabled {
   border-color: var(--hairline);
   background: var(--tint);

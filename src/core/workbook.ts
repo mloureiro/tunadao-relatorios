@@ -250,6 +250,50 @@ function evaluate(
   };
 }
 
+function flagErroneousAnchors(
+  evaluated: readonly Evaluated[],
+  prepared: readonly Prepared[],
+): Evaluated[] {
+  return evaluated.map((item, index) => {
+    const source = prepared[index];
+    if (source === undefined) return item;
+    const { cellOf } = toRawParams(source.draft);
+    const flagged = [...source.resolution.derived].flatMap(
+      ([key, { fromSheet }]) => {
+        const anchor = evaluated.find(
+          ({ instance }) => instance.sheet === fromSheet,
+        );
+        if (fromSheet === undefined || anchor === undefined) return [];
+        if (!hasErrors(anchor.instance.issues)) return [];
+        const target = cellOf.get(key);
+        return [
+          makeIssue(
+            'derived-from-erroneous-sheet',
+            issueMessages['derived-from-erroneous-sheet'](fromSheet),
+            {
+              sheet: item.instance.sheet,
+              ...(target === undefined
+                ? {}
+                : { cell: target.cell, field: target.field }),
+            },
+          ),
+        ];
+      },
+    );
+    if (flagged.length === 0) return item;
+    const { instance } = item;
+    return {
+      ...item,
+      instance: {
+        ...instance,
+        issues: [...instance.issues, ...flagged],
+        status:
+          instance.status === 'pronto' ? 'pronto-com-avisos' : instance.status,
+      },
+    };
+  });
+}
+
 function rank(instance: ReportInstance): number {
   if (instance.status === 'por-preencher' || instance.tipo === null) return 2;
   return instance.endDate === undefined ? 1 : 0;
@@ -327,8 +371,9 @@ export async function loadWorkbook(
   }));
   const cross = crossSheetIssues(checked, load.dataset, todayOf(ctx.now));
 
-  const evaluated = prepared.map((item) =>
-    evaluate(item, { load, ctx, dataBlocked, cross }),
+  const evaluated = flagErroneousAnchors(
+    prepared.map((item) => evaluate(item, { load, ctx, dataBlocked, cross })),
+    prepared,
   );
   const reports = sortReports(evaluated.map(({ instance }) => instance));
   const ready = evaluated.flatMap(({ ready: report }) =>
