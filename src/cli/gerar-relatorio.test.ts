@@ -196,9 +196,10 @@ describe('main()', () => {
     );
 
     expect(code).toBe(EXIT.blocked);
-    expect(run.stderr()).toContain(
+    expect(run.stdout()).toContain(
       'ERRO Separador Movimentos, linha 2, coluna Atividade',
     );
+    expect(run.stderr()).toBe('');
   });
 
   it('exits 2 and suggests the closest sheet when the name is unknown', async () => {

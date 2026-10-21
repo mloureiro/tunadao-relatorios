@@ -80,9 +80,13 @@ const STATUS_LABEL: Record<ReportStatus, string> = {
   pronto: 'pronto',
 };
 
-function printIssues(issues: readonly Issue[], io: CliIo): void {
+function printIssues(
+  issues: readonly Issue[],
+  io: CliIo,
+  stream: 'stdout' | 'stderr',
+): void {
   for (const issue of sortedForPrinting(issues)) {
-    io.stderr(`${formatIssue(issue)}\n`);
+    io[stream](`${formatIssue(issue)}\n`);
   }
 }
 
@@ -171,7 +175,7 @@ async function run(options: CliOptions, io: CliIo): Promise<number> {
   const dataIssues = workbook.load.issues;
 
   if (options.listar) {
-    printIssues(dataIssues, io);
+    printIssues(dataIssues, io, 'stdout');
     listReports(workbook.reports, io);
     return dataIssues.some(({ severity }) => severity === 'error')
       ? EXIT.blocked
@@ -184,6 +188,7 @@ async function run(options: CliOptions, io: CliIo): Promise<number> {
     printIssues(
       instance.status === 'bloqueado-dados' ? dataIssues : instance.issues,
       io,
+      'stderr',
     );
     io.stderr(
       `A folha "${instance.sheet}" não está pronta (${STATUS_LABEL[instance.status]}); nenhum PDF escrito.\n`,
@@ -191,7 +196,7 @@ async function run(options: CliOptions, io: CliIo): Promise<number> {
     return EXIT.blocked;
   }
 
-  printIssues([...dataIssues, ...instance.issues], io);
+  printIssues([...dataIssues, ...instance.issues], io, 'stderr');
   if (options.json !== null) {
     await writeOutput(io, options.json, `${JSON.stringify(report, null, 2)}\n`);
   }
