@@ -58,7 +58,7 @@ jobs:
       - name: Check the PDF embeds only the bundled fonts
         run: |
           pdffonts build/hello.pdf
-          ! pdffonts build/hello.pdf | tail -n +3 | grep -vE '\+(Lato|CarterOne)'
+          ! pdffonts build/hello.pdf | tail -n +3 | grep -vE '\+(Lato|CarterOne|Rubik|Nunito)'
       - name: Compile every report template against its examples
         run: |
           for example in examples/*.json; do
@@ -68,7 +68,7 @@ jobs:
             typst compile --root build/typst-root --font-path assets/fonts --ignore-system-fonts "build/typst-root/templates/${template}.typ" "build/${name}.pdf" 2> "build/${name}.log"
             cat "build/${name}.log"
             test ! -s "build/${name}.log"
-            ! pdffonts "build/${name}.pdf" | tail -n +3 | grep -vE '\+(Lato|CarterOne)'
+            ! pdffonts "build/${name}.pdf" | tail -n +3 | grep -vE '\+(Lato|CarterOne|Rubik|Nunito)'
           done
           pdftotext build/evento-citadao.pdf - | tr '\302\240' ' ' | grep -F '20.225,20 €'
           pdftotext build/evento-zumba.pdf - | tr '\302\240' ' ' | grep -F '2.927,50 €'

@@ -25,7 +25,7 @@ export interface WebRendererOptions {
 const assetUrls = import.meta.glob<string>(
   [
     '../../assets/fonts/*.ttf',
-    '../../assets/logo.svg',
+    '../../assets/letterhead/*',
     '../../templates/**/*.typ',
   ],
   { query: '?url', import: 'default', eager: true },
@@ -50,7 +50,7 @@ function urlFor(path: string): string {
 }
 
 function resolveAssets(manifest: AssetManifest): WorkerAssets {
-  const filePaths = [...manifest.templates, manifest.logo];
+  const filePaths = [...manifest.templates, ...manifest.images];
   return {
     wasmUrl: absolute(wasmUrl),
     fontUrls: manifest.fonts.map(urlFor),

@@ -1,5 +1,11 @@
 # Changelog
 
+## Por publicar
+
+- Os PDFs usam o papel timbrado da tuna: barra azul, marca d'água e selo no cabeçalho, e no rodapé o nome, a morada e o
+  NIPC (`org.address` e `org.nipc` em `config/config.json`).
+- As páginas são numeradas `1/3`, `2/3`, `3/3`, para que cada página possa ser rubricada.
+
 ## 2.0.0
 
 - A Tesouraria passa a ser o único sítio onde se escreve um relatório. A página já não tem formulários: carrega-se o

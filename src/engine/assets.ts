@@ -3,7 +3,7 @@ import type { TemplateId } from './renderer';
 export interface AssetManifest {
   templates: readonly string[];
   fonts: readonly string[];
-  logo: string;
+  images: readonly string[];
 }
 
 export const defaultManifest: AssetManifest = {
@@ -23,8 +23,11 @@ export const defaultManifest: AssetManifest = {
     'assets/fonts/Lato-Italic.ttf',
     'assets/fonts/Lato-BoldItalic.ttf',
     'assets/fonts/CarterOne.ttf',
+    'assets/fonts/Rubik-Bold.ttf',
+    'assets/fonts/Nunito-Regular.ttf',
+    'assets/fonts/Nunito-Bold.ttf',
   ],
-  logo: 'assets/logo.svg',
+  images: ['assets/letterhead/selo.jpg', 'assets/letterhead/fundo.png'],
 };
 
 export const REPORT_DATA_PATH = 'data/report.json';

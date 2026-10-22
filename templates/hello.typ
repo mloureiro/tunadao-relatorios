@@ -16,6 +16,12 @@
 
 #text(font: "Carter One")[Carter One: #glyphs]
 
+#text(font: "Rubik", weight: "bold")[Rubik Bold: #glyphs]
+
+#text(font: "Nunito")[Nunito Regular: #glyphs]
+
+#text(font: "Nunito", weight: "bold")[Nunito Bold: #glyphs]
+
 = Tabela de várias páginas
 
 #table(

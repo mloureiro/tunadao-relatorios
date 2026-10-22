@@ -185,13 +185,13 @@ npm run gerar -- --entrada fixtures/generated/invalid/report-sheets.xlsx --lista
 
 | O quê                                      | Onde                                     | Como                                                                                                       |
 | ------------------------------------------ | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Logo                                       | `assets/logo.svg`                        | Substitua o ficheiro por outro SVG (mantenha o nome). Aparece no cabeçalho dos PDFs.                       |
+| Papel timbrado                             | `assets/letterhead/`                     | `selo.jpg` (selo no cabeçalho) e `fundo.png` (barra azul e marca d'água). Substitua mantendo os nomes.     |
 | Rubricas, sub-rubricas, atividades e meios | aba **Listas** do modelo                 | Acrescente ou altere linhas na própria folha. Não há nada para mudar no código.                            |
 | Cores dos PDFs                             | `config/config.json`, chave `theme`      | Valores `#RRGGBB`. `segments` tem sempre 8 cores (gráficos) e `segmentInk` o texto legível sobre cada uma. |
 | Cargos nas linhas de assinatura            | `config/config.json`, chave `signatures` | Uma lista de cargos por relatório (`evento`, `pegada`, `letivo`, `fiscal`).                                |
-| Nome e subtítulo da tuna                   | `config/config.json`, chave `org`        | Texto livre.                                                                                               |
+| Nome, subtítulo, morada e NIPC da tuna     | `config/config.json`, chave `org`        | Texto livre; o NIPC tem 9 dígitos. Aparecem no cabeçalho e no rodapé dos PDFs.                             |
 
-O logo e o `config.json` fazem parte da página publicada: depois de os alterar, faça commit para `main` e a
+O papel timbrado e o `config.json` fazem parte da página publicada: depois de os alterar, faça commit para `main` e a
 publicação refaz-se sozinha (ver a secção seguinte). Pelo CLI a alteração vale logo. Um `config.json` inválido
 impede a página e o CLI de arrancar, com uma mensagem a dizer qual o campo errado.
 
@@ -270,7 +270,7 @@ endereço publicado.
 
 O PDF é composto por Typst, compilado em WebAssembly com `@myriaddreamin/typst.ts` e `@myriaddreamin/typst-ts-web-compiler`
 (ambos fixados em `0.7.0`, que embute o Typst **0.14.2**). Os modelos usam apenas funcionalidades do Typst 0.14. O CI
-compila `templates/hello.typ` com o Typst CLI 0.14.2 e confirma que o PDF só embute Lato e Carter One.
+compila `templates/hello.typ` com o Typst CLI 0.14.2 e confirma que o PDF só embute Lato, Carter One, Rubik e Nunito.
 
 - `src/engine/typst-session.ts` constrói o compilador a partir de bytes (wasm, tipos de letra, modelos) e implementa
   `render(templateId, report)`. É partilhado pelo navegador e pelo Node.
@@ -291,8 +291,7 @@ compila `templates/hello.typ` com o Typst CLI 0.14.2 e confirma que o PDF só em
 - A versão 0.7.0 só devolve avisos do compilador quando a compilação falha. Por isso `render` compila através de
   `runWithWorld`, onde os avisos (por exemplo `unknown font family`) chegam também em caso de sucesso. Glifos em falta
   não geram aviso nenhum; a cobertura é verificada por `src/engine/font-coverage.test.ts`, que lê a tabela `cmap` de cada
-  tipo de letra, e o job `typst-cli` falha se o PDF embutir qualquer tipo de letra que não seja Lato ou Carter One.
-- `assets/logo.svg` é um marcador provisório até haver o logótipo real.
+  tipo de letra, e o job `typst-cli` falha se o PDF embutir qualquer tipo de letra que não seja Lato, Carter One, Rubik ou Nunito.
 
 ### Tamanhos medidos
 
@@ -300,7 +299,7 @@ compila `templates/hello.typ` com o Typst CLI 0.14.2 e confirma que o PDF só em
 | --------------------------------------- | ----------------------- |
 | `typst_ts_web_compiler_bg.wasm` (bruto) | 28 325 178 B (27,0 MiB) |
 | mesmo ficheiro, gzip -9                 | 10 733 234 B (10,2 MiB) |
-| tipos de letra (5 TTF)                  | 2 800 908 B (2,7 MiB)   |
+| tipos de letra (8 TTF)                  | 3 227 528 B (3,1 MiB)   |
 
 O primeiro PDF de teste, medido em `vite preview` local (sem rede real), fica pronto cerca de 0,1 s após o wasm
 carregar e demora cerca de 0,2 s a compor. No GitHub Pages o wasm é transferido

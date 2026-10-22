@@ -8,6 +8,8 @@ export const configSchema = z.strictObject({
   org: z.strictObject({
     name: z.string().min(1),
     subtitle: z.string().min(1),
+    address: z.string().min(1),
+    nipc: z.string().regex(/^\d{9}$/, 'NIPC com 9 dígitos'),
   }),
   theme: z.strictObject({
     navy: colour,
