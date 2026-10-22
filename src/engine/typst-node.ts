@@ -32,7 +32,7 @@ export async function createNodeRenderer(
     require.resolve('@myriaddreamin/typst-ts-web-compiler/wasm'),
   );
   const fonts = await readFiles(manifest.fonts);
-  const files = await readFiles([...manifest.templates, manifest.logo]);
+  const files = await readFiles([...manifest.templates, ...manifest.images]);
   return createTypstSession({
     wasm: new Uint8Array(wasm),
     fonts: [...fonts.values()],

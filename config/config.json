@@ -1,7 +1,9 @@
 {
   "org": {
-    "name": "TUNADÃO 1998",
-    "subtitle": "Tuna do Instituto Politécnico de Viseu"
+    "name": "Tunadão 1998",
+    "subtitle": "Tuna do Instituto Politécnico de Viseu",
+    "address": "Campus Politécnico, 3500-227 Viseu",
+    "nipc": "507313356"
   },
   "theme": {
     "navy": "#1D2F6F",

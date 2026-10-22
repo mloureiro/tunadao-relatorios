@@ -472,6 +472,8 @@ export function headerOf(
   return {
     org: config.org.name,
     subtitle: config.org.subtitle,
+    address: config.org.address,
+    nipc: config.org.nipc,
     title,
     periodLabel: period,
     ...(lead === undefined ? {} : { lead }),

@@ -8,35 +8,49 @@
 #let rule-grey = luma(220)
 #let page-top = 3.6cm
 
+#let letterhead-blue = rgb("#1668B3")
+#let letterhead-ink = rgb("#111111")
+
 #let setup(body) = {
   set document(date: none, title: report.header.title)
   set page(
     paper: "a4",
-    margin: (top: page-top, bottom: 2.2cm, x: 2cm),
-    header-ascent: 0.6cm,
+    margin: (top: page-top, bottom: 2.6cm, left: 2.4cm, right: 2cm),
+    header-ascent: 0.5cm,
+    footer-descent: 0.4cm,
+    background: image("/assets/letterhead/fundo.png", width: 100%, height: 100%),
     header: {
       grid(
-        columns: (auto, 1fr, auto),
-        column-gutter: 0.4cm,
+        columns: (1fr, auto, auto),
+        column-gutter: 0.35cm,
         align: horizon,
-        image("/assets/logo.svg", height: 1.4cm),
         {
-          text(font: "Carter One", size: 18pt, fill: navy, report.header.org)
+          text(weight: "bold", size: 11pt, fill: navy, report.header.title)
           linebreak()
-          text(size: 9pt, fill: muted, report.header.subtitle)
+          text(size: 9pt, fill: muted, report.header.periodLabel)
         },
-        align(right)[
-          #text(weight: "bold", size: 11pt, fill: navy, report.header.title)
-          #linebreak()
-          #text(size: 9pt, fill: muted, report.header.periodLabel)
-        ],
+        align(right, {
+          text(font: "Rubik", weight: "bold", size: 20pt, fill: letterhead-ink, report.header.org)
+          linebreak()
+          text(font: "Nunito", size: 7.5pt, fill: letterhead-blue, report.header.subtitle)
+        }),
+        image("/assets/letterhead/selo.jpg", height: 1.9cm),
       )
-      v(0.15cm)
-      line(length: 100%, stroke: 0.8pt + navy)
     },
     footer: context {
-      set text(size: 8pt, fill: muted)
-      align(center)[Página #counter(page).display() de #counter(page).final().first()]
+      set text(font: "Nunito", size: 8pt, fill: letterhead-ink)
+      line(length: 100%, stroke: 0.4pt + luma(150))
+      v(0.1cm)
+      grid(
+        columns: (1fr, auto, 1fr),
+        align: (left, center, right + horizon),
+        [],
+        align(center)[
+          #text(weight: "bold")[#report.header.org - #report.header.subtitle] \
+          #report.header.address | NIPC: #report.header.nipc
+        ],
+        text(size: 9pt, weight: "bold")[#counter(page).display()/#counter(page).final().first()],
+      )
     },
   )
   set text(font: "Lato", size: 10pt, lang: "pt", region: "pt")

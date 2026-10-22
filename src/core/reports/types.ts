@@ -278,6 +278,8 @@ export interface ReportJson {
   readonly header: {
     readonly org: string;
     readonly subtitle: string;
+    readonly address: string;
+    readonly nipc: string;
     readonly title: string;
     readonly periodLabel: string;
     readonly lead?: string;

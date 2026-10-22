@@ -6,7 +6,7 @@ describe('loadConfig()', () => {
   it('loads the shipped config.json', () => {
     const config = loadConfig(shipped);
 
-    expect(config.org.name).toBe('TUNADÃO 1998');
+    expect(config.org.name).toBe('Tunadão 1998');
     expect(config.signatures.pegada).toHaveLength(3);
     expect(config.aggregation.annex).toBe('subRubrica');
   });

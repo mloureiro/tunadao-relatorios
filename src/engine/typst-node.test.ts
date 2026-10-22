@@ -40,7 +40,7 @@ describe('createNodeRenderer', () => {
     expect(warnings).toEqual([]);
   });
 
-  it.skipIf(!hasPoppler)('embeds only Lato and Carter One faces', async () => {
+  it.skipIf(!hasPoppler)('embeds only the bundled faces', async () => {
     const { pdf } = await renderer.render('hello', helloSample);
 
     const names = poppler('pdffonts', pdf)
@@ -55,6 +55,9 @@ describe('createNodeRenderer', () => {
       'Lato-BoldItalic',
       'Lato-Italic',
       'Lato-Regular',
+      'Nunito-Bold',
+      'Nunito-Regular',
+      'Rubik-Bold',
     ]);
   });
 

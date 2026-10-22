@@ -211,7 +211,7 @@ describe('evento template', () => {
       expect(text).toContain('4.548 €');
       expect(text).toContain('20.225,20 €');
       expect(text).toContain('15.927,00 €');
-      expect(text).toMatch(/Página 1 de [1-9]\d*/);
+      expect(text).toMatch(/\b1\/[1-9]\d*\b/);
     },
   );
 

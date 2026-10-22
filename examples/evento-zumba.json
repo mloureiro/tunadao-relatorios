@@ -30,8 +30,10 @@
     ]
   },
   "header": {
-    "org": "TUNADÃO 1998",
+    "org": "Tunadão 1998",
     "subtitle": "Tuna do Instituto Politécnico de Viseu",
+    "address": "Campus Politécnico, 3500-227 Viseu",
+    "nipc": "507313356",
     "title": "Relatório de evento",
     "periodLabel": "Evento de 14/03/2026",
     "lead": "Zumba na Caneca · Valores dos movimentos de 03/03/2026 a 18/03/2026"
