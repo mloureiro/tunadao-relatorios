@@ -8,7 +8,6 @@ import {
   inPeriod,
   periodFigures,
   sortChronologically,
-  type ManualOpening,
   type PeriodFigures,
 } from './period.ts';
 
@@ -31,7 +30,6 @@ export interface PegadaParams {
   readonly naoCreditados: readonly UnclearedItem[];
   readonly contagem: Readonly<Partial<Record<DenominationCents, number>>>;
   readonly moedasPequenasCents?: Cents;
-  readonly aberturaManual?: ManualOpening;
 }
 
 export interface CashCountRow {
@@ -92,12 +90,7 @@ export function pegadaFigures(
 ): PegadaFigures {
   const { dataUltimoRelatorio, dataPassagem } = params;
   const start = addDays(dataUltimoRelatorio, 1);
-  const period = periodFigures(
-    dataset,
-    start,
-    dataPassagem,
-    params.aberturaManual,
-  );
+  const period = periodFigures(dataset, start, dataPassagem);
   const { issues: periodIssues, ...periodOnly } = period;
   const movements = sortChronologically(
     inPeriod(dataset.movimentos, start, dataPassagem),

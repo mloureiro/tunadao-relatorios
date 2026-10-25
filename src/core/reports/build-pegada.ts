@@ -11,7 +11,6 @@ import {
   bridgeSection,
   card,
   dedupeIssues,
-  hasManualOpening,
   headerOf,
   money,
   pendingSection,
@@ -123,7 +122,7 @@ export function buildPegada(
       })),
       net: money(pegada.position.netCents),
     },
-    bridgeSection(period, hasManualOpening(pegada.issues)),
+    bridgeSection(period),
     ...present(
       signedMovementsSection(
         'Movimentos desde o último relatório',

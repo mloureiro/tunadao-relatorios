@@ -24,7 +24,7 @@ const extrato = (
   fonte: Checkpoint['fonte'] = 'Extrato',
 ): Checkpoint => ({ ...saldo(data, cents, 'Banco'), fonte });
 
-const openingBalances = [
+const yearStartSaldos = [
   saldo('2024-12-31', 10000, 'Caixa'),
   saldo('2024-12-31', 50000, 'Banco'),
 ];
@@ -47,13 +47,13 @@ const build = (
     CONTEXT,
   );
 
-const year = emptyDataset({ saldos: openingBalances, movimentos: movements });
+const year = emptyDataset({ saldos: yearStartSaldos, movimentos: movements });
 
 describe('buildFiscal()', () => {
   it('adds the conferido row only when a Banco Extrato checkpoint exists on 31/12 of the year', () => {
     const rowsOf = (extra: Checkpoint[]) =>
       sectionOf(
-        build({ ...year, saldos: [...openingBalances, ...extra] }).report,
+        build({ ...year, saldos: [...yearStartSaldos, ...extra] }).report,
         'bridge',
       ).rows.map((row) => [row.label, row.value.text]);
 
@@ -71,7 +71,7 @@ describe('buildFiscal()', () => {
 
   it('puts the optional sections in the fiscal order and leaves the movement annex out by default', () => {
     const dataset = emptyDataset({
-      saldos: openingBalances,
+      saldos: yearStartSaldos,
       movimentos: movements,
       orcamento: [
         linha({ ambito: '2025', orcadoCents: 5000 }),
@@ -111,7 +111,7 @@ describe('buildFiscal()', () => {
 
   it('uses the budget lines of the year as text and warns when there are none', () => {
     const withBudget = emptyDataset({
-      saldos: openingBalances,
+      saldos: yearStartSaldos,
       movimentos: movements,
       orcamento: [
         linha({ ambito: '2025', orcadoCents: 5000 }),
@@ -155,7 +155,7 @@ describe('buildFiscal()', () => {
 
   it('compares at the configured level', () => {
     const detailed = emptyDataset({
-      saldos: openingBalances,
+      saldos: yearStartSaldos,
       movimentos: [
         mov({ data: '2024-05-01', cents: 4000, subRubrica: 'Bilhetes' }),
         mov({ data: '2025-05-01', cents: 8000, subRubrica: 'Bilhetes' }),

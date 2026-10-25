@@ -1,7 +1,5 @@
-import { addDays, type IsoDate } from '../dates.ts';
-import type { Conta, Dataset } from '../dataset/types.ts';
+import type { Dataset } from '../dataset/types.ts';
 import { issueMessages, makeIssue, type Issue } from '../issues.ts';
-import type { Cents } from '../money.ts';
 import {
   CONTAS,
   checkpointsOf,
@@ -63,41 +61,6 @@ export function verifyCheckpoints(dataset: Dataset): Issue[] {
         );
       }
     });
-  }
-  return issues;
-}
-
-export function verifyFromManual(
-  dataset: Dataset,
-  periodStart: IsoDate,
-  manual: Readonly<Partial<Record<Conta, Cents>>>,
-): Issue[] {
-  const openingDay = addDays(periodStart, -1);
-  const issues: Issue[] = [];
-
-  for (const conta of CONTAS) {
-    const opening = manual[conta];
-    const first = checkpointsOf(dataset, conta).find(
-      (checkpoint) => checkpoint.data > openingDay && !checkpoint.conflicting,
-    );
-    if (opening === undefined || first === undefined) continue;
-
-    const computed =
-      opening + movementsBetween(dataset, conta, openingDay, first.data);
-    if (computed !== first.saldoCents) {
-      issues.push(
-        makeIssue(
-          'manual-opening-mismatch',
-          issueMessages['manual-opening-mismatch'](
-            conta,
-            first.data,
-            first.saldoCents,
-            computed,
-          ),
-          where(first),
-        ),
-      );
-    }
   }
   return issues;
 }

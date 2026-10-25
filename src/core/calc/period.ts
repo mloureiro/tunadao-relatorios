@@ -3,10 +3,7 @@ import type { Cents, Conta, Dataset, Movimento } from '../dataset/types.ts';
 import { issueMessages, makeIssue, type Issue } from '../issues.ts';
 import { sum } from '../money.ts';
 import { CONTAS, balanceAtEndOf, movementsBetween } from '../ledger/balance.ts';
-import { verifyFromManual } from '../ledger/verify.ts';
 import { classify } from './classify.ts';
-
-export type ManualOpening = Readonly<Partial<Record<Conta, Cents>>>;
 
 export interface AccountSplit {
   readonly caixaCents: Cents;
@@ -85,27 +82,15 @@ export function periodFigures(
   dataset: Dataset,
   start: IsoDate,
   end: IsoDate,
-  manualOpening: ManualOpening = {},
 ): PeriodResult {
   const dayBefore = addDays(start, -1);
   const issues: Issue[] = [];
-  const manualUsed: Partial<Record<Conta, Cents>> = {};
   const opening = {} as Record<Conta, Cents>;
 
   for (const conta of CONTAS) {
     const fromLedger = balanceAtEndOf(dataset, conta, dayBefore);
-    const manual = manualOpening[conta];
     if (fromLedger !== undefined) {
       opening[conta] = fromLedger;
-    } else if (manual !== undefined) {
-      opening[conta] = manual;
-      manualUsed[conta] = manual;
-      issues.push(
-        makeIssue(
-          'manual-opening-balance',
-          issueMessages['manual-opening-balance'](conta, manual),
-        ),
-      );
     } else {
       opening[conta] = 0;
       issues.push(
@@ -116,7 +101,6 @@ export function periodFigures(
       );
     }
   }
-  issues.push(...verifyFromManual(dataset, start, manualUsed));
 
   const closing = {} as Record<Conta, Cents>;
   for (const conta of CONTAS) {

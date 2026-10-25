@@ -157,10 +157,6 @@ export function negativeNetIssues(
   );
 }
 
-export function hasManualOpening(issues: readonly Issue[]): boolean {
-  return issues.some((issue) => issue.code === 'manual-opening-balance');
-}
-
 export function textSection(
   title: string,
   text: string | undefined,
@@ -482,7 +478,6 @@ export function headerOf(
 
 export function bridgeSection(
   figures: PeriodFigures,
-  manualOpening: boolean,
   extraRows: readonly BridgeRow[] = [],
 ): BridgeSection {
   return {
@@ -490,9 +485,7 @@ export function bridgeSection(
     title: 'Ponte entre o saldo inicial e o saldo final',
     rows: [
       {
-        label: manualOpening
-          ? 'Saldo inicial (declarado manualmente)'
-          : 'Saldo inicial',
+        label: 'Saldo inicial',
         value: money(figures.opening.totalCents),
       },
       { label: '(+) Recebimentos', value: money(figures.recebidoCents) },

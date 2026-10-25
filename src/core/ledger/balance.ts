@@ -1,4 +1,4 @@
-import { addDays, compare, type IsoDate } from '../dates.ts';
+import { compare, type IsoDate } from '../dates.ts';
 import type { Checkpoint, Conta, Dataset } from '../dataset/types.ts';
 import type { Cents } from '../money.ts';
 
@@ -57,13 +57,4 @@ export function balanceAtEndOf(
   return latest === undefined
     ? undefined
     : latest.saldoCents + movementsBetween(dataset, conta, latest.data, date);
-}
-
-export function openingBalance(
-  dataset: Dataset,
-  conta: Conta,
-  periodStart: IsoDate,
-  manual?: Cents,
-): Cents | undefined {
-  return balanceAtEndOf(dataset, conta, addDays(periodStart, -1)) ?? manual;
 }
