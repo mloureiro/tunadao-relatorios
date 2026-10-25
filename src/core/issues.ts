@@ -39,8 +39,6 @@ export const ISSUE_SEVERITY = {
   'checkpoint-mismatch': 'error',
   'negative-balance': 'warning',
   'missing-opening-balance': 'error',
-  'manual-opening-balance': 'warning',
-  'manual-opening-mismatch': 'error',
   'negative-rubric-net': 'warning',
   'budget-level-mismatch': 'warning',
   'no-budget': 'warning',
@@ -173,15 +171,6 @@ export const issueMessages = {
     `O saldo de ${conta} fica negativo em ${formatDate(date)}: ${formatMoney(cents)}.`,
   'missing-opening-balance': (conta: Conta, date: string) =>
     `Não há saldo de ${conta} anterior a ${formatDate(date)}. Acrescente no separador Saldos uma linha com Data ${formatDate(addDays(date, -1))}, Conta ${conta}, o saldo e Fonte Declarado.`,
-  'manual-opening-balance': (conta: Conta, cents: Cents) =>
-    `Foi usado o saldo inicial de ${conta} indicado manualmente: ${formatMoney(cents)}.`,
-  'manual-opening-mismatch': (
-    conta: Conta,
-    date: string,
-    declared: Cents,
-    computed: Cents,
-  ) =>
-    `O saldo de ${conta} em ${formatDate(date)} é ${formatMoney(declared)} mas o saldo inicial manual e os movimentos dão ${formatMoney(computed)}.`,
   'negative-rubric-net': (rubrica: string, cents: Cents) =>
     `O total líquido da rubrica "${rubrica}" é negativo: ${formatMoney(cents)}.`,
   'budget-level-mismatch': (rubrica: string) =>

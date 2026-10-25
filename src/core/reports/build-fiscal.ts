@@ -16,7 +16,6 @@ import {
   bridgeSection,
   budgetSections,
   dedupeIssues,
-  hasManualOpening,
   headerOf,
   inKindSection,
   money,
@@ -91,11 +90,7 @@ export function buildFiscal(
 
   const sections: Section[] = [
     periodKpis(figures),
-    bridgeSection(
-      figures,
-      hasManualOpening(figures.issues),
-      checkedRows(dataset, end),
-    ),
+    bridgeSection(figures, checkedRows(dataset, end)),
     ...budgetSections(budget.tables, config.aggregation.budgetPeriod),
     ...present(activitySection(byActivity(result, lists))),
     pendingSection(end, pendingAt(dataset, end)),

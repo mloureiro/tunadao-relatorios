@@ -47,7 +47,6 @@ export {
 } from './period.ts';
 export type {
   AccountSplit,
-  ManualOpening,
   MovementCounts,
   PeriodFigures,
   PeriodResult,

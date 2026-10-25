@@ -17,7 +17,6 @@ import {
   budgetSections,
   compositionSection,
   dedupeIssues,
-  hasManualOpening,
   headerOf,
   inKindSection,
   negativeNetIssues,
@@ -79,7 +78,7 @@ export function buildLetivo(
 
   const sections: Section[] = [
     periodKpis(figures),
-    bridgeSection(figures, hasManualOpening(figures.issues)),
+    bridgeSection(figures),
     ...present(
       compositionSection(
         'Composição do recebido',

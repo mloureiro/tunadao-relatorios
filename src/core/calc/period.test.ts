@@ -61,41 +61,6 @@ describe('periodFigures()', () => {
     });
   });
 
-  it('uses a manual opening when no checkpoint precedes the period and says so', () => {
-    const dataset = emptyDataset({
-      movimentos: [mov({ data: '2025-02-01', cents: 700 })],
-    });
-
-    const figures = periodFigures(dataset, '2025-01-01', '2025-12-31', {
-      Caixa: 1000,
-      Banco: 2000,
-    });
-
-    expect(figures.opening.totalCents).toBe(3000);
-    expect(figures.closing.totalCents).toBe(3700);
-    expect(figures.issues.map((i) => [i.code, i.severity])).toEqual([
-      ['manual-opening-balance', 'warning'],
-      ['manual-opening-balance', 'warning'],
-    ]);
-  });
-
-  it('flags a manual opening that a later checkpoint contradicts', () => {
-    const dataset = emptyDataset({
-      saldos: [
-        saldo('2025-06-30', 9999, 'Caixa'),
-        saldo('2025-06-30', 0, 'Banco'),
-      ],
-      movimentos: [mov({ data: '2025-02-01', cents: 700 })],
-    });
-
-    const { issues } = periodFigures(dataset, '2025-01-01', '2025-12-31', {
-      Caixa: 1000,
-      Banco: 0,
-    });
-
-    expect(issues.map((i) => i.code)).toContain('manual-opening-mismatch');
-  });
-
   it('reports a missing opening as an error instead of throwing', () => {
     const dataset = emptyDataset({
       movimentos: [mov({ data: '2025-02-01', cents: 700 })],

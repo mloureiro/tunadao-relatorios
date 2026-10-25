@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { emptyDataset, mov, saldo } from '../../../tests/support/dataset.ts';
 import { formatMoney, formatMoneySigned } from '../format.ts';
 import { dailyBalances, negativeBalanceIssues } from './daily.ts';
-import { verifyCheckpoints, verifyFromManual } from './index.ts';
+import { verifyCheckpoints } from './index.ts';
 
 const movimentos = [
   mov({ data: '2025-02-01', cents: 2500 }),
@@ -77,33 +77,6 @@ describe('verifyCheckpoints()', () => {
     });
 
     expect(verifyCheckpoints(dataset)).toEqual([]);
-  });
-});
-
-describe('verifyFromManual()', () => {
-  const dataset = emptyDataset({
-    movimentos,
-    saldos: [saldo('2025-12-31', 12400, 'Caixa', 7)],
-  });
-
-  it('accepts a manual opening that reaches the later checkpoint', () => {
-    expect(verifyFromManual(dataset, '2025-01-01', { Caixa: 10000 })).toEqual(
-      [],
-    );
-  });
-
-  it('reports the first later checkpoint that disagrees with the manual opening', () => {
-    const issues = verifyFromManual(dataset, '2025-01-01', { Caixa: 9000 });
-
-    expect(issues).toMatchObject([
-      { severity: 'error', code: 'manual-opening-mismatch', row: 7 },
-    ]);
-    expect(issues[0]?.message).toContain(formatMoney(12400));
-    expect(issues[0]?.message).toContain(formatMoney(11400));
-  });
-
-  it('ignores accounts without a manual value', () => {
-    expect(verifyFromManual(dataset, '2025-01-01', { Banco: 1 })).toEqual([]);
   });
 });
 

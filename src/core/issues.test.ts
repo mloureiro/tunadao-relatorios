@@ -66,7 +66,6 @@ describe('issue catalogue', () => {
       'checkpoint-conflict',
       'checkpoint-mismatch',
       'missing-opening-balance',
-      'manual-opening-mismatch',
       'report-type-unknown',
       'report-version-newer',
       'field-missing',
