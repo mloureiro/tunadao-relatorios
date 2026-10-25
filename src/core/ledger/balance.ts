@@ -31,6 +31,21 @@ export function checkpointsOf(dataset: Dataset, conta: Conta): DayCheckpoint[] {
   return [...byDate.values()];
 }
 
+export function isDeclaredAtEndOf(
+  dataset: Dataset,
+  conta: Conta,
+  date: IsoDate,
+): boolean {
+  const sameDay = dataset.saldos.filter(
+    (checkpoint) => checkpoint.conta === conta && checkpoint.data === date,
+  );
+  // A statement or count on the same day beats a declaration, so a mixed day is not declared.
+  return (
+    sameDay.length > 0 &&
+    sameDay.every((checkpoint) => checkpoint.fonte === 'Declarado')
+  );
+}
+
 export function movementsBetween(
   dataset: Dataset,
   conta: Conta,

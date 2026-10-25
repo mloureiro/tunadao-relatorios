@@ -476,6 +476,13 @@ export function headerOf(
   };
 }
 
+function openingLabel(declared: PeriodFigures['openingDeclared']): string {
+  if (declared.Caixa && declared.Banco) return 'Saldo inicial (declarado)';
+  if (declared.Caixa) return 'Saldo inicial (caixa declarado)';
+  if (declared.Banco) return 'Saldo inicial (banco declarado)';
+  return 'Saldo inicial';
+}
+
 export function bridgeSection(
   figures: PeriodFigures,
   extraRows: readonly BridgeRow[] = [],
@@ -485,7 +492,7 @@ export function bridgeSection(
     title: 'Ponte entre o saldo inicial e o saldo final',
     rows: [
       {
-        label: 'Saldo inicial',
+        label: openingLabel(figures.openingDeclared),
         value: money(figures.opening.totalCents),
       },
       { label: '(+) Recebimentos', value: money(figures.recebidoCents) },

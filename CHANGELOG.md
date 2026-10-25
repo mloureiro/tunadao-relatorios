@@ -4,6 +4,8 @@
 
 - Os PDFs usam o papel timbrado da tuna: barra azul, marca d'água e selo no cabeçalho, e no rodapé o nome, a morada e o
   NIPC (`org.address` e `org.nipc` em `config/config.json`).
+- Na ponte de saldos, o saldo inicial que vem de uma linha de Saldos com Fonte «Declarado» passa a dizer-se declarado:
+  «Saldo inicial (declarado)», ou só da caixa ou do banco (a contagem ou o extrato do mesmo dia prevalecem).
 - As páginas são numeradas `1/3`, `2/3`, `3/3`, para que cada página possa ser rubricada.
 
 ## 2.0.0
