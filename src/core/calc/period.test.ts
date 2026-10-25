@@ -73,4 +73,32 @@ describe('periodFigures()', () => {
       ['missing-opening-balance', 'error'],
     ]);
   });
+
+  it('flags per account the openings declared on the day before the start', () => {
+    const dataset = emptyDataset({
+      saldos: [
+        { ...saldo('2024-12-31', 10000, 'Caixa'), fonte: 'Declarado' },
+        saldo('2024-12-31', 50000, 'Banco'),
+      ],
+    });
+
+    const figures = periodFigures(dataset, '2025-01-01', '2025-12-31');
+
+    expect(figures.openingDeclared).toEqual({ Caixa: true, Banco: false });
+  });
+
+  it('does not flag a declaration older than the day before, and keeps the amount carried by the movements', () => {
+    const dataset = emptyDataset({
+      saldos: [
+        { ...saldo('2024-12-30', 10000, 'Caixa'), fonte: 'Declarado' },
+        { ...saldo('2024-12-30', 50000, 'Banco'), fonte: 'Declarado' },
+      ],
+      movimentos: [mov({ data: '2024-12-31', cents: 700 })],
+    });
+
+    const figures = periodFigures(dataset, '2025-01-01', '2025-12-31');
+
+    expect(figures.openingDeclared).toEqual({ Caixa: false, Banco: false });
+    expect(figures.opening.caixaCents).toBe(10700);
+  });
 });

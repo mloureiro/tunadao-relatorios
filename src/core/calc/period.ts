@@ -2,7 +2,12 @@ import { addDays, compare, inRange, type IsoDate } from '../dates.ts';
 import type { Cents, Conta, Dataset, Movimento } from '../dataset/types.ts';
 import { issueMessages, makeIssue, type Issue } from '../issues.ts';
 import { sum } from '../money.ts';
-import { CONTAS, balanceAtEndOf, movementsBetween } from '../ledger/balance.ts';
+import {
+  CONTAS,
+  balanceAtEndOf,
+  isDeclaredAtEndOf,
+  movementsBetween,
+} from '../ledger/balance.ts';
 import { classify } from './classify.ts';
 
 export interface AccountSplit {
@@ -20,6 +25,7 @@ export interface PeriodFigures {
   readonly start: IsoDate;
   readonly end: IsoDate;
   readonly opening: AccountSplit;
+  readonly openingDeclared: Readonly<Record<Conta, boolean>>;
   readonly recebidoCents: Cents;
   readonly pagoCents: Cents;
   readonly outrosCents: Cents;
@@ -119,6 +125,10 @@ export function periodFigures(
     start,
     end,
     opening: splitOf(opening.Caixa, opening.Banco),
+    openingDeclared: {
+      Caixa: isDeclaredAtEndOf(dataset, 'Caixa', dayBefore),
+      Banco: isDeclaredAtEndOf(dataset, 'Banco', dayBefore),
+    },
     recebidoCents,
     pagoCents,
     outrosCents,

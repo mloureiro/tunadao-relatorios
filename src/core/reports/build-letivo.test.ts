@@ -121,6 +121,38 @@ describe('buildLetivo()', () => {
     expect(bridge.rows[0]?.label).toBe('Saldo inicial');
   });
 
+  it.each([
+    ['Caixa and Banco declared', true, true, 'Saldo inicial (declarado)'],
+    ['only Caixa declared', true, false, 'Saldo inicial (caixa declarado)'],
+    ['only Banco declared', false, true, 'Saldo inicial (banco declarado)'],
+    ['nothing declared', false, false, 'Saldo inicial'],
+  ])(
+    'labels the opening row when %s, leaving the amount and the KPI card alone',
+    (_name, caixa, banco, label) => {
+      const withSources = emptyDataset({
+        saldos: [
+          {
+            ...saldo('2025-12-31', 10000, 'Caixa'),
+            fonte: caixa ? 'Declarado' : 'Contagem',
+          },
+          {
+            ...saldo('2025-12-31', 50000, 'Banco'),
+            fonte: banco ? 'Declarado' : 'Contagem',
+          },
+        ],
+        movimentos: simple.movimentos,
+      });
+
+      const { report } = build(withSources);
+      const bridge = sectionOf(report, 'bridge');
+      const plain = sectionOf(build(simple).report, 'bridge');
+
+      expect(bridge.rows[0]?.label).toBe(label);
+      expect(bridge.rows[0]?.value).toEqual(plain.rows[0]?.value);
+      expect(sectionOf(report, 'kpis').cards[0]?.label).toBe('Saldo inicial');
+    },
+  );
+
   it('prints the transfer line in the bridge only when it is not zero, and closes onto the final balance', () => {
     const withTransfer = emptyDataset({
       saldos: opening,
