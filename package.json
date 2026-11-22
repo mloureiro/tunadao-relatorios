@@ -53,6 +53,6 @@
     "fflate": "0.8.3",
     "preact": "11.0.0",
     "xlsx": "file:vendor/xlsx-0.20.3.tgz",
-    "zod": "4.6.5"
+    "zod": "4.6.6"
   }
 }
